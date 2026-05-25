@@ -18,32 +18,21 @@ interface GlassPanelProps extends Omit<HTMLMotionProps<"div">, "animate"> {
   cornerMarks?: boolean;
   revealOnView?: boolean;
   interactive?: boolean;
-  /** Picks up environmental light from the hero neural core */
   coreGlow?: boolean;
 }
 
-const variantStyles: Record<GlassVariant, string> = {
-  default:
-    "bg-white/[0.03] border-white/[0.08] backdrop-blur-xl",
-  hud: "bg-black/40 border-nexus-cyan/20 backdrop-blur-2xl shadow-[inset_0_1px_0_rgba(0,240,255,0.15)]",
-  telemetry:
-    "bg-black/50 border-nexus-lime/15 backdrop-blur-xl shadow-[0_0_40px_rgba(212,255,0,0.06)]",
-  command:
-    "bg-gradient-to-br from-white/[0.06] to-transparent border-white/10 backdrop-blur-2xl",
+const accentBorder: Record<GlassGlow, string> = {
+  none: "border-white/[0.1]",
+  lime: "border-nexus-lime/[0.14]",
+  cyan: "border-nexus-cyan/[0.14]",
+  orange: "border-nexus-orange/[0.12]",
 };
 
-const glowStyles: Record<GlassGlow, string> = {
-  none: "",
-  lime: "shadow-[0_0_60px_rgba(212,255,0,0.08),inset_0_0_30px_rgba(212,255,0,0.03)]",
-  cyan: "shadow-[0_0_60px_rgba(0,240,255,0.1),inset_0_0_30px_rgba(0,240,255,0.04)]",
-  orange: "shadow-[0_0_50px_rgba(255,107,53,0.08)]",
-};
-
-const breatheClass: Record<GlassGlow, string> = {
-  none: "",
-  lime: "panel-breathe-lime",
-  cyan: "panel-breathe-cyan",
-  orange: "panel-breathe-orange",
+const accentGlow: Record<GlassGlow, string> = {
+  none: "shadow-[var(--nx-glow-lime-soft)]",
+  lime: "shadow-[0_0_48px_rgba(212,255,0,0.06),inset_0_1px_0_rgba(212,255,0,0.1)]",
+  cyan: "shadow-[0_0_48px_rgba(0,240,255,0.07),inset_0_1px_0_rgba(0,240,255,0.08)]",
+  orange: "shadow-[0_0_40px_rgba(255,107,53,0.06),inset_0_1px_0_rgba(255,107,53,0.06)]",
 };
 
 export function GlassPanel({
@@ -61,6 +50,14 @@ export function GlassPanel({
   const reduceMotion = useHydratedReducedMotion();
   const shouldReveal = revealOnView && mounted;
   const motionReady = mounted && !reduceMotion && interactive;
+  const resolvedGlow =
+    glow !== "none"
+      ? glow
+      : variant === "telemetry" || variant === "hud"
+        ? "lime"
+        : variant === "command"
+          ? "lime"
+          : "none";
 
   return (
     <motion.div
@@ -70,39 +67,33 @@ export function GlassPanel({
       viewport={{ once: true, amount: 0.2 }}
       whileHover={
         motionReady
-          ? {
-              y: -3,
-              scale: 1.008,
-              transition: springHoverReact,
-            }
+          ? { y: -2, scale: 1.006, transition: springHoverReact }
           : undefined
       }
       transition={springInertia}
       className={cn(
-        "group/panel relative overflow-hidden rounded-sm border",
-        variantStyles[variant],
-        glowStyles[glow],
-        glow !== "none" && breatheClass[glow],
+        "nexus-panel-base group/panel",
+        accentBorder[resolvedGlow],
+        accentGlow[resolvedGlow],
+        variant === "command" &&
+          "bg-gradient-to-br from-white/[0.05] to-transparent",
         coreGlow && "hero-panel-core-light",
         className
       )}
       {...props}
     >
       {motionReady && (
-        <>
-          <div className="panel-holo-shimmer pointer-events-none absolute inset-0 z-0" />
-          <div className="atmo-holo-flicker pointer-events-none absolute inset-0 z-0 opacity-[0.02]" />
-        </>
+        <div className="panel-holo-shimmer pointer-events-none absolute inset-0 z-0 opacity-80" />
       )}
       {cornerMarks && (
         <>
-          <span className="absolute left-0 top-0 z-10 h-3 w-3 border-l border-t border-nexus-lime/50 transition-colors duration-500 group-hover/panel:border-nexus-lime" />
-          <span className="absolute right-0 top-0 z-10 h-3 w-3 border-r border-t border-nexus-lime/50 transition-colors duration-500 group-hover/panel:border-nexus-lime" />
-          <span className="absolute bottom-0 left-0 z-10 h-3 w-3 border-b border-l border-nexus-lime/50 transition-colors duration-500 group-hover/panel:border-nexus-lime" />
-          <span className="absolute bottom-0 right-0 z-10 h-3 w-3 border-b border-r border-nexus-lime/50 transition-colors duration-500 group-hover/panel:border-nexus-lime" />
+          <span className="absolute left-0 top-0 z-10 h-3 w-3 border-l border-t border-nexus-lime/40 transition-colors duration-500 group-hover/panel:border-nexus-lime/70" />
+          <span className="absolute right-0 top-0 z-10 h-3 w-3 border-r border-t border-nexus-lime/40 transition-colors duration-500 group-hover/panel:border-nexus-lime/70" />
+          <span className="absolute bottom-0 left-0 z-10 h-3 w-3 border-b border-l border-nexus-lime/40 transition-colors duration-500 group-hover/panel:border-nexus-lime/70" />
+          <span className="absolute bottom-0 right-0 z-10 h-3 w-3 border-b border-r border-nexus-lime/40 transition-colors duration-500 group-hover/panel:border-nexus-lime/70" />
         </>
       )}
-      <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.03] bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(255,255,255,0.5)_2px,rgba(255,255,255,0.5)_3px)]" />
+      <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.025] bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(255,255,255,0.45)_2px,rgba(255,255,255,0.45)_3px)]" />
       <div className="relative z-[1]">{children}</div>
     </motion.div>
   );

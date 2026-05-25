@@ -12,10 +12,10 @@ import { AmbientReflections } from "./ambient-reflections";
 function AtmosphereStaticShell() {
   return (
     <div className="pointer-events-none fixed inset-0 z-[2] overflow-hidden" aria-hidden>
-      <div className="atmo-fog-blob atmo-fog-cyan absolute -left-[10%] top-[15%] h-[55vh] w-[55vw] opacity-60" />
-      <div className="atmo-fog-blob atmo-fog-lime absolute -right-[15%] top-[40%] h-[50vh] w-[50vw] opacity-50" />
-      <div className="atmo-scanlines absolute inset-0 opacity-[0.05]" />
-      <div className="atmo-noise-drift absolute inset-0 opacity-[0.04]" />
+      <div className="atmo-fog-blob atmo-fog-cyan absolute -left-[10%] top-[15%] h-[45vh] w-[45vw] opacity-35" />
+      <div className="atmo-fog-blob atmo-fog-lime absolute -right-[15%] top-[40%] h-[40vh] w-[40vw] opacity-30" />
+      <div className="atmo-scanlines absolute inset-0 opacity-[0.04]" />
+      <div className="atmo-noise-drift absolute inset-0 opacity-[0.025]" />
     </div>
   );
 }
@@ -39,7 +39,7 @@ export function CinematicAtmosphere() {
       <DataStreams />
       <Scanlines />
       <HoloOverlay />
-      <div className="atmo-vignette-pulse absolute inset-0" />
+      <div className="atmo-vignette-pulse absolute inset-0 opacity-70" />
     </div>
   );
 }

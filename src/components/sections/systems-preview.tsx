@@ -43,7 +43,7 @@ export function SystemsPreview() {
       <div className="pointer-events-none absolute inset-0 atmo-section-glow opacity-40" aria-hidden />
       <div className="mx-auto max-w-[1800px] px-4 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
-          <DepthParallax depth={0.5} className="lg:col-span-4 lg:sticky lg:top-32 lg:self-start">
+          <DepthParallax depth={0.5} className="lg:col-span-4 lg:sticky lg:top-32 lg:self-start lg:pl-2">
           <motion.div
             variants={slideFromLeft}
             initial={false}
@@ -56,14 +56,14 @@ export function SystemsPreview() {
               <br />
               <span className="text-white/30">Architecture</span>
             </h2>
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-white/40">
+            <p className="nexus-support-sm mt-6 max-w-sm">
               Modular intelligence layers engineered for cinematic oversight and
               millisecond reactivity.
             </p>
           </motion.div>
           </DepthParallax>
 
-          <DepthParallax depth={0.9} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
+          <DepthParallax depth={0.9} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6 lg:-ml-6 xl:-ml-10">
           <motion.div
             className="flex flex-col gap-6"
             variants={staggerCinematic(0.1, 0.15)}
@@ -85,7 +85,7 @@ export function SystemsPreview() {
                       <h3 className="mt-3 font-display text-3xl font-light text-white sm:text-4xl">
                         {sys.name}
                       </h3>
-                      <p className="mt-3 max-w-md text-sm text-white/45">{sys.desc}</p>
+                      <p className="nexus-support-sm mt-3 max-w-md">{sys.desc}</p>
                     </div>
                     <span className="font-display text-6xl font-extralight text-white/[0.06] sm:text-7xl">
                       {sys.id}

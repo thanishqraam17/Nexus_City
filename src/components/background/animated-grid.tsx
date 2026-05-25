@@ -113,8 +113,8 @@ export function AnimatedGrid() {
       aria-hidden
     >
       <div className="absolute inset-0 bg-void" />
-      <div className={`absolute inset-0 opacity-40 ${GRID_GRADIENT_CLASS}`} />
-      <div className={`absolute inset-0 opacity-30 ${GRID_STATIC_CLASS}`} />
+      <div className={`absolute inset-0 opacity-50 ${GRID_GRADIENT_CLASS}`} />
+      <div className={`absolute inset-0 opacity-45 ${GRID_STATIC_CLASS}`} />
       <canvas
         ref={canvasRef}
         className={`absolute inset-0 h-full w-full mix-blend-screen ${

@@ -9,7 +9,7 @@ export default function HeroCoreCanvas() {
     <Canvas
       className="h-full w-full touch-none"
       dpr={[1, 1.5]}
-      camera={{ position: [0.8, 2.1, 8.2], fov: 44, near: 0.1, far: 36 }}
+      camera={{ position: [0.5, 2.2, 7.6], fov: 42, near: 0.1, far: 36 }}
       gl={{
         alpha: true,
         antialias: true,

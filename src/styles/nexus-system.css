@@ -1,0 +1,499 @@
+/* NEXUS CITY — unified cinematic design system */
+
+:root {
+  --nx-border: rgba(255, 255, 255, 0.1);
+  --nx-border-accent: rgba(212, 255, 0, 0.22);
+  --nx-panel-bg: rgba(3, 3, 8, 0.72);
+  --nx-panel-blur: 8px;
+  --nx-glow-lime-soft: 0 0 32px rgba(212, 255, 0, 0.08);
+  --nx-glow-cyan-soft: 0 0 32px rgba(0, 240, 255, 0.08);
+  --nx-glow-inset-lime: inset 0 1px 0 rgba(212, 255, 0, 0.14);
+  --nx-space-card: 1rem;
+  --nx-ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
+  --nx-duration-hover: 0.55s;
+}
+
+/* Typography */
+.nexus-support {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.nexus-support-sm {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.nexus-value {
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #fff;
+}
+
+.nexus-value-unit {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+/* Panels */
+.nexus-panel-base {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  border: 1px solid var(--nx-border-accent);
+  background: var(--nx-panel-bg);
+  backdrop-filter: blur(var(--nx-panel-blur));
+  -webkit-backdrop-filter: blur(var(--nx-panel-blur));
+  box-shadow: var(--nx-glow-lime-soft), var(--nx-glow-inset-lime);
+}
+
+.telemetry-card.nexus-panel-base {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ─── Telemetry instrumentation system ─── */
+.telemetry-card-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.telemetry-card {
+  padding: 0.75rem 0.875rem !important;
+}
+
+.telemetry-card-inner {
+  display: flex;
+  flex-direction: column;
+  height: 7.75rem;
+}
+
+.telemetry-slot {
+  flex-shrink: 0;
+}
+
+.telemetry-slot-header {
+  height: 0.875rem;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.telemetry-slot-header .font-mono {
+  line-height: 1;
+}
+
+.telemetry-slot-value {
+  height: 1.75rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: flex-end;
+}
+
+.telemetry-slot-bar {
+  height: 0.1875rem;
+  margin-top: 0.5rem;
+}
+
+.telemetry-slot-bar--empty {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.telemetry-slot-graph {
+  height: 1.25rem;
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+}
+
+/* Metric row — locked baseline, monospace digits */
+.telemetry-metric-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  height: 1.75rem;
+  line-height: 1.75rem;
+}
+
+.telemetry-metric-digits {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 1.375rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  line-height: 1.75rem;
+  letter-spacing: 0.02em;
+  color: #fff;
+  display: inline-block;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.telemetry-metric-digits--sector {
+  width: 7ch;
+  font-size: 1.125rem;
+  letter-spacing: 0.08em;
+  text-align: left;
+}
+
+.telemetry-metric-digits--percent {
+  width: 4ch;
+}
+
+.telemetry-metric-digits--uptime {
+  width: 5ch;
+}
+
+.telemetry-metric-digits--latency {
+  width: 3ch;
+}
+
+.telemetry-metric-unit {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 0.625rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.14em;
+  line-height: 1.75rem;
+  color: rgba(255, 255, 255, 0.42);
+  width: 1.75rem;
+  flex-shrink: 0;
+  text-transform: lowercase;
+}
+
+.telemetry-bar-track {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.telemetry-bar-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 1px;
+  transform-origin: left center;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 240, 255, 0.85) 0%,
+    rgba(212, 255, 0, 0.95) 100%
+  );
+  box-shadow: 0 0 8px rgba(212, 255, 0, 0.3);
+}
+
+.telemetry-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  height: 1.25rem;
+}
+
+.telemetry-sparkline-wrap {
+  flex: 1;
+  min-width: 0;
+  height: 1.25rem;
+  overflow: hidden;
+}
+
+.telemetry-sparkline {
+  display: block;
+  width: 100%;
+  height: 1.25rem;
+}
+
+.telemetry-sparkline-wave {
+  transform: translateZ(0);
+  animation: telemetry-wave-drift 16s linear infinite;
+}
+
+@keyframes telemetry-wave-drift {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .telemetry-sparkline-wave {
+    animation: none;
+  }
+}
+
+.telemetry-sync-line {
+  position: relative;
+  height: 1px;
+  flex: 1;
+  transform-origin: left;
+  background: linear-gradient(
+    90deg,
+    rgba(212, 255, 0, 0.45) 0%,
+    transparent 100%
+  );
+}
+
+.telemetry-sync-label {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+/* Buttons */
+.nexus-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  line-height: 1;
+  transition:
+    border-color var(--nx-duration-hover) var(--nx-ease-cinematic),
+    background-color var(--nx-duration-hover) var(--nx-ease-cinematic),
+    box-shadow var(--nx-duration-hover) var(--nx-ease-cinematic),
+    color var(--nx-duration-hover) var(--nx-ease-cinematic),
+    transform var(--nx-duration-hover) var(--nx-ease-cinematic);
+}
+
+.nexus-btn-primary {
+  padding: 1rem 2rem;
+  background: var(--nexus-lime);
+  color: var(--void);
+  border: 1px solid rgba(212, 255, 0, 0.5);
+}
+
+.nexus-btn-primary:hover {
+  box-shadow: 0 0 48px rgba(212, 255, 0, 0.35);
+}
+
+.nexus-btn-ghost {
+  padding: 1rem 1.5rem;
+  background: rgba(3, 3, 8, 0.45);
+  color: rgba(255, 255, 255, 0.62);
+  border: 1px solid var(--nx-border);
+  backdrop-filter: blur(12px);
+}
+
+.nexus-btn-ghost:hover {
+  border-color: rgba(0, 240, 255, 0.35);
+  color: #fff;
+}
+
+.nexus-btn-outline {
+  padding: 0.625rem 1.25rem;
+  background: rgba(212, 255, 0, 0.08);
+  color: var(--nexus-lime);
+  border: 1px solid rgba(212, 255, 0, 0.35);
+}
+
+.nexus-input {
+  width: 100%;
+  border: 1px solid var(--nx-border);
+  background: rgba(3, 3, 8, 0.55);
+  padding: 1rem 1.25rem;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #fff;
+  outline: none;
+  backdrop-filter: blur(12px);
+  transition: border-color var(--nx-duration-hover) var(--nx-ease-cinematic);
+}
+
+.nexus-input::placeholder {
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.nexus-input:focus {
+  border-color: rgba(212, 255, 0, 0.4);
+}
+
+/* Environmental core light on nearby UI */
+.hero-panel-core-light {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 240, 255, 0.04) 0%,
+    rgba(3, 3, 8, 0.58) 50%,
+    rgba(3, 3, 8, 0.72) 100%
+  ) !important;
+  box-shadow:
+    inset -20px 0 40px rgba(0, 240, 255, 0.04),
+    var(--nx-glow-lime-soft),
+    var(--nx-glow-cyan-soft) !important;
+}
+
+/* Mid-depth environmental layer (between UI and background) */
+.mid-depth-field {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.mid-depth-fog {
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(ellipse 50% 40% at 62% 42%, rgba(0, 240, 255, 0.03) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 35% at 38% 58%, rgba(212, 255, 0, 0.025) 0%, transparent 50%);
+  animation: mid-depth-fog-drift 24s ease-in-out infinite;
+}
+
+.mid-depth-scan {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 240, 255, 0.15) 3px,
+    rgba(0, 240, 255, 0.15) 4px
+  );
+  animation: mid-depth-scan-drift 14s linear infinite;
+}
+
+.mid-depth-sweep {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 255, 0, 0.2),
+    rgba(0, 240, 255, 0.15),
+    transparent
+  );
+  animation: mid-depth-sweep 11s ease-in-out infinite;
+}
+
+.mid-depth-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: var(--nexus-cyan);
+  opacity: 0.35;
+  animation: mid-depth-particle-float 18s ease-in-out infinite;
+}
+
+.mid-depth-holo-line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 240, 255, 0.25),
+    transparent
+  );
+  transform-origin: left center;
+  animation: mid-depth-line-pulse 8s ease-in-out infinite;
+}
+
+.mid-depth-telemetry-drift {
+  position: absolute;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(212, 255, 0, 0.2);
+  white-space: nowrap;
+  animation: mid-depth-telemetry-drift 22s linear infinite;
+}
+
+@keyframes mid-depth-fog-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate(2%, -1%) scale(1.03);
+    opacity: 1;
+  }
+}
+
+@keyframes mid-depth-scan-drift {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(8px);
+  }
+}
+
+@keyframes mid-depth-sweep {
+  0%,
+  100% {
+    top: 22%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.5;
+  }
+  55% {
+    top: 72%;
+    opacity: 0.35;
+  }
+}
+
+@keyframes mid-depth-particle-float {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translate(12px, -24px);
+    opacity: 0.5;
+  }
+}
+
+@keyframes mid-depth-line-pulse {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scaleX(0.6);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes mid-depth-telemetry-drift {
+  0% {
+    transform: translateY(-10%) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.35;
+  }
+  90% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateY(110vh) translateX(20px);
+    opacity: 0;
+  }
+}

@@ -129,7 +129,7 @@ export function ParticleField() {
   return (
     <canvas
       ref={canvasRef}
-      className="pointer-events-none absolute inset-0 opacity-80 mix-blend-screen"
+      className="pointer-events-none absolute inset-0 opacity-45 mix-blend-screen"
       aria-hidden
     />
   );

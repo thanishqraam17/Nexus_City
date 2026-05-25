@@ -37,7 +37,7 @@ export function HolographicRings() {
           <meshBasicMaterial
             color={ring.color}
             transparent
-            opacity={0.25}
+            opacity={0.38}
             blending={THREE.AdditiveBlending}
           />
         </mesh>

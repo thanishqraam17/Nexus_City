@@ -8,7 +8,8 @@ import { useMounted } from "@/hooks/use-mounted";
 import { Menu, X, Radio } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navItem } from "@/lib/motion/variants";
-import { springHoverReact, springSnappy } from "@/lib/motion/transitions";
+import { springHoverReact } from "@/lib/motion/transitions";
+import { NexusButton } from "@/components/ui/nexus-button";
 import { MicroLabel } from "@/components/ui/micro-label";
 import { useUIStore } from "@/store/ui-store";
 
@@ -85,7 +86,7 @@ export function Navbar() {
               <span className="absolute -inset-px bg-nexus-lime/20 blur-md opacity-0 transition-opacity group-hover:opacity-100" />
             </motion.div>
             <div className="hidden sm:block">
-              <p className="font-display text-sm font-semibold tracking-[0.2em] text-white">
+              <p className="font-display text-sm font-semibold tracking-[0.2em] text-white/95">
                 NEXUS
               </p>
               <MicroLabel accent="cyan" className="text-[8px]">
@@ -106,14 +107,10 @@ export function Navbar() {
                 >
                   <Link
                     href={link.href}
-                    className="group relative font-mono text-xs uppercase tracking-[0.2em] text-white/50 transition-colors hover:text-white"
+                    className="group relative font-mono text-xs uppercase tracking-[0.22em] text-white/58 transition-colors duration-500 hover:text-white/95"
                   >
                     {link.label}
-                    <motion.span
-                      className="absolute -bottom-1 left-0 h-px w-0 bg-nexus-lime"
-                      whileHover={{ width: "100%" }}
-                      transition={springSnappy}
-                    />
+                    <span className="absolute -bottom-1 left-0 h-px w-0 bg-nexus-lime/80 transition-all duration-500 group-hover:w-full" />
                   </Link>
                 </motion.li>
               ))}
@@ -121,15 +118,9 @@ export function Navbar() {
 
             <div className="flex items-center gap-4">
               <StatusPill live={mounted && telemetryLive} />
-              <motion.a
-                href="#access"
-                className="relative overflow-hidden border border-nexus-lime/40 bg-nexus-lime/10 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.25em] text-nexus-lime"
-                whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(212,255,0,0.25)" }}
-                whileTap={{ scale: 0.98 }}
-                transition={springHoverReact}
-              >
+              <NexusButton href="#access" variant="outline">
                 Initialize
-              </motion.a>
+              </NexusButton>
             </div>
           </div>
 
@@ -202,7 +193,7 @@ function StatusPill({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 border border-white/10 bg-black/30 px-3 py-1.5",
+        "flex items-center gap-2 border border-white/[0.1] bg-black/35 px-3 py-1.5 backdrop-blur-md",
         className
       )}
     >
@@ -212,7 +203,7 @@ function StatusPill({
       >
         <Radio size={12} className="text-nexus-lime" />
       </motion.span>
-      <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/50">
+      <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-white/55">
         {live ? "Live Feed" : "Standby"}
       </span>
     </div>

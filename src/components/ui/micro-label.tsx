@@ -15,7 +15,7 @@ const accentMap = {
   lime: "text-nexus-lime",
   cyan: "text-nexus-cyan",
   orange: "text-nexus-orange",
-  muted: "text-white/40",
+  muted: "text-white/45",
 };
 
 export function MicroLabel({
@@ -30,7 +30,7 @@ export function MicroLabel({
   return (
     <motion.span
       className={cn(
-        "font-mono text-[10px] uppercase tracking-[0.28em] leading-none",
+        "font-mono text-[10px] font-medium uppercase tracking-[0.24em] leading-none",
         accentMap[accent],
         className
       )}

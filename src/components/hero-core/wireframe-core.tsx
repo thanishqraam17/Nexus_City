@@ -16,7 +16,7 @@ export function WireframeCore() {
   });
 
   return (
-    <group position={[0, 0.2, 0]}>
+    <group position={[0.35, 0.15, 0]}>
       <mesh ref={outer}>
         <icosahedronGeometry args={[1.15, 2]} />
         <meshBasicMaterial

@@ -73,9 +73,9 @@ export const floatPulse: Variants = {
 export const panelReveal: Variants = {
   hidden: {
     opacity: 0,
-    y: 24,
-    scale: 0.98,
-    filter: "blur(14px)",
+    y: 16,
+    scale: 0.99,
+    filter: "blur(4px)",
   },
   visible: {
     opacity: 1,

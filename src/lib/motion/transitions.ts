@@ -67,6 +67,11 @@ export const blurReveal: Transition = {
   ease: [0.22, 1, 0.36, 1],
 };
 
+export const easeCinematic: Transition = {
+  duration: 0.9,
+  ease: [0.16, 1, 0.3, 1],
+};
+
 export const staggerContainer = (stagger = 0.08, delay = 0.12) => ({
   hidden: {},
   visible: {

@@ -34,7 +34,7 @@ export function WireframeStructures() {
               color={NEXUS.cyan}
               wireframe
               transparent
-              opacity={0.2}
+              opacity={0.35}
               blending={THREE.AdditiveBlending}
             />
           </mesh>
@@ -44,7 +44,7 @@ export function WireframeStructures() {
               color={NEXUS.lime}
               wireframe
               transparent
-              opacity={0.15}
+              opacity={0.28}
             />
           </mesh>
         </group>
