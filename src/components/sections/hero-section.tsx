@@ -8,16 +8,10 @@ import { ArrowUpRight, ChevronRight } from "lucide-react";
 import { NexusButton } from "@/components/ui/nexus-button";
 import { HeroHologram } from "@/components/hero-core/hero-hologram";
 import { MicroLabel } from "@/components/ui/micro-label";
-import { GlassPanel } from "@/components/ui/glass-panel";
 import { TelemetryRail } from "@/components/ui/telemetry-widget";
 import { HeroCommandBar } from "@/components/layout/hero-command-bar";
-
-const METRICS = [
-  { stat: "847", label: "Nodes Active" },
-  { stat: "12ms", label: "Avg Response" },
-  { stat: "4.2M", label: "Events / sec" },
-  { stat: "∞", label: "Scale Ready" },
-] as const;
+import { HeroDepth } from "@/components/sections/hero-depth";
+import { HeroMetricsGrid } from "@/components/sections/hero-metrics-grid";
 
 export function HeroSection() {
   const mounted = useMounted();
@@ -44,13 +38,14 @@ export function HeroSection() {
 
   return (
     <section id="command" className="hero-section">
+      <HeroDepth />
       <HeroHologram />
 
       <div className="hero-shell">
         <div className="hero-grid">
-          <div className="hero-grid-left">
+          <div className="hero-grid-left hero-grid-left--focus">
             <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-              <MicroLabel accent="lime" pulse={mounted}>
+              <MicroLabel accent="lime" pulse={false}>
                 Smart City Operating System
               </MicroLabel>
               <MicroLabel accent="cyan">Sector Alpha-7 Online</MicroLabel>
@@ -58,7 +53,7 @@ export function HeroSection() {
 
             <h1
               ref={titleRef}
-              className="font-display font-extralight leading-[0.85] tracking-[-0.04em] text-white"
+              className="hero-title font-display font-extralight leading-[0.85] tracking-[-0.04em] text-white"
             >
               <span className="block">
                 <span className="flex flex-wrap">
@@ -92,7 +87,7 @@ export function HeroSection() {
               planetary scale.
             </p>
 
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="hero-actions flex flex-wrap items-center gap-4">
               <NexusButton href="#access" variant="primary">
                 Enter Command Center
                 <ArrowUpRight size={16} />
@@ -103,24 +98,7 @@ export function HeroSection() {
               </NexusButton>
             </div>
 
-            <div className="hero-metrics">
-              {METRICS.map((item) => (
-                <GlassPanel
-                  key={item.label}
-                  variant="hud"
-                  className="p-4"
-                  glow="cyan"
-                  revealOnView={false}
-                >
-                  <p className="font-display text-xl text-white sm:text-2xl">
-                    {item.stat}
-                  </p>
-                  <MicroLabel accent="muted" className="mt-2 text-[8px]">
-                    {item.label}
-                  </MicroLabel>
-                </GlassPanel>
-              ))}
-            </div>
+            <HeroMetricsGrid />
           </div>
 
           <div className="hero-grid-center" aria-hidden />

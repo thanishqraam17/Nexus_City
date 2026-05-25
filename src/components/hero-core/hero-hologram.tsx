@@ -24,11 +24,13 @@ export function HeroHologram() {
 
   return (
     <div className="hero-core-field" aria-hidden>
+      <div className="hero-core-glow-spill" />
       <div className="hero-core-atmo-sync" />
       <div className="hero-core-canvas-wrap">
         {ready ? <HeroCoreCanvas /> : <HeroCoreFallback />}
       </div>
       <div className="hero-core-feather" />
+      <div className="hero-core-ambient-ring" />
       <div className="hero-core-depth-fade hero-core-depth-fade-bottom" />
     </div>
   );

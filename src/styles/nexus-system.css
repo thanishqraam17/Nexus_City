@@ -64,6 +64,32 @@
 .telemetry-card-wrap {
   position: relative;
   width: 100%;
+  transition:
+    box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.telemetry-card-wrap:hover .nexus-panel-base {
+  box-shadow:
+    0 0 36px rgba(212, 255, 0, 0.1),
+    inset 0 1px 0 rgba(212, 255, 0, 0.16);
+}
+
+.telemetry-card-wrap--cyan:hover .nexus-panel-base,
+.telemetry-card--cyan ~ .telemetry-card-wrap:hover .nexus-panel-base {
+  box-shadow:
+    0 0 36px rgba(0, 240, 255, 0.1),
+    inset 0 1px 0 rgba(0, 240, 255, 0.12);
+}
+
+.hero-metrics-grid .telemetry-card-wrap:hover .nexus-panel-base {
+  box-shadow:
+    0 0 36px rgba(0, 240, 255, 0.1),
+    inset 0 1px 0 rgba(0, 240, 255, 0.14);
+}
+
+.telemetry-card--cyan.nexus-panel-base {
+  border-color: rgba(0, 240, 255, 0.2);
 }
 
 .telemetry-card {
@@ -155,6 +181,27 @@
 
 .telemetry-metric-digits--latency {
   width: 3ch;
+}
+
+.telemetry-metric-digits--hud-lg {
+  width: 4ch;
+  font-size: 1.375rem;
+}
+
+.telemetry-metric-digits--hud-md {
+  width: 4ch;
+  font-size: 1.25rem;
+}
+
+.telemetry-metric-digits--hud-sm {
+  width: 2ch;
+  font-size: 1.375rem;
+}
+
+.telemetry-metric-digits--hud-symbol {
+  width: 2ch;
+  font-size: 1.5rem;
+  text-align: center;
 }
 
 .telemetry-metric-unit {
@@ -253,12 +300,14 @@
   letter-spacing: 0.18em;
 }
 
-/* Buttons */
+/* Buttons — cinematic controls */
 .nexus-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  overflow: hidden;
+  isolation: isolate;
   font-family: var(--font-jetbrains), monospace;
   font-size: 10px;
   text-transform: uppercase;
@@ -268,32 +317,105 @@
     border-color var(--nx-duration-hover) var(--nx-ease-cinematic),
     background-color var(--nx-duration-hover) var(--nx-ease-cinematic),
     box-shadow var(--nx-duration-hover) var(--nx-ease-cinematic),
-    color var(--nx-duration-hover) var(--nx-ease-cinematic),
-    transform var(--nx-duration-hover) var(--nx-ease-cinematic);
+    color var(--nx-duration-hover) var(--nx-ease-cinematic);
+}
+
+.nexus-btn-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nexus-btn-shine {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 65%
+  );
+  background-size: 220% 100%;
+  background-position: 120% 0;
+  opacity: 0;
+  transition:
+    opacity 0.55s var(--nx-ease-cinematic),
+    background-position 0.85s var(--nx-ease-cinematic);
+  pointer-events: none;
+}
+
+.nexus-btn-border-trace {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.55s var(--nx-ease-cinematic);
+  pointer-events: none;
 }
 
 .nexus-btn-primary {
   padding: 1rem 2rem;
   background: var(--nexus-lime);
   color: var(--void);
-  border: 1px solid rgba(212, 255, 0, 0.5);
+  border: 1px solid rgba(212, 255, 0, 0.55);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.25) inset,
+    0 0 32px rgba(212, 255, 0, 0.2),
+    0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.nexus-btn-primary .nexus-btn-border-trace {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+    0 0 20px rgba(212, 255, 0, 0.35);
 }
 
 .nexus-btn-primary:hover {
-  box-shadow: 0 0 48px rgba(212, 255, 0, 0.35);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.3) inset,
+    0 0 56px rgba(212, 255, 0, 0.4),
+    0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.nexus-btn-primary:hover .nexus-btn-shine {
+  opacity: 1;
+  background-position: -20% 0;
+}
+
+.nexus-btn-primary:hover .nexus-btn-border-trace {
+  opacity: 1;
 }
 
 .nexus-btn-ghost {
   padding: 1rem 1.5rem;
-  background: rgba(3, 3, 8, 0.45);
-  color: rgba(255, 255, 255, 0.62);
+  background: rgba(3, 3, 8, 0.55);
+  color: rgba(255, 255, 255, 0.65);
   border: 1px solid var(--nx-border);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.nexus-btn-ghost .nexus-btn-border-trace {
+  box-shadow: inset 0 0 0 1px rgba(0, 240, 255, 0.12);
 }
 
 .nexus-btn-ghost:hover {
-  border-color: rgba(0, 240, 255, 0.35);
+  border-color: rgba(0, 240, 255, 0.4);
   color: #fff;
+  box-shadow:
+    0 0 28px rgba(0, 240, 255, 0.12),
+    0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.nexus-btn-ghost:hover .nexus-btn-shine {
+  opacity: 0.6;
+  background-position: -20% 0;
+}
+
+.nexus-btn-ghost:hover .nexus-btn-border-trace {
+  opacity: 1;
 }
 
 .nexus-btn-outline {

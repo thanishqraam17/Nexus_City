@@ -21,6 +21,16 @@ const variantClass: Record<NexusButtonVariant, string> = {
   outline: "nexus-btn nexus-btn-outline",
 };
 
+function ButtonInner({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <span className="nexus-btn-shine" aria-hidden />
+      <span className="nexus-btn-border-trace" aria-hidden />
+      <span className="nexus-btn-content relative z-[1]">{children}</span>
+    </>
+  );
+}
+
 export function NexusButton({
   variant = "primary",
   children,
@@ -32,19 +42,19 @@ export function NexusButton({
   const reduceMotion = useHydratedReducedMotion();
   const motionReady = mounted && !reduceMotion;
 
-  const classes = cn(variantClass[variant], className);
+  const classes = cn(variantClass[variant], "group/nxbtn", className);
 
   if (href) {
     return (
       <motion.a
         href={href}
         className={classes}
-        whileHover={motionReady ? { scale: 1.02 } : undefined}
-        whileTap={motionReady ? { scale: 0.98 } : undefined}
+        whileHover={motionReady ? { y: -1 } : undefined}
+        whileTap={motionReady ? { y: 0, scale: 0.992 } : undefined}
         transition={springHoverReact}
         {...(props as HTMLMotionProps<"a">)}
       >
-        {children}
+        <ButtonInner>{children}</ButtonInner>
       </motion.a>
     );
   }
@@ -53,12 +63,12 @@ export function NexusButton({
     <motion.button
       type="button"
       className={classes}
-      whileHover={motionReady ? { scale: 1.02 } : undefined}
-      whileTap={motionReady ? { scale: 0.98 } : undefined}
+      whileHover={motionReady ? { y: -1 } : undefined}
+      whileTap={motionReady ? { y: 0, scale: 0.992 } : undefined}
       transition={springHoverReact}
       {...props}
     >
-      {children}
+      <ButtonInner>{children}</ButtonInner>
     </motion.button>
   );
 }

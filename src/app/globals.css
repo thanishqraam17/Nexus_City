@@ -172,6 +172,58 @@ body {
   pointer-events: none;
 }
 
+.hero-core-glow-spill {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: min(85vw, 1000px);
+  height: min(85vh, 800px);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    ellipse 60% 55% at 50% 50%,
+    rgba(212, 255, 0, 0.06) 0%,
+    rgba(0, 240, 255, 0.04) 40%,
+    transparent 72%
+  );
+  filter: blur(2px);
+  animation: hero-glow-spill-pulse 10s ease-in-out infinite;
+}
+
+.hero-core-ambient-ring {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: min(52vw, 520px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(0, 240, 255, 0.06);
+  box-shadow: 0 0 60px rgba(0, 240, 255, 0.04);
+  animation: hero-ambient-ring-spin 48s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes hero-glow-spill-pulse {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.03);
+  }
+}
+
+@keyframes hero-ambient-ring-spin {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
 .hero-core-atmo-sync {
   position: absolute;
   inset: -8%;

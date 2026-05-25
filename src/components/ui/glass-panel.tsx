@@ -66,7 +66,7 @@ export function GlassPanel({
       whileInView={shouldReveal ? "visible" : undefined}
       viewport={{ once: true, amount: 0.2 }}
       whileHover={
-        motionReady
+        motionReady && interactive
           ? { y: -2, scale: 1.006, transition: springHoverReact }
           : undefined
       }
@@ -87,10 +87,38 @@ export function GlassPanel({
       )}
       {cornerMarks && (
         <>
-          <span className="absolute left-0 top-0 z-10 h-3 w-3 border-l border-t border-nexus-lime/40 transition-colors duration-500 group-hover/panel:border-nexus-lime/70" />
-          <span className="absolute right-0 top-0 z-10 h-3 w-3 border-r border-t border-nexus-lime/40 transition-colors duration-500 group-hover/panel:border-nexus-lime/70" />
-          <span className="absolute bottom-0 left-0 z-10 h-3 w-3 border-b border-l border-nexus-lime/40 transition-colors duration-500 group-hover/panel:border-nexus-lime/70" />
-          <span className="absolute bottom-0 right-0 z-10 h-3 w-3 border-b border-r border-nexus-lime/40 transition-colors duration-500 group-hover/panel:border-nexus-lime/70" />
+          <span
+            className={cn(
+              "absolute left-0 top-0 z-10 h-3 w-3 border-l border-t transition-colors duration-500",
+              resolvedGlow === "cyan"
+                ? "border-nexus-cyan/40 group-hover/panel:border-nexus-cyan/70"
+                : "border-nexus-lime/40 group-hover/panel:border-nexus-lime/70"
+            )}
+          />
+          <span
+            className={cn(
+              "absolute right-0 top-0 z-10 h-3 w-3 border-r border-t transition-colors duration-500",
+              resolvedGlow === "cyan"
+                ? "border-nexus-cyan/40 group-hover/panel:border-nexus-cyan/70"
+                : "border-nexus-lime/40 group-hover/panel:border-nexus-lime/70"
+            )}
+          />
+          <span
+            className={cn(
+              "absolute bottom-0 left-0 z-10 h-3 w-3 border-b border-l transition-colors duration-500",
+              resolvedGlow === "cyan"
+                ? "border-nexus-cyan/40 group-hover/panel:border-nexus-cyan/70"
+                : "border-nexus-lime/40 group-hover/panel:border-nexus-lime/70"
+            )}
+          />
+          <span
+            className={cn(
+              "absolute bottom-0 right-0 z-10 h-3 w-3 border-b border-r transition-colors duration-500",
+              resolvedGlow === "cyan"
+                ? "border-nexus-cyan/40 group-hover/panel:border-nexus-cyan/70"
+                : "border-nexus-lime/40 group-hover/panel:border-nexus-lime/70"
+            )}
+          />
         </>
       )}
       <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.025] bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(255,255,255,0.45)_2px,rgba(255,255,255,0.45)_3px)]" />

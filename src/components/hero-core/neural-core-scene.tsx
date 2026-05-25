@@ -27,8 +27,11 @@ export function NeuralCoreScene() {
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
-    if (core.current) core.current.rotation.y = t * 0.018;
-    if (orbit.current) orbit.current.rotation.y = -t * 0.025;
+    if (core.current) {
+      core.current.rotation.y = t * 0.02;
+      core.current.position.y = Math.sin(t * 0.35) * 0.02;
+    }
+    if (orbit.current) orbit.current.rotation.y = -t * 0.028;
   });
 
   return (
