@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
 import { useMounted } from "@/hooks/use-mounted";
 import { ArrowUpRight, ChevronRight } from "lucide-react";
+import { HeroHologram } from "@/components/hero-core/hero-hologram";
 import { MicroLabel } from "@/components/ui/micro-label";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { TelemetryCluster } from "@/components/ui/telemetry-widget";
@@ -18,7 +19,7 @@ export function HeroSection() {
   const mounted = useMounted();
   const reduceMotion = useHydratedReducedMotion();
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const { x, y } = useLayeredParallax(0.6);
+  const { x, y } = useLayeredParallax(0.35);
   const motionReady = mounted && !reduceMotion;
 
   useEffect(() => {
@@ -48,11 +49,13 @@ export function HeroSection() {
       id="command"
       className="relative min-h-[100dvh] overflow-hidden pt-28 pb-20 sm:pt-32 lg:pb-28"
     >
+      <HeroHologram className="top-[12%] sm:top-[10%] lg:top-[8%]" />
+
       <motion.div
-        className="relative z-10 mx-auto grid max-w-[1800px] grid-cols-1 gap-12 px-4 sm:px-8 lg:grid-cols-12 lg:gap-8 lg:px-12"
+        className="relative z-10 mx-auto grid max-w-[1800px] grid-cols-1 gap-12 px-4 sm:px-8 lg:grid-cols-12 lg:gap-6 lg:px-12"
         style={motionReady ? { x, y } : undefined}
       >
-        <div className="lg:col-span-8 lg:col-start-1">
+        <div className="relative z-10 lg:col-span-5 lg:col-start-1">
           <motion.div
             variants={staggerCinematic(0.09, 0.25)}
             initial={false}
@@ -86,7 +89,7 @@ export function HeroSection() {
                         variants={heroTitle}
                         initial={false}
                         animate={motionReady ? "visible" : false}
-                        className="hero-char inline-block text-[clamp(4rem,14vw,11rem)]"
+                        className="hero-char inline-block text-[clamp(3rem,11vw,9rem)]"
                       >
                         {char}
                       </motion.span>
@@ -102,7 +105,7 @@ export function HeroSection() {
                         variants={heroTitle}
                         initial={false}
                         animate={motionReady ? "visible" : false}
-                        className="hero-char inline-block text-[clamp(4rem,14vw,11rem)] text-shadow-nexus-lime"
+                        className="hero-char inline-block text-[clamp(3rem,11vw,9rem)] text-shadow-nexus-lime"
                       >
                         {char}
                       </motion.span>
@@ -114,7 +117,7 @@ export function HeroSection() {
 
             <motion.p
               variants={fadeUp}
-              className="max-w-xl text-base leading-relaxed text-white/45 sm:text-lg lg:ml-2 lg:max-w-md"
+              className="max-w-md text-base leading-relaxed text-white/45 sm:text-lg"
             >
               The neural command layer for tomorrow&apos;s metropolis. Real-time
               telemetry, autonomous infrastructure, and cinematic control at
@@ -123,7 +126,7 @@ export function HeroSection() {
 
             <motion.div
               variants={fadeUp}
-              className="flex flex-wrap items-center gap-4 pt-4 lg:ml-2"
+              className="flex flex-wrap items-center gap-4 pt-2"
             >
               <motion.a
                 href="#access"
@@ -152,13 +155,9 @@ export function HeroSection() {
           </motion.div>
 
           <motion.div
-            className="mt-16 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:mt-24 lg:max-w-2xl"
+            className="relative z-10 mt-12 grid grid-cols-2 gap-3 sm:mt-16 lg:mt-20 lg:max-w-md"
             initial={false}
-            animate={
-              motionReady
-                ? { opacity: 1, y: 0 }
-                : false
-            }
+            animate={motionReady ? { opacity: 1, y: 0 } : false}
             transition={{ delay: 1.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
             {[
@@ -184,8 +183,10 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        <div className="relative lg:col-span-4 lg:col-start-9">
-          <DepthParallax depth={1.4} className="lg:absolute lg:right-0 lg:top-8">
+        <div className="hidden lg:col-span-2 lg:block" aria-hidden />
+
+        <div className="relative z-10 lg:col-span-4 lg:col-start-9">
+          <DepthParallax depth={1.2} className="lg:pt-4">
             <motion.div
               initial={false}
               animate={
@@ -201,21 +202,6 @@ export function HeroSection() {
               <TelemetryCluster className="lg:items-end" />
             </motion.div>
           </DepthParallax>
-
-          <motion.div
-            className="mt-8 hidden lg:block lg:absolute lg:-left-32 lg:bottom-32"
-            initial={false}
-            animate={motionReady ? { opacity: 1, rotate: 0 } : false}
-            transition={{ delay: 1.4, duration: 1 }}
-          >
-            <GlassPanel variant="command" glow="orange" className="w-48 p-4" cornerMarks>
-              <MicroLabel accent="orange">Atmospheric</MicroLabel>
-              <p className="mt-2 font-mono text-xs text-white/40 leading-relaxed">
-                Depth layers active. Parallax field synchronized with cursor
-                vector.
-              </p>
-            </GlassPanel>
-          </motion.div>
         </div>
       </motion.div>
 
@@ -236,7 +222,7 @@ export function HeroSection() {
       </motion.div>
 
       <div
-        className="pointer-events-none absolute right-0 top-1/3 hidden h-[40vh] w-px bg-gradient-to-b from-transparent via-nexus-cyan/30 to-transparent lg:block"
+        className="pointer-events-none absolute right-0 top-1/3 z-10 hidden h-[40vh] w-px bg-gradient-to-b from-transparent via-nexus-cyan/30 to-transparent lg:block"
         aria-hidden
       />
     </section>

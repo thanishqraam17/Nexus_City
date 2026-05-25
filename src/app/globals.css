@@ -107,6 +107,101 @@ body {
   );
 }
 
+/* Hero holographic centerpiece */
+.hero-hologram-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-hologram-fallback-core {
+  width: 28%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(212, 255, 0, 0.2) 0%,
+    rgba(0, 240, 255, 0.08) 45%,
+    transparent 70%
+  );
+  animation: hero-core-breathe 4s ease-in-out infinite;
+}
+
+.hero-hologram-fallback-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  animation: hero-ring-pulse 6s ease-in-out infinite;
+}
+
+.hero-hologram-fallback-ring-1 {
+  width: 42%;
+  aspect-ratio: 1;
+}
+
+.hero-hologram-fallback-ring-2 {
+  width: 58%;
+  aspect-ratio: 1;
+  border-color: rgba(212, 255, 0, 0.15);
+  animation-delay: 1.5s;
+}
+
+.hero-hologram-mask {
+  background: radial-gradient(
+    ellipse 75% 70% at 50% 45%,
+    transparent 25%,
+    rgba(3, 3, 8, 0.55) 65%,
+    rgba(3, 3, 8, 0.92) 100%
+  );
+  pointer-events: none;
+}
+
+.hero-hologram-glow {
+  background: radial-gradient(
+    ellipse 60% 50% at 50% 50%,
+    rgba(0, 240, 255, 0.08) 0%,
+    rgba(212, 255, 0, 0.04) 40%,
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: hero-hologram-glow-pulse 8s ease-in-out infinite;
+}
+
+@keyframes hero-core-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes hero-ring-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.65;
+  }
+}
+
+@keyframes hero-hologram-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 /* Telemetry scan aesthetic */
 @keyframes scan-pulse {
   0%,
