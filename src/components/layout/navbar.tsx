@@ -1,8 +1,10 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
+import { useMounted } from "@/hooks/use-mounted";
 import { Menu, X, Radio } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navItem } from "@/lib/motion/variants";
@@ -23,7 +25,8 @@ export function Navbar() {
   const toggleNav = useUIStore((s) => s.toggleNav);
   const setNavOpen = useUIStore((s) => s.setNavOpen);
   const telemetryLive = useUIStore((s) => s.telemetryLive);
-  const reduceMotion = useReducedMotion();
+  const mounted = useMounted();
+  const reduceMotion = useHydratedReducedMotion();
 
   const { scrollY } = useScroll();
   const navBlur = useTransform(scrollY, [0, 120], ["blur(0px)", "blur(12px)"]);
@@ -56,12 +59,16 @@ export function Navbar() {
           scrolled ? "py-3" : "py-6"
         )}
         style={
-          reduceMotion
+          !mounted || reduceMotion
             ? { backgroundColor: scrolled ? "rgba(3,3,8,0.9)" : "transparent" }
             : { backgroundColor: navBg, backdropFilter: navBlur }
         }
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        initial={false}
+        animate={
+          mounted && !reduceMotion
+            ? { y: 0, opacity: 1 }
+            : undefined
+        }
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
       >
         <nav
@@ -94,8 +101,8 @@ export function Navbar() {
                   key={link.href}
                   custom={i}
                   variants={navItem}
-                  initial="hidden"
-                  animate="visible"
+                  initial={false}
+                  animate={mounted && !reduceMotion ? "visible" : false}
                 >
                   <Link
                     href={link.href}
@@ -113,7 +120,7 @@ export function Navbar() {
             </ul>
 
             <div className="flex items-center gap-4">
-              <StatusPill live={telemetryLive} />
+              <StatusPill live={mounted && telemetryLive} />
               <motion.a
                 href="#access"
                 className="relative overflow-hidden border border-nexus-lime/40 bg-nexus-lime/10 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.25em] text-nexus-lime"
@@ -139,8 +146,12 @@ export function Navbar() {
 
         <motion.div
           className="mx-auto mt-3 hidden h-px max-w-[1800px] origin-left bg-gradient-to-r from-nexus-lime/50 via-nexus-cyan/30 to-transparent lg:block"
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: scrolled ? 1 : 0.3 }}
+          initial={false}
+          animate={
+            mounted && !reduceMotion
+              ? { scaleX: scrolled ? 1 : 0.3 }
+              : { scaleX: 0.3 }
+          }
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         />
       </motion.header>
@@ -172,7 +183,7 @@ export function Navbar() {
                   </Link>
                 </motion.div>
               ))}
-              <StatusPill live={telemetryLive} className="mt-4" />
+              <StatusPill live={mounted && telemetryLive} className="mt-4" />
             </div>
           </motion.div>
         )}

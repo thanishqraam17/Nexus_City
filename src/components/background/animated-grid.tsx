@@ -1,15 +1,26 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import { useEffect, useMemo, useRef } from "react";
 import gsap from "gsap";
+import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
+import { useMounted } from "@/hooks/use-mounted";
+
+const GRID_GRADIENT_CLASS = "animated-grid-gradients";
+const GRID_STATIC_CLASS = "animated-grid-static";
+const GRID_NOISE_CLASS = "animated-grid-noise";
 
 export function AnimatedGrid() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const reduceMotion = useReducedMotion();
+  const mounted = useMounted();
+  const reduceMotion = useHydratedReducedMotion();
+  const showCanvas = useMemo(
+    () => mounted && !reduceMotion,
+    [mounted, reduceMotion]
+  );
 
   useEffect(() => {
-    if (reduceMotion) return;
+    if (!showCanvas) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -40,7 +51,6 @@ export function AnimatedGrid() {
       const offsetX = (time * 12) % spacing;
       const offsetY = (time * 8) % spacing;
 
-      ctx.strokeStyle = "rgba(0, 240, 255, 0.06)";
       ctx.lineWidth = 1;
 
       for (let x = -spacing + offsetX; x < w + spacing; x += spacing) {
@@ -63,8 +73,8 @@ export function AnimatedGrid() {
 
       const pulseCount = 6;
       for (let i = 0; i < pulseCount; i++) {
-        const px = ((i * 137 + time * 40) % w);
-        const py = ((i * 89 + time * 25) % h);
+        const px = (i * 137 + time * 40) % w;
+        const py = (i * 89 + time * 25) % h;
         const grad = ctx.createRadialGradient(px, py, 0, px, py, 120);
         grad.addColorStop(0, "rgba(212, 255, 0, 0.08)");
         grad.addColorStop(1, "transparent");
@@ -82,52 +92,47 @@ export function AnimatedGrid() {
       window.removeEventListener("resize", resize);
       cancelAnimationFrame(animationId);
     };
-  }, [reduceMotion]);
+  }, [showCanvas]);
 
   useEffect(() => {
-    if (reduceMotion) return;
-    gsap.to(".grid-scan-line", {
+    if (!showCanvas) return;
+    const tween = gsap.to(".grid-scan-line", {
       y: "100vh",
       duration: 8,
       repeat: -1,
       ease: "none",
     });
-  }, [reduceMotion]);
+    return () => {
+      tween.kill();
+    };
+  }, [showCanvas]);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden>
+    <div
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
+      aria-hidden
+    >
       <div className="absolute inset-0 bg-void" />
-      <div
-        className="absolute inset-0 opacity-40"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 60% at 70% 20%, rgba(0, 240, 255, 0.12) 0%, transparent 55%), radial-gradient(ellipse 60% 50% at 15% 80%, rgba(212, 255, 0, 0.08) 0%, transparent 50%), radial-gradient(ellipse 50% 40% at 50% 50%, rgba(255, 107, 53, 0.04) 0%, transparent 45%)",
-        }}
+      <div className={`absolute inset-0 opacity-40 ${GRID_GRADIENT_CLASS}`} />
+      <div className={`absolute inset-0 opacity-30 ${GRID_STATIC_CLASS}`} />
+      <canvas
+        ref={canvasRef}
+        className={`absolute inset-0 h-full w-full mix-blend-screen ${
+          showCanvas ? "opacity-70" : "pointer-events-none opacity-0"
+        }`}
+        aria-hidden={!showCanvas}
       />
-      {!reduceMotion && (
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 h-full w-full opacity-70 mix-blend-screen"
+      {mounted && !reduceMotion ? (
+        <motion.div
+          className="grid-scan-line absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-nexus-lime/40 to-transparent shadow-[0_0_24px_rgba(212,255,0,0.5)]"
+          initial={{ opacity: 0.6 }}
+          animate={{ opacity: [0.4, 0.9, 0.4] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         />
+      ) : (
+        <div className="grid-scan-line absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-nexus-lime/40 to-transparent opacity-60 shadow-[0_0_24px_rgba(212,255,0,0.5)]" />
       )}
-      {reduceMotion && (
-        <div
-          className="absolute inset-0 opacity-30"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(0,240,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,0.06) 1px, transparent 1px)",
-            backgroundSize: "56px 56px",
-          }}
-        />
-      )}
-      <motion.div
-        className="grid-scan-line absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-nexus-lime/40 to-transparent"
-        style={{ top: "-1px", boxShadow: "0 0 24px rgba(212, 255, 0, 0.5)" }}
-        initial={{ opacity: 0.6 }}
-        animate={{ opacity: [0.4, 0.9, 0.4] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.04%22/%3E%3C/svg%3E')] opacity-50 mix-blend-overlay" />
+      <div className={`absolute inset-0 opacity-50 mix-blend-overlay ${GRID_NOISE_CLASS}`} />
       <div className="vignette absolute inset-0" />
     </div>
   );

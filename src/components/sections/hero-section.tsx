@@ -1,8 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
+import { useMounted } from "@/hooks/use-mounted";
 import { ArrowUpRight, ChevronRight } from "lucide-react";
 import { MicroLabel } from "@/components/ui/micro-label";
 import { GlassPanel } from "@/components/ui/glass-panel";
@@ -12,12 +14,14 @@ import { staggerContainer } from "@/lib/motion/transitions";
 import { useParallaxMouse } from "@/lib/motion/hooks";
 
 export function HeroSection() {
-  const reduceMotion = useReducedMotion();
+  const mounted = useMounted();
+  const reduceMotion = useHydratedReducedMotion();
   const titleRef = useRef<HTMLHeadingElement>(null);
   const { x, y } = useParallaxMouse(0.02);
+  const motionReady = mounted && !reduceMotion;
 
   useEffect(() => {
-    if (reduceMotion || !titleRef.current) return;
+    if (!motionReady || !titleRef.current) return;
     const chars = titleRef.current.querySelectorAll(".hero-char");
     gsap.fromTo(
       chars,
@@ -33,7 +37,7 @@ export function HeroSection() {
         delay: 0.4,
       }
     );
-  }, [reduceMotion]);
+  }, [motionReady]);
 
   const titleLine1 = "NEXUS";
   const titleLine2 = "CITY";
@@ -45,13 +49,13 @@ export function HeroSection() {
     >
       <motion.div
         className="relative z-10 mx-auto grid max-w-[1800px] grid-cols-1 gap-12 px-4 sm:px-8 lg:grid-cols-12 lg:gap-8 lg:px-12"
-        style={reduceMotion ? undefined : { x, y }}
+        style={motionReady ? { x, y } : undefined}
       >
         <div className="lg:col-span-8 lg:col-start-1">
           <motion.div
             variants={staggerContainer(0.1, 0.2)}
-            initial="hidden"
-            animate="visible"
+            initial={false}
+            animate={motionReady ? "visible" : false}
             className="space-y-6"
           >
             <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-4">
@@ -79,6 +83,8 @@ export function HeroSection() {
                         key={`l1-${i}`}
                         custom={i}
                         variants={heroTitle}
+                        initial={false}
+                        animate={motionReady ? "visible" : false}
                         className="hero-char inline-block text-[clamp(4rem,14vw,11rem)]"
                       >
                         {char}
@@ -93,10 +99,9 @@ export function HeroSection() {
                         key={`l2-${i}`}
                         custom={i + 6}
                         variants={heroTitle}
-                        className="hero-char inline-block text-[clamp(4rem,14vw,11rem)]"
-                        style={{
-                          textShadow: "0 0 80px rgba(212, 255, 0, 0.35)",
-                        }}
+                        initial={false}
+                        animate={motionReady ? "visible" : false}
+                        className="hero-char inline-block text-[clamp(4rem,14vw,11rem)] text-shadow-nexus-lime"
                       >
                         {char}
                       </motion.span>
@@ -147,8 +152,12 @@ export function HeroSection() {
 
           <motion.div
             className="mt-16 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:mt-24 lg:max-w-2xl"
-            initial={{ opacity: 0, y: 32 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={false}
+            animate={
+              motionReady
+                ? { opacity: 1, y: 0 }
+                : false
+            }
             transition={{ delay: 1.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
             {[
@@ -177,8 +186,12 @@ export function HeroSection() {
         <div className="relative lg:col-span-4 lg:col-start-9">
           <motion.div
             className="lg:absolute lg:right-0 lg:top-8"
-            initial={{ opacity: 0, x: 40, filter: "blur(12px)" }}
-            animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+            initial={false}
+            animate={
+              motionReady
+                ? { opacity: 1, x: 0, filter: "blur(0px)" }
+                : false
+            }
             transition={{ delay: 0.8, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="mb-4 flex justify-end">
@@ -189,8 +202,8 @@ export function HeroSection() {
 
           <motion.div
             className="mt-8 hidden lg:block lg:absolute lg:-left-32 lg:bottom-32"
-            initial={{ opacity: 0, rotate: -2 }}
-            animate={{ opacity: 1, rotate: 0 }}
+            initial={false}
+            animate={motionReady ? { opacity: 1, rotate: 0 } : false}
             transition={{ delay: 1.4, duration: 1 }}
           >
             <GlassPanel variant="command" glow="orange" className="w-48 p-4" cornerMarks>
@@ -206,16 +219,18 @@ export function HeroSection() {
 
       <motion.div
         className="pointer-events-none absolute bottom-8 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 sm:flex"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={false}
+        animate={motionReady ? { opacity: 1 } : false}
         transition={{ delay: 2 }}
       >
         <MicroLabel accent="muted">Scroll to descend</MicroLabel>
-        <motion.div
-          className="h-12 w-px bg-gradient-to-b from-nexus-lime/60 to-transparent"
-          animate={{ scaleY: [0.4, 1, 0.4], opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
+        {motionReady && (
+          <motion.div
+            className="h-12 w-px bg-gradient-to-b from-nexus-lime/60 to-transparent"
+            animate={{ scaleY: [0.4, 1, 0.4], opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        )}
       </motion.div>
 
       <div

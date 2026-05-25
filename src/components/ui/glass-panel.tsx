@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, type HTMLMotionProps } from "framer-motion";
+import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
 import { panelReveal } from "@/lib/motion/variants";
 
@@ -42,11 +43,14 @@ export function GlassPanel({
   revealOnView = true,
   ...props
 }: GlassPanelProps) {
+  const mounted = useMounted();
+  const shouldReveal = revealOnView && mounted;
+
   return (
     <motion.div
-      variants={revealOnView ? panelReveal : undefined}
-      initial={revealOnView ? "hidden" : undefined}
-      whileInView={revealOnView ? "visible" : undefined}
+      variants={shouldReveal ? panelReveal : undefined}
+      initial={false}
+      whileInView={shouldReveal ? "visible" : undefined}
       viewport={{ once: true, amount: 0.2 }}
       className={cn(
         "relative overflow-hidden rounded-sm border",

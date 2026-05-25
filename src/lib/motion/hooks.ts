@@ -9,14 +9,17 @@ import {
   useTransform,
   type Variants,
 } from "framer-motion";
+import { useMounted } from "@/hooks/use-mounted";
 
 export function useParallaxMouse(intensity = 0.04) {
+  const mounted = useMounted();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const smoothX = useSpring(x, { stiffness: 60, damping: 20 });
   const smoothY = useSpring(y, { stiffness: 60, damping: 20 });
 
   useEffect(() => {
+    if (!mounted) return;
     const handleMove = (e: MouseEvent) => {
       const cx = window.innerWidth / 2;
       const cy = window.innerHeight / 2;
@@ -25,7 +28,7 @@ export function useParallaxMouse(intensity = 0.04) {
     };
     window.addEventListener("mousemove", handleMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMove);
-  }, [intensity, x, y]);
+  }, [mounted, intensity, x, y]);
 
   return { x: smoothX, y: smoothY };
 }

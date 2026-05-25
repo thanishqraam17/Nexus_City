@@ -1,18 +1,24 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
+import { useMounted } from "@/hooks/use-mounted";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { MicroLabel } from "@/components/ui/micro-label";
 import { fadeUp } from "@/lib/motion/variants";
 
 export function AccessSection() {
+  const mounted = useMounted();
+  const reduceMotion = useHydratedReducedMotion();
+  const motionReady = mounted && !reduceMotion;
+
   return (
     <section id="access" className="relative z-10 pb-32 pt-8 sm:pb-40">
       <div className="mx-auto max-w-[1800px] px-4 sm:px-8 lg:px-12">
         <motion.div
           variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
+          initial={false}
+          whileInView={motionReady ? "visible" : undefined}
           viewport={{ once: true }}
           className="relative overflow-hidden"
         >
@@ -22,14 +28,7 @@ export function AccessSection() {
             className="relative px-8 py-16 sm:px-16 sm:py-24"
             cornerMarks
           >
-            <div
-              className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full opacity-30"
-              style={{
-                background:
-                  "radial-gradient(circle, rgba(212,255,0,0.2) 0%, transparent 70%)",
-                filter: "blur(40px)",
-              }}
-            />
+            <div className="access-glow pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full opacity-30" />
             <div className="relative grid gap-10 lg:grid-cols-2 lg:items-end">
               <div>
                 <MicroLabel accent="lime" pulse>

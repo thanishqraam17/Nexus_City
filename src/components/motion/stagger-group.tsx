@@ -1,6 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
+import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
 import { staggerContainer } from "@/lib/motion/transitions";
 
@@ -17,9 +19,10 @@ export function StaggerGroup({
   stagger = 0.08,
   delay = 0.1,
 }: StaggerGroupProps) {
-  const reduceMotion = useReducedMotion();
+  const mounted = useMounted();
+  const reduceMotion = useHydratedReducedMotion();
 
-  if (reduceMotion) {
+  if (!mounted || reduceMotion) {
     return <div className={className}>{children}</div>;
   }
 
@@ -27,7 +30,7 @@ export function StaggerGroup({
     <motion.div
       className={cn(className)}
       variants={staggerContainer(stagger, delay)}
-      initial="hidden"
+      initial={false}
       whileInView="visible"
       viewport={{ once: true, amount: 0.15 }}
     >

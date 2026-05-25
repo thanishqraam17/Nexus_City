@@ -1,7 +1,9 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
+import { useMounted } from "@/hooks/use-mounted";
 import { GlassPanel } from "./glass-panel";
 import { MicroLabel } from "./micro-label";
 import { cn } from "@/lib/utils";
@@ -19,14 +21,17 @@ interface TelemetryWidgetProps {
 }
 
 function useLiveValue(base: number, variance: number, live: boolean) {
+  const mounted = useMounted();
   const [val, setVal] = useState(base);
+
   useEffect(() => {
-    if (!live) return;
+    if (!mounted || !live) return;
     const id = setInterval(() => {
       setVal(base + (Math.random() - 0.5) * variance);
     }, 1200);
     return () => clearInterval(id);
-  }, [base, variance, live]);
+  }, [mounted, base, variance, live]);
+
   return val;
 }
 
@@ -39,9 +44,10 @@ export function TelemetryWidget({
   delay = 0,
   live = true,
 }: TelemetryWidgetProps) {
-  const reduceMotion = useReducedMotion();
+  const mounted = useMounted();
+  const reduceMotion = useHydratedReducedMotion();
   const telemetryLive = useUIStore((s) => s.telemetryLive);
-  const isLive = live && telemetryLive;
+  const isLive = mounted && live && telemetryLive;
 
   const trendColor = {
     up: "text-nexus-lime",
@@ -54,7 +60,7 @@ export function TelemetryWidget({
       className={cn("w-full max-w-[200px]", className)}
       variants={floatPulse}
       initial="initial"
-      animate={reduceMotion ? undefined : "animate"}
+      animate={mounted && !reduceMotion ? "animate" : undefined}
       style={{ animationDelay: `${delay}s` }}
       transition={{ delay }}
     >
@@ -104,6 +110,7 @@ export function TelemetryBarWidget({
   percentage,
   className,
 }: TelemetryBarWidgetProps) {
+  const mounted = useMounted();
   const liveVal = useLiveValue(percentage, 4, true);
 
   return (
@@ -112,9 +119,8 @@ export function TelemetryBarWidget({
       <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-white/5">
         <motion.div
           className="h-full rounded-full bg-gradient-to-r from-nexus-cyan/80 to-nexus-lime/80"
-          initial={{ width: 0 }}
-          whileInView={{ width: `${liveVal}%` }}
-          viewport={{ once: true }}
+          initial={false}
+          animate={mounted ? { width: `${liveVal}%` } : false}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
         />
       </div>

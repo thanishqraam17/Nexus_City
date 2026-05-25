@@ -1,6 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useMounted } from "@/hooks/use-mounted";
+import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { MicroLabel } from "@/components/ui/micro-label";
 import { fadeUp, slideFromLeft } from "@/lib/motion/variants";
@@ -28,6 +30,10 @@ const systems = [
 ];
 
 export function SystemsPreview() {
+  const mounted = useMounted();
+  const reduceMotion = useHydratedReducedMotion();
+  const motionReady = mounted && !reduceMotion;
+
   return (
     <section
       id="systems"
@@ -38,8 +44,8 @@ export function SystemsPreview() {
           <motion.div
             className="lg:col-span-4 lg:sticky lg:top-32 lg:self-start"
             variants={slideFromLeft}
-            initial="hidden"
-            whileInView="visible"
+            initial={false}
+            whileInView={motionReady ? "visible" : undefined}
             viewport={{ once: true, amount: 0.3 }}
           >
             <MicroLabel accent="cyan">Subsystems</MicroLabel>
@@ -57,8 +63,8 @@ export function SystemsPreview() {
           <motion.div
             className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6"
             variants={staggerContainer(0.12, 0)}
-            initial="hidden"
-            whileInView="visible"
+            initial={false}
+            whileInView={motionReady ? "visible" : undefined}
             viewport={{ once: true, amount: 0.2 }}
           >
             {systems.map((sys, i) => (
@@ -83,8 +89,8 @@ export function SystemsPreview() {
                   </div>
                   <motion.div
                     className="mt-8 h-px w-full origin-left bg-gradient-to-r from-white/20 to-transparent"
-                    initial={{ scaleX: 0 }}
-                    whileInView={{ scaleX: 1 }}
+                    initial={false}
+                    whileInView={motionReady ? { scaleX: 1 } : undefined}
                     viewport={{ once: true }}
                     transition={{ delay: 0.2 + i * 0.1, duration: 1.2 }}
                   />

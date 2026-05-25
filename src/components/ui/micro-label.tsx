@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
 
 interface MicroLabelProps {
@@ -23,6 +24,9 @@ export function MicroLabel({
   accent = "muted",
   pulse = false,
 }: MicroLabelProps) {
+  const mounted = useMounted();
+  const shouldPulse = mounted && pulse;
+
   return (
     <motion.span
       className={cn(
@@ -30,8 +34,8 @@ export function MicroLabel({
         accentMap[accent],
         className
       )}
-      animate={pulse ? { opacity: [0.5, 1, 0.5] } : undefined}
-      transition={pulse ? { duration: 2, repeat: Infinity } : undefined}
+      animate={shouldPulse ? { opacity: [0.5, 1, 0.5] } : undefined}
+      transition={shouldPulse ? { duration: 2, repeat: Infinity } : undefined}
     >
       <span className="mr-1.5 inline-block h-1 w-1 rounded-full bg-current opacity-80" />
       {children}

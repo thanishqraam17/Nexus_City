@@ -1,6 +1,8 @@
 "use client";
 
-import { motion, type HTMLMotionProps, useReducedMotion } from "framer-motion";
+import { motion, type HTMLMotionProps } from "framer-motion";
+import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
+import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
 import type { Variants } from "framer-motion";
 import {
@@ -37,16 +39,17 @@ export function MotionReveal({
   once = true,
   ...props
 }: MotionRevealProps) {
-  const reduceMotion = useReducedMotion();
+  const mounted = useMounted();
+  const reduceMotion = useHydratedReducedMotion();
 
-  if (reduceMotion) {
+  if (!mounted || reduceMotion) {
     return <div className={className}>{children}</div>;
   }
 
   return (
     <motion.div
       variants={variantMap[variant]}
-      initial="hidden"
+      initial={false}
       whileInView="visible"
       viewport={{ once, amount: 0.2 }}
       transition={{ delay }}
