@@ -2,7 +2,7 @@
 
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Html, OrbitControls } from "@react-three/drei";
+import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import { NEURAL_SECTORS, type NeuralSectorId } from "@/lib/system/city-data";
 import {
@@ -10,183 +10,207 @@ import {
   NEURAL_RELAY_POSITIONS,
   NEURAL_SECTOR_POSITIONS,
   buildNeuralConnections,
-  getNeuralNodePosition,
+  getRelatedNodeIds,
 } from "@/lib/system/neural-layout";
+import { NEURAL_HUB_META, NEURAL_SECTOR_META, NEURAL_RELAY_META } from "@/lib/system/neural-data";
 import { NEXUS } from "@/components/hero-core/colors";
+import { NeuralMapEnvironment } from "./neural-map-environment";
+import { NeuralMapControls } from "./neural-map-controls";
+import { NeuralSignalFlow } from "./neural-signal-flow";
+import { NeuralOrbitRings } from "./neural-orbit-rings";
 
 interface NeuralMapSceneProps {
-  activeSector: NeuralSectorId | null;
+  hoveredSector: NeuralSectorId | null;
+  selectedSector: NeuralSectorId | null;
   onSectorHover: (id: NeuralSectorId | null) => void;
   onSectorSelect: (id: NeuralSectorId) => void;
 }
 
 export function NeuralMapScene({
-  activeSector,
+  hoveredSector,
+  selectedSector,
   onSectorHover,
   onSectorSelect,
 }: NeuralMapSceneProps) {
-  const lineMat = useRef<THREE.LineBasicMaterial>(null);
-  const pulseMat = useRef<THREE.LineBasicMaterial>(null);
   const hubMat = useRef<THREE.MeshStandardMaterial>(null);
-  const { lineGeo } = useMemo(() => {
-    const connections = buildNeuralConnections();
-    const linePoints: number[] = [];
+  const sectorMats = useRef<Record<string, THREE.MeshStandardMaterial>>({});
+  const worldRef = useRef<THREE.Group>(null);
+  const connections = useMemo(() => buildNeuralConnections(), []);
 
-    connections.forEach(([a, b]) => {
-      const pa = getNeuralNodePosition(a);
-      const pb = getNeuralNodePosition(b);
-      if (!pa || !pb) return;
-      linePoints.push(pa[0], pa[1], pa[2], pb[0], pb[1], pb[2]);
-    });
-
-    const lineGeo = new THREE.BufferGeometry();
-    lineGeo.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(linePoints, 3)
-    );
-
-    return { lineGeo };
-  }, []);
+  const focusId = hoveredSector ?? selectedSector;
+  const analysisId = selectedSector;
+  const relatedIds = useMemo(
+    () => getRelatedNodeIds(analysisId ?? focusId),
+    [analysisId, focusId]
+  );
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
-    const focus = activeSector;
 
-    if (lineMat.current) {
-      lineMat.current.opacity = 0.14 + Math.sin(t * 0.9) * 0.04;
+    if (worldRef.current) {
+      worldRef.current.position.y = Math.sin(t * 0.35) * 0.03;
     }
-    if (pulseMat.current) {
-      pulseMat.current.opacity = 0.06 + ((Math.sin(t * 1.6) + 1) * 0.5) * 0.14;
-    }
+
     if (hubMat.current) {
-      hubMat.current.emissiveIntensity = focus ? 1.8 : 1.2;
+      hubMat.current.emissiveIntensity =
+        1.2 + Math.sin(t * 1.1) * 0.2 + (focusId ? 1.2 : 0);
     }
+
+    Object.entries(sectorMats.current).forEach(([id, mat]) => {
+      const isFocus = id === hoveredSector || id === selectedSector;
+      if (isFocus) {
+        mat.emissiveIntensity = 2.6 + Math.sin(t * 2.2) * 0.35;
+      }
+    });
   });
 
   return (
     <>
-      <fog attach="fog" args={[NEXUS.void, 10, 24]} />
-      <ambientLight intensity={0.22} />
-      <pointLight position={[2, 3, 4]} intensity={2.2} color={NEXUS.lime} />
-      <pointLight position={[-3, -1, 2]} intensity={1.4} color={NEXUS.cyan} />
-      {activeSector && (
+      <NeuralMapEnvironment />
+      <NeuralMapControls />
+
+      <pointLight position={[4, 5, 6]} intensity={2.4} color={NEXUS.lime} />
+      <pointLight position={[-5, 2, 4]} intensity={1.6} color={NEXUS.cyan} />
+      {(analysisId || focusId) && focusId && focusId in NEURAL_SECTOR_POSITIONS && (
         <pointLight
-          position={NEURAL_SECTOR_POSITIONS[activeSector]}
-          intensity={2.5}
+          position={NEURAL_SECTOR_POSITIONS[focusId as NeuralSectorId]}
+          intensity={3.5}
           color={NEXUS.limeBright}
-          distance={5}
+          distance={8}
         />
       )}
 
-      <OrbitControls
-        enablePan={false}
-        enableDamping
-        dampingFactor={0.06}
-        rotateSpeed={0.45}
-        zoomSpeed={0.6}
-        minDistance={5}
-        maxDistance={9.5}
-        minPolarAngle={Math.PI * 0.28}
-        maxPolarAngle={Math.PI * 0.62}
-        target={[0, 0.1, 0]}
-      />
+      <group ref={worldRef}>
+        <NeuralOrbitRings active={!!focusId} />
 
-      <mesh position={NEURAL_HUB_POSITION}>
-        <sphereGeometry args={[0.08, 16, 16]} />
-        <meshStandardMaterial
-          ref={hubMat}
-          color={NEXUS.cyan}
-          emissive={NEXUS.cyan}
-          emissiveIntensity={1.2}
-          transparent
-          opacity={0.85}
-          toneMapped={false}
+        <NeuralSignalFlow
+          connections={connections}
+          focusId={focusId}
+          analysisId={analysisId}
         />
-      </mesh>
 
-      <lineSegments geometry={lineGeo}>
-        <lineBasicMaterial
-          ref={lineMat}
-          color={NEXUS.cyan}
-          transparent
-          opacity={0.16}
-          blending={THREE.AdditiveBlending}
-        />
-      </lineSegments>
-      <lineSegments geometry={lineGeo} scale={1.001}>
-        <lineBasicMaterial
-          ref={pulseMat}
-          color={NEXUS.lime}
-          transparent
-          opacity={0.1}
-          blending={THREE.AdditiveBlending}
-        />
-      </lineSegments>
+        {/* Hub */}
+        <group position={NEURAL_HUB_POSITION}>
+          <mesh>
+            <sphereGeometry args={[0.11, 24, 24]} />
+            <meshStandardMaterial
+              ref={hubMat}
+              color={NEXUS.cyan}
+              emissive={NEXUS.cyan}
+              emissiveIntensity={1.2}
+              transparent
+              opacity={0.92}
+              toneMapped={false}
+            />
+          </mesh>
+          <Html center distanceFactor={12} pointerEvents="none">
+            <div className="neural-node-label neural-node-label--hub">
+              <span className="neural-node-label__id">{NEURAL_HUB_META.districtId}</span>
+              <span className="neural-node-label__name">{NEURAL_HUB_META.systemName}</span>
+            </div>
+          </Html>
+        </group>
 
-      {NEURAL_RELAY_POSITIONS.map((pos, i) => (
-        <mesh key={`relay-${i}`} position={pos}>
-          <sphereGeometry args={[0.035, 8, 8]} />
-          <meshBasicMaterial
-            color={NEXUS.cyan}
-            transparent
-            opacity={0.45}
-            blending={THREE.AdditiveBlending}
-          />
-        </mesh>
-      ))}
+        {/* Relays — mid-ring, between sectors */}
+        {NEURAL_RELAY_POSITIONS.map((pos, i) => {
+          const meta = NEURAL_RELAY_META[i];
+          if (!meta) return null;
+          const dimmed = analysisId !== null && !relatedIds.has(meta.id);
+          return (
+            <group key={meta.id} position={pos}>
+              <mesh>
+                <sphereGeometry args={[0.05, 10, 10]} />
+                <meshBasicMaterial
+                  color={NEXUS.cyan}
+                  transparent
+                  opacity={dimmed ? 0.15 : 0.55}
+                  blending={THREE.AdditiveBlending}
+                />
+              </mesh>
+            </group>
+          );
+        })}
 
-      {NEURAL_SECTORS.map((sector) => {
-        const pos = NEURAL_SECTOR_POSITIONS[sector.id];
-        const isActive = activeSector === sector.id;
-        return (
-          <group key={sector.id} position={pos}>
-            {isActive && (
+        {/* Sectors — outer pentagon */}
+        {NEURAL_SECTORS.map((sector) => {
+          const pos = NEURAL_SECTOR_POSITIONS[sector.id];
+          const meta = NEURAL_SECTOR_META[sector.id];
+          const isHovered = hoveredSector === sector.id;
+          const isSelected = selectedSector === sector.id;
+          const isFocus = isHovered || isSelected;
+          const dimmed =
+            analysisId !== null && !relatedIds.has(sector.id) && !isSelected;
+
+          return (
+            <group key={sector.id} position={pos}>
               <mesh rotation={[Math.PI / 2, 0, 0]}>
-                <ringGeometry args={[0.2, 0.28, 48]} />
+                <ringGeometry args={[0.26, 0.3, 48]} />
                 <meshBasicMaterial
                   color={NEXUS.lime}
                   transparent
-                  opacity={0.4}
+                  opacity={isFocus ? 0.35 : 0.08}
                   blending={THREE.AdditiveBlending}
                   side={THREE.DoubleSide}
                 />
               </mesh>
-            )}
-            <mesh
-              onPointerOver={(e) => {
-                e.stopPropagation();
-                onSectorHover(sector.id);
-                document.body.style.cursor = "pointer";
-              }}
-              onPointerOut={() => {
-                onSectorHover(null);
-                document.body.style.cursor = "";
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                onSectorSelect(sector.id);
-              }}
-            >
-              <sphereGeometry args={[isActive ? 0.16 : 0.13, 20, 20]} />
-              <meshStandardMaterial
-                color={isActive ? NEXUS.limeBright : NEXUS.cyan}
-                emissive={isActive ? NEXUS.lime : NEXUS.cyan}
-                emissiveIntensity={isActive ? 2.4 : 1.1}
-                transparent
-                opacity={0.95}
-                toneMapped={false}
-              />
-            </mesh>
-            <Html center distanceFactor={10} style={{ pointerEvents: "none" }}>
-              <span
-                className={`neural-sector-label ${isActive ? "neural-sector-label--active" : ""}`}
+
+              {isFocus && (
+                <mesh rotation={[Math.PI / 2, 0, 0]}>
+                  <ringGeometry args={[0.32, 0.38, 48]} />
+                  <meshBasicMaterial
+                    color={NEXUS.lime}
+                    transparent
+                    opacity={isSelected ? 0.55 : 0.3}
+                    blending={THREE.AdditiveBlending}
+                    side={THREE.DoubleSide}
+                  />
+                </mesh>
+              )}
+
+              <mesh
+                onPointerOver={(e) => {
+                  e.stopPropagation();
+                  onSectorHover(sector.id);
+                  document.body.style.cursor = "pointer";
+                }}
+                onPointerOut={(e) => {
+                  e.stopPropagation();
+                  onSectorHover(null);
+                  document.body.style.cursor = "";
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSectorSelect(sector.id);
+                }}
               >
-                {sector.id}
-              </span>
-            </Html>
-          </group>
-        );
-      })}
+                <sphereGeometry
+                  args={[isSelected ? 0.18 : isHovered ? 0.16 : 0.14, 24, 24]}
+                />
+                <meshStandardMaterial
+                  ref={(m) => {
+                    if (m) sectorMats.current[sector.id] = m;
+                  }}
+                  color={isFocus ? NEXUS.limeBright : NEXUS.cyan}
+                  emissive={isFocus ? NEXUS.lime : NEXUS.cyan}
+                  emissiveIntensity={isFocus ? 2.8 : dimmed ? 0.4 : 1.2}
+                  transparent
+                  opacity={dimmed ? 0.3 : 0.96}
+                  toneMapped={false}
+                />
+              </mesh>
+
+              <Html center distanceFactor={12} pointerEvents="none">
+                <div
+                  className={`neural-node-label ${isFocus ? "neural-node-label--active" : ""} ${dimmed ? "neural-node-label--dim" : ""}`}
+                >
+                  <span className="neural-node-label__id">{meta.districtId}</span>
+                  <span className="neural-node-label__name">{meta.systemName}</span>
+                </div>
+              </Html>
+            </group>
+          );
+        })}
+      </group>
     </>
   );
 }

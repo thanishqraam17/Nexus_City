@@ -88,7 +88,7 @@ export function ScrollCinematicSection({
       id={id}
       data-atmosphere={atmosphere}
       data-depth={depth}
-      className={cn("scroll-cinematic-section scroll-cinematic-wrap", className)}
+      className={cn("scroll-cinematic-section scroll-cinematic-wrap overflow-visible", className)}
       style={{ opacity, y, scale, filter }}
     >
       {children}

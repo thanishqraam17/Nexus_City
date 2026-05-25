@@ -5,9 +5,10 @@ import { useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
 import { useMounted } from "@/hooks/use-mounted";
-import { SectionShell, SectionHeading, GlowContainer } from "@/components/system";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { SectionShell, SectionHeading } from "@/components/system";
 import { MicroLabel } from "@/components/ui/micro-label";
+import { NeuralAnalysisPanel } from "@/components/neural-map/neural-analysis-panel";
+import { NEURAL_SECTOR_META } from "@/lib/system/neural-data";
 import { NEURAL_SECTORS, type NeuralSectorId } from "@/lib/system/city-data";
 import { fadeUp } from "@/lib/motion/variants";
 import { cn } from "@/lib/utils";
@@ -17,8 +18,8 @@ const NeuralMapCanvas = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="neural-map-fallback flex h-full min-h-[360px] items-center justify-center">
-        <MicroLabel accent="cyan">Initializing neural mesh…</MicroLabel>
+      <div className="neural-map-fallback flex min-h-[480px] items-center justify-center">
+        <MicroLabel accent="cyan">Initializing neural infrastructure mesh…</MicroLabel>
       </div>
     ),
   }
@@ -28,98 +29,126 @@ export function NeuralNetworkSection() {
   const mounted = useMounted();
   const reduceMotion = useHydratedReducedMotion();
   const motionReady = mounted && !reduceMotion;
-  const [activeSector, setActiveSector] = useState<NeuralSectorId | null>(null);
-  const [hovered, setHovered] = useState<NeuralSectorId | null>(null);
-
-  const displaySector = hovered ?? activeSector;
+  const [selectedSector, setSelectedSector] = useState<NeuralSectorId | null>(null);
+  const [hoveredSector, setHoveredSector] = useState<NeuralSectorId | null>(null);
 
   const handleHover = useCallback((id: NeuralSectorId | null) => {
-    setHovered(id);
+    setHoveredSector(id);
   }, []);
 
   const handleSelect = useCallback((id: NeuralSectorId) => {
-    setActiveSector((prev) => (prev === id ? null : id));
-    setHovered(null);
+    setSelectedSector((prev) => (prev === id ? null : id));
+    setHoveredSector(null);
   }, []);
+
+  const previewMeta = hoveredSector
+    ? NEURAL_SECTOR_META[hoveredSector]
+    : null;
 
   return (
     <SectionShell
       id="neural-map"
       tone="lime"
       atmosphere="neural"
-      className="!py-28 sm:!py-36"
+      className="neural-section !overflow-visible !border-t-0 !py-20 sm:!py-28"
+      innerClassName="max-w-none px-0 sm:px-0 lg:px-0"
+      borderTop={false}
     >
-      <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
+      <div className="mx-auto max-w-[1800px] px-4 sm:px-8 lg:px-12">
         <SectionHeading
-          eyebrow="Neural Network"
-          title="City"
-          titleAccent="Consciousness"
-          description="Drag to orbit the mesh. Select a sector to trace uplink pathways across the metropolitan neural grid."
+          eyebrow="Neural Infrastructure"
+          title="AI Routing"
+          titleAccent="Layer"
+          description="Metropolitan neural mesh — district intelligence nodes, relay pathways, and the infrastructure cortex. Inspect sectors to analyze live system diagnostics."
           accent="lime"
-          className="lg:col-span-4 lg:pt-4"
         />
-
-        <motion.div
-          className="lg:col-span-8"
-          variants={fadeUp}
-          initial={false}
-          whileInView={motionReady ? "visible" : undefined}
-          viewport={{ once: true, amount: 0.12 }}
-        >
-          <GlowContainer tone="lime" className="h-full">
-            <GlassPanel
-              variant="command"
-              glow="lime"
-              cornerMarks
-              className="overflow-hidden p-0"
-              revealOnView={false}
-            >
-              <div className="neural-map-viewport relative min-h-[360px] sm:min-h-[440px] lg:min-h-[520px]">
-                <div className="neural-map-fog" aria-hidden />
-                {displaySector && (
-                  <span className="neural-signal-wave" aria-hidden />
-                )}
-                <p className="neural-map-hint pointer-events-none absolute left-5 top-5 z-10 font-mono text-[8px] uppercase tracking-[0.28em] text-white/30">
-                  Drag · orbit · select
-                </p>
-                {mounted ? (
-                  <NeuralMapCanvas
-                    activeSector={displaySector}
-                    onSectorHover={handleHover}
-                    onSectorSelect={handleSelect}
-                  />
-                ) : (
-                  <div className="neural-map-fallback absolute inset-0" />
-                )}
-                <div className="neural-map-ui pointer-events-none absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-4 p-5 sm:p-6">
-                  <div className="pointer-events-auto flex flex-wrap gap-2">
-                    {NEURAL_SECTORS.map((s) => (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => handleSelect(s.id)}
-                        className={cn(
-                          "neural-sector-btn font-mono text-[9px] uppercase tracking-widest transition-colors",
-                          displaySector === s.id
-                            ? "text-nexus-lime"
-                            : "text-white/40 hover:text-nexus-cyan"
-                        )}
-                      >
-                        {s.id}
-                      </button>
-                    ))}
-                  </div>
-                  <MicroLabel accent="muted">
-                    {displaySector
-                      ? `${displaySector} · ${NEURAL_SECTORS.find((s) => s.id === displaySector)?.label ?? "SYNC"}`
-                      : "Orbit mesh · select sector"}
-                  </MicroLabel>
-                </div>
-              </div>
-            </GlassPanel>
-          </GlowContainer>
-        </motion.div>
       </div>
+
+      <motion.div
+        className="neural-map-stage mt-12 sm:mt-16"
+        variants={fadeUp}
+        initial={false}
+        whileInView={motionReady ? "visible" : undefined}
+        viewport={{ once: true, amount: 0.08 }}
+      >
+        <div className="neural-map-stage__vignette" aria-hidden />
+        <div className="neural-map-stage__fade neural-map-stage__fade--top" aria-hidden />
+        <div className="neural-map-stage__fade neural-map-stage__fade--bottom" aria-hidden />
+        <div className="neural-map-stage__fade neural-map-stage__fade--left" aria-hidden />
+        <div className="neural-map-stage__fade neural-map-stage__fade--right" aria-hidden />
+
+        <div className="neural-map-stage__guide">
+          <MicroLabel accent="muted" className="text-[8px]">
+            Active AI routing layer
+          </MicroLabel>
+          <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.24em] text-white/40">
+            Drag to inspect neural sectors · Select nodes for infrastructure diagnostics
+          </p>
+        </div>
+
+        <div className="neural-map-stage__canvas-wrap">
+          {mounted ? (
+            <NeuralMapCanvas
+              hoveredSector={hoveredSector}
+              selectedSector={selectedSector}
+              onSectorHover={handleHover}
+              onSectorSelect={handleSelect}
+            />
+          ) : (
+            <div className="neural-map-fallback absolute inset-0 min-h-[480px]" />
+          )}
+
+          <NeuralAnalysisPanel
+            sectorId={selectedSector}
+            onClose={() => setSelectedSector(null)}
+          />
+
+          {previewMeta && !selectedSector && (
+            <div className="neural-map-hover-card pointer-events-none">
+              <span className="font-mono text-[8px] uppercase tracking-widest text-nexus-cyan/70">
+                {previewMeta.districtId}
+              </span>
+              <p className="mt-1 font-display text-sm text-white/90">
+                {previewMeta.systemName}
+              </p>
+              <p className="mt-1 text-[10px] text-white/45">{previewMeta.role}</p>
+            </div>
+          )}
+        </div>
+
+        <div className="neural-map-stage__rail mx-auto max-w-[1800px] px-4 sm:px-8 lg:px-12">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-white/[0.06] pt-6">
+            <div className="flex flex-wrap gap-2">
+              {NEURAL_SECTORS.map((s) => {
+                const meta = NEURAL_SECTOR_META[s.id];
+                const active =
+                  selectedSector === s.id || hoveredSector === s.id;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => handleSelect(s.id)}
+                    className={cn(
+                      "neural-sector-chip",
+                      active && "neural-sector-chip--active"
+                    )}
+                  >
+                    <span className="neural-sector-chip__system">{meta.systemName}</span>
+                    <span className="neural-sector-chip__id">{s.id}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <MicroLabel accent="muted">
+              {selectedSector
+                ? `Analysis · ${NEURAL_SECTOR_META[selectedSector].systemName}`
+                : hoveredSector
+                  ? `Preview · ${NEURAL_SECTOR_META[hoveredSector].systemName}`
+                  : "Infrastructure cortex online"}
+            </MicroLabel>
+          </div>
+        </div>
+      </motion.div>
     </SectionShell>
   );
 }

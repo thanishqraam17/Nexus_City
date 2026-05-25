@@ -394,16 +394,19 @@
 }
 
 /* Neural map section atmosphere */
-.neural-map-fog {
+.neural-map-stage__canvas-wrap::before {
+  content: "";
   position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse 70% 60% at 50% 50%,
-    rgba(0, 240, 255, 0.06) 0%,
-    transparent 65%
-  );
+  inset: 10% 5%;
   pointer-events: none;
-  animation: neural-fog-drift 12s ease-in-out infinite alternate;
+  z-index: 1;
+  background: radial-gradient(
+    ellipse 55% 50% at 50% 48%,
+    rgba(0, 240, 255, 0.06) 0%,
+    rgba(212, 255, 0, 0.02) 45%,
+    transparent 70%
+  );
+  animation: neural-fog-drift 14s ease-in-out infinite alternate;
 }
 
 @keyframes neural-fog-drift {

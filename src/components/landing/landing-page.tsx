@@ -41,7 +41,7 @@ export function LandingPage() {
         </ScrollCinematicSection>
 
         <SectionBridge from="cyan" to="lime" label="Neural interface" />
-        <ScrollCinematicSection atmosphere="neural" depth={2}>
+        <ScrollCinematicSection atmosphere="neural" depth={2} className="overflow-visible">
           <NeuralNetworkSection />
         </ScrollCinematicSection>
 

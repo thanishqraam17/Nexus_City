@@ -6,29 +6,36 @@ import type { NeuralSectorId } from "@/lib/system/city-data";
 import { NeuralMapScene } from "./neural-map-scene";
 
 interface NeuralMapCanvasProps {
-  activeSector: NeuralSectorId | null;
+  hoveredSector: NeuralSectorId | null;
+  selectedSector: NeuralSectorId | null;
   onSectorHover: (id: NeuralSectorId | null) => void;
   onSectorSelect: (id: NeuralSectorId) => void;
 }
 
 function NeuralMapCanvasInner({
-  activeSector,
+  hoveredSector,
+  selectedSector,
   onSectorHover,
   onSectorSelect,
 }: NeuralMapCanvasProps) {
   return (
     <Canvas
-      className="h-full w-full touch-none"
+      className="neural-map-canvas h-full w-full"
       dpr={[1, 1.25]}
-      camera={{ position: [0, 1.4, 7.2], fov: 38, near: 0.1, far: 30 }}
-      gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
-      style={{ background: "transparent" }}
+      camera={{ position: [0.4, 1.1, 9.2], fov: 34, near: 0.1, far: 45 }}
+      gl={{
+        alpha: true,
+        antialias: true,
+        powerPreference: "high-performance",
+      }}
+      style={{ background: "transparent", touchAction: "none" }}
       frameloop="always"
-      performance={{ min: 0.55 }}
+      performance={{ min: 0.5 }}
     >
       <Suspense fallback={null}>
         <NeuralMapScene
-          activeSector={activeSector}
+          hoveredSector={hoveredSector}
+          selectedSector={selectedSector}
           onSectorHover={onSectorHover}
           onSectorSelect={onSectorSelect}
         />
