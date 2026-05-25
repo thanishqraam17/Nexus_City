@@ -22,7 +22,7 @@ function nextLineId() {
 }
 
 function toneClass(tone?: TerminalLine["tone"]) {
-  if (tone === "lime") return "text-nexus-lime";
+  if (tone === "lime") return "text-nexus-lime os-terminal-line--glow";
   if (tone === "cyan") return "text-nexus-cyan";
   return "text-white/55";
 }
@@ -44,10 +44,16 @@ async function typeLine(
   }
 }
 
+async function fakeLoad(ms: number, reduceMotion: boolean) {
+  if (reduceMotion) return;
+  await new Promise((r) => setTimeout(r, ms));
+}
+
 export function SystemTerminal() {
   const mounted = useMounted();
   const reduceMotion = useHydratedReducedMotion();
   const [lines, setLines] = useState<TerminalLine[]>([]);
+  const [history, setHistory] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [cursorOn, setCursorOn] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -73,9 +79,9 @@ export function SystemTerminal() {
   useEffect(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
-      behavior: "smooth",
+      behavior: reduceMotion ? "auto" : "smooth",
     });
-  }, [lines, busy]);
+  }, [lines, busy, reduceMotion]);
 
   const appendLine = useCallback((text: string, tone: TerminalLine["tone"] = "cyan") => {
     const id = nextLineId();
@@ -93,13 +99,16 @@ export function SystemTerminal() {
     async (cmd: TerminalCommand) => {
       if (busy) return;
       setBusy(true);
+      setHistory((prev) => [cmd.input, ...prev].slice(0, 8));
       appendLine(`nexus@city:~$ ${cmd.input}`, "lime");
-      const charMs = reduceMotion ? 0 : 24;
+      await fakeLoad(cmd.delayMs ?? 280, reduceMotion);
+
+      const charMs = reduceMotion ? 0 : 22;
 
       for (const line of cmd.lines) {
         const id = appendLine("", "cyan");
         await typeLine(line, (partial) => updateLine(id, partial), charMs);
-        await new Promise((r) => setTimeout(r, charMs ? 100 : 0));
+        await new Promise((r) => setTimeout(r, charMs ? 80 : 0));
       }
 
       setBusy(false);
@@ -113,10 +122,12 @@ export function SystemTerminal() {
   };
 
   return (
-    <GlassPanel variant="command" glow="lime" cornerMarks className="overflow-hidden p-0">
+    <GlassPanel variant="command" glow="lime" cornerMarks className="overflow-hidden p-0 os-hud-shimmer">
       <div className="os-terminal flex flex-col">
         <div className="os-terminal-chrome flex items-center justify-between border-b border-white/[0.08] px-4 py-3 sm:px-5">
-          <MicroLabel accent="lime">System Terminal</MicroLabel>
+          <MicroLabel accent="lime" className="os-telemetry-pulse">
+            System Terminal
+          </MicroLabel>
           <span className="font-mono text-[8px] uppercase tracking-widest text-white/30">
             SECURE · ENCRYPTED
           </span>
@@ -126,19 +137,43 @@ export function SystemTerminal() {
           ref={scrollRef}
           className="os-terminal-body max-h-[320px] min-h-[240px] overflow-y-auto px-4 py-4 font-mono text-[11px] leading-relaxed sm:max-h-[380px] sm:px-5 sm:text-xs"
         >
+          {history.length > 0 && (
+            <div className="os-terminal-history mb-3 space-y-0.5">
+              {history.slice(0, 4).map((h) => (
+                <div key={h} className="truncate text-white/30">
+                  › {h}
+                </div>
+              ))}
+            </div>
+          )}
           {lines.map((line) => (
-            <div key={line.id} className={cn("mb-1 min-h-[1.25em]", toneClass(line.tone))}>
+            <div
+              key={line.id}
+              className={cn(
+                "mb-1 min-h-[1.25em] transition-opacity duration-300",
+                toneClass(line.tone),
+                line.text.startsWith("›") && "pl-1"
+              )}
+            >
               {line.text}
             </div>
           ))}
           <div className="mt-2 flex items-center gap-1 text-nexus-lime">
             <span>nexus@city:~$</span>
-            <span
-              className={cn(
-                "inline-block h-3.5 w-1.5 bg-nexus-lime/80 transition-opacity",
-                cursorOn ? "opacity-100" : "opacity-0"
-              )}
-            />
+            {busy ? (
+              <span className="os-terminal-loading" aria-hidden>
+                <span />
+                <span />
+                <span />
+              </span>
+            ) : (
+              <span
+                className={cn(
+                  "inline-block h-3.5 w-1.5 bg-nexus-lime/80 transition-opacity",
+                  cursorOn ? "opacity-100" : "opacity-0"
+                )}
+              />
+            )}
           </div>
         </div>
 
@@ -149,6 +184,7 @@ export function SystemTerminal() {
               type="button"
               disabled={busy}
               onClick={() => handleSuggestion(s)}
+              data-depth-pull
               className="os-terminal-chip font-mono text-[9px] uppercase tracking-wider text-white/45 transition-colors hover:border-nexus-lime/35 hover:text-nexus-lime disabled:opacity-40"
             >
               {s}

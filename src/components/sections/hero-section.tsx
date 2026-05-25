@@ -6,6 +6,7 @@ import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
 import { useMounted } from "@/hooks/use-mounted";
 import { ArrowUpRight, ChevronRight } from "lucide-react";
 import { NexusButton } from "@/components/ui/nexus-button";
+import { Magnetic } from "@/components/cinematic/magnetic";
 import { HeroHologram } from "@/components/hero-core/hero-hologram";
 import { MicroLabel } from "@/components/ui/micro-label";
 import { TelemetryRail } from "@/components/ui/telemetry-widget";
@@ -37,7 +38,7 @@ export function HeroSection() {
   }, [motionReady]);
 
   return (
-    <section id="command" className="hero-section">
+    <section id="overview" className="hero-section">
       <HeroDepth />
       <HeroHologram />
 
@@ -88,14 +89,18 @@ export function HeroSection() {
             </p>
 
             <div className="hero-actions flex flex-wrap items-center gap-4">
-              <NexusButton href="#access" variant="primary">
-                Enter Command Center
-                <ArrowUpRight size={16} />
-              </NexusButton>
-              <NexusButton href="#systems" variant="ghost">
-                View Systems
-                <ChevronRight size={14} />
-              </NexusButton>
+              <Magnetic strength={0.4}>
+                <NexusButton href="#terminal" variant="primary" data-magnetic>
+                  Enter Command Center
+                  <ArrowUpRight size={16} />
+                </NexusButton>
+              </Magnetic>
+              <Magnetic strength={0.3}>
+                <NexusButton href="#systems" variant="ghost" data-magnetic>
+                  View Systems
+                  <ChevronRight size={14} />
+                </NexusButton>
+              </Magnetic>
             </div>
 
             <HeroMetricsGrid />

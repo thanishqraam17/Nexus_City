@@ -72,11 +72,12 @@ export function GlassPanel({
       }
       transition={springInertia}
       className={cn(
-        "nexus-panel-base group/panel",
+        "nexus-panel-base group/panel os-depth-layer",
         accentBorder[resolvedGlow],
         accentGlow[resolvedGlow],
+        variant === "command" && "os-scan-sweep os-bracket-pulse",
         variant === "command" &&
-          "bg-gradient-to-br from-white/[0.05] to-transparent",
+          "bg-gradient-to-br from-white/[0.05] to-transparent backdrop-blur-md",
         coreGlow && "hero-panel-core-light",
         className
       )}

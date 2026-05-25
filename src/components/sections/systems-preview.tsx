@@ -38,7 +38,9 @@ export function SystemsPreview() {
   return (
     <section
       id="systems"
-      className="relative z-10 overflow-hidden py-32 sm:py-40"
+      data-section="systems"
+      data-atmosphere="systems"
+      className="os-section os-section--systems relative z-10 overflow-hidden py-32 sm:py-40"
     >
       <div className="pointer-events-none absolute inset-0 atmo-section-glow opacity-40" aria-hidden />
       <div className="mx-auto max-w-[1800px] px-4 sm:px-8 lg:px-12">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
 import { useMounted } from "@/hooks/use-mounted";
+import { useScrollSpy } from "@/hooks/use-scroll-spy";
 import { Menu, X, Radio } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navItem } from "@/lib/motion/variants";
@@ -12,14 +13,8 @@ import { springHoverReact } from "@/lib/motion/transitions";
 import { NexusButton } from "@/components/ui/nexus-button";
 import { MicroLabel } from "@/components/ui/micro-label";
 import { useUIStore } from "@/store/ui-store";
-
-const navLinks = [
-  { href: "#command", label: "Command" },
-  { href: "#intelligence", label: "Intelligence" },
-  { href: "#neural-map", label: "Neural Map" },
-  { href: "#terminal", label: "Terminal" },
-  { href: "#access", label: "Access" },
-];
+import { NAV_SECTIONS } from "@/lib/navigation/sections";
+import { useScrollTo } from "@/context/scroll-context";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -29,6 +24,8 @@ export function Navbar() {
   const telemetryLive = useUIStore((s) => s.telemetryLive);
   const mounted = useMounted();
   const reduceMotion = useHydratedReducedMotion();
+  const activeSection = useScrollSpy();
+  const { scrollTo } = useScrollTo();
 
   const { scrollY } = useScroll();
   const navBlur = useTransform(scrollY, [0, 120], ["blur(0px)", "blur(12px)"]);
@@ -51,6 +48,12 @@ export function Navbar() {
       document.body.style.overflow = "";
     };
   }, [navOpen]);
+
+  const navLinks = NAV_SECTIONS.filter((s) => s.id !== "overview").map((s) => ({
+    href: `#${s.id}`,
+    label: s.navLabel ?? s.label,
+    id: s.id,
+  }));
 
   return (
     <>
@@ -77,7 +80,15 @@ export function Navbar() {
           className="mx-auto flex max-w-[1800px] items-center justify-between"
           aria-label="Main navigation"
         >
-          <Link href="/" className="group relative flex items-center gap-3">
+          <Link
+            href="#overview"
+            className="group relative flex items-center gap-3"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollTo("overview");
+              setNavOpen(false);
+            }}
+          >
             <motion.div
               className="relative flex h-10 w-10 items-center justify-center border border-nexus-lime/30 bg-black/50"
               whileHover={{ scale: 1.05, borderColor: "rgba(212,255,0,0.6)" }}
@@ -98,23 +109,37 @@ export function Navbar() {
 
           <div className="hidden items-center gap-10 lg:flex">
             <ul className="flex items-center gap-8">
-              {navLinks.map((link, i) => (
-                <motion.li
-                  key={link.href}
-                  custom={i}
-                  variants={navItem}
-                  initial={false}
-                  animate={mounted && !reduceMotion ? "visible" : false}
-                >
-                  <Link
-                    href={link.href}
-                    className="group relative font-mono text-xs uppercase tracking-[0.22em] text-white/58 transition-colors duration-500 hover:text-white/95"
+              {navLinks.map((link, i) => {
+                const isActive = activeSection === link.id;
+                return (
+                  <motion.li
+                    key={link.href}
+                    custom={i}
+                    variants={navItem}
+                    initial={false}
+                    animate={mounted && !reduceMotion ? "visible" : false}
                   >
-                    {link.label}
-                    <span className="absolute -bottom-1 left-0 h-px w-0 bg-nexus-lime/80 transition-all duration-500 group-hover:w-full" />
-                  </Link>
-                </motion.li>
-              ))}
+                    <a
+                      href={link.href}
+                      className={cn(
+                        "group relative font-mono text-xs uppercase tracking-[0.22em] transition-colors duration-500",
+                        isActive
+                          ? "text-nexus-lime"
+                          : "text-white/58 hover:text-white/95"
+                      )}
+                      aria-current={isActive ? "true" : undefined}
+                    >
+                      {link.label}
+                      <span
+                        className={cn(
+                          "absolute -bottom-1 left-0 h-px bg-nexus-lime/80 transition-all duration-500",
+                          isActive ? "w-full" : "w-0 group-hover:w-full"
+                        )}
+                      />
+                    </a>
+                  </motion.li>
+                );
+              })}
             </ul>
 
             <div className="flex items-center gap-4">
@@ -166,13 +191,18 @@ export function Navbar() {
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ delay: i * 0.08, duration: 0.5 }}
                 >
-                  <Link
+                  <a
                     href={link.href}
-                    className="font-display text-4xl font-light text-white/90"
+                    className={cn(
+                      "font-display text-4xl font-light",
+                      activeSection === link.id
+                        ? "text-nexus-lime"
+                        : "text-white/90"
+                    )}
                     onClick={() => setNavOpen(false)}
                   >
                     {link.label}
-                  </Link>
+                  </a>
                 </motion.div>
               ))}
               <StatusPill live={mounted && telemetryLive} className="mt-4" />

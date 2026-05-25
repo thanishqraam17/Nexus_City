@@ -1,0 +1,438 @@
+/* ─── Cinematic cursor ─── */
+.cinematic-cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 280px;
+  margin: -140px 0 0 -140px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 240, 255, 0.12) 0%,
+    rgba(212, 255, 0, 0.06) 35%,
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.cinematic-cursor-core {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(212, 255, 0, 0.85);
+  box-shadow:
+    0 0 12px rgba(212, 255, 0, 0.5),
+    0 0 24px rgba(0, 240, 255, 0.25);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.cinematic-cursor-trail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(0, 240, 255, 0.4);
+  box-shadow: 0 0 6px rgba(0, 240, 255, 0.35);
+  filter: blur(0.5px);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.cinematic-cursor-persistence {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 120px;
+  height: 120px;
+  margin: -60px 0 0 -60px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 240, 255, 0.08) 0%,
+    rgba(212, 255, 0, 0.03) 40%,
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+  will-change: transform;
+  transition: opacity 0.3s ease;
+}
+
+/* Cursor-driven environmental light */
+.landing-canvas::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(
+    520px circle at var(--cursor-x, 50%) var(--cursor-y, 40%),
+    rgba(0, 240, 255, 0.04) 0%,
+    rgba(212, 255, 0, 0.02) 28%,
+    transparent 55%
+  );
+  opacity: 0.9;
+  transition: opacity 0.4s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-cursor,
+  .landing-canvas::after {
+    display: none;
+  }
+}
+
+/* Magnetic depth pull on interactive surfaces */
+.magnetic-target .nexus-btn,
+.magnetic-target [data-magnetic] {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-depth-pull] {
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease;
+}
+
+[data-depth-pull]:hover {
+  transform: translateZ(0) translateY(-2px) scale(1.008);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.45),
+    0 0 24px rgba(0, 240, 255, 0.06);
+}
+
+/* Layered glass depth */
+.os-depth-layer {
+  position: relative;
+  isolation: isolate;
+}
+
+.os-depth-layer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    transparent 42%,
+    rgba(0, 240, 255, 0.03) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.os-depth-layer::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    transparent 30%
+  );
+  backdrop-filter: blur(0.5px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+/* ─── System boot ─── */
+.system-boot {
+  background: var(--void);
+}
+
+.system-boot-vignette {
+  background: radial-gradient(ellipse 80% 70% at 50% 50%, transparent 0%, var(--void) 72%);
+}
+
+.system-boot-grid {
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black 20%, transparent 75%);
+}
+
+.system-boot-pulse-bar {
+  background: linear-gradient(90deg, transparent, var(--nexus-lime), transparent);
+  transform-origin: center;
+}
+
+/* ─── Scroll environment ─── */
+.scroll-environment-cyan {
+  background: radial-gradient(
+    ellipse 120% 80% at 50% 20%,
+    rgba(0, 240, 255, 0.14) 0%,
+    transparent 55%
+  );
+  mix-blend-mode: screen;
+}
+
+.scroll-environment-lime {
+  background: radial-gradient(
+    ellipse 100% 60% at 80% 60%,
+    rgba(212, 255, 0, 0.1) 0%,
+    transparent 50%
+  );
+  mix-blend-mode: screen;
+}
+
+.scroll-environment-depth {
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.35) 100%);
+}
+
+.scroll-cinematic-section {
+  will-change: transform, opacity;
+}
+
+/* ─── Ambient pulse (silent audio viz) ─── */
+.ambient-pulse-bar {
+  animation: ambient-eq 2.4s ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+.silent-waveform-path {
+  animation: silent-wave 3.2s ease-in-out infinite;
+}
+
+.silent-waveform-bar {
+  animation: silent-bar 2.8s ease-in-out infinite;
+  transform-origin: center 12px;
+}
+
+@keyframes silent-wave {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes silent-bar {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1.4);
+  }
+}
+
+@keyframes ambient-eq {
+  0%,
+  100% {
+    transform: scaleY(0.4);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scaleY(1.2);
+    opacity: 0.75;
+  }
+}
+
+/* ─── Microdetails ─── */
+.os-scan-sweep {
+  position: relative;
+  overflow: hidden;
+}
+
+.os-scan-sweep::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  top: -1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 240, 255, 0.35),
+    rgba(212, 255, 0, 0.25),
+    transparent
+  );
+  animation: os-scan-line 8s linear infinite;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.5;
+}
+
+@keyframes os-scan-line {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.6;
+  }
+  92% {
+    opacity: 0.4;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.os-bracket-pulse > span[class*="border-"] {
+  animation: bracket-pulse 4s ease-in-out infinite;
+}
+
+@keyframes bracket-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.os-hud-shimmer {
+  position: relative;
+}
+
+.os-hud-shimmer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.012) 2px,
+    rgba(255, 255, 255, 0.012) 3px
+  );
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.4;
+}
+
+.os-telemetry-pulse {
+  animation: telemetry-flicker 6s steps(1) infinite;
+}
+
+@keyframes telemetry-flicker {
+  0%,
+  97%,
+  100% {
+    opacity: 1;
+  }
+  98% {
+    opacity: 0.92;
+  }
+  99% {
+    opacity: 1;
+  }
+}
+
+/* ─── Terminal premium ─── */
+.os-terminal-body {
+  text-shadow: 0 0 20px rgba(0, 240, 255, 0.08);
+}
+
+.os-terminal-line--glow {
+  text-shadow:
+    0 0 8px rgba(212, 255, 0, 0.25),
+    0 0 16px rgba(0, 240, 255, 0.12);
+}
+
+.os-terminal-loading {
+  display: inline-flex;
+  gap: 3px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.os-terminal-loading span {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--nexus-lime);
+  animation: term-dot 0.9s ease-in-out infinite;
+}
+
+.os-terminal-loading span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.os-terminal-loading span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes term-dot {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.os-terminal-history {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  max-height: 4.5em;
+  overflow: hidden;
+  opacity: 0.35;
+  font-size: 0.92em;
+}
+
+/* Neural map section atmosphere */
+.neural-map-fog {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 50%,
+    rgba(0, 240, 255, 0.06) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+  animation: neural-fog-drift 12s ease-in-out infinite alternate;
+}
+
+@keyframes neural-fog-drift {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.85;
+    transform: scale(1.05);
+  }
+}
+
+.neural-signal-wave {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  animation: neural-ring-pulse 3s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes neural-ring-pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.08);
+    opacity: 0;
+  }
+}

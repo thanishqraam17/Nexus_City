@@ -27,8 +27,9 @@ export function TelemetryCardLayout({
 }: TelemetryCardLayoutProps) {
   return (
     <div
+      data-depth-pull
       className={cn(
-        "telemetry-card-wrap group/telemetry",
+        "telemetry-card-wrap group/telemetry os-telemetry-pulse",
         isLive && "telemetry-card-wrap--live",
         className
       )}

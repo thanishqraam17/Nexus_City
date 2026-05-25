@@ -5,12 +5,15 @@ import { useRef } from "react";
 import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
 import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
+import type { SectionAtmosphere } from "@/components/system/section-shell";
 
 interface ScrollCinematicSectionProps {
   children: React.ReactNode;
   id?: string;
   className?: string;
   as?: "section" | "div";
+  atmosphere?: SectionAtmosphere;
+  depth?: number;
 }
 
 /**
@@ -22,6 +25,8 @@ export function ScrollCinematicSection({
   id,
   className,
   as = "section",
+  atmosphere = "default",
+  depth = 0,
 }: ScrollCinematicSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const divRef = useRef<HTMLDivElement>(null);
@@ -36,21 +41,42 @@ export function ScrollCinematicSection({
     offset: ["start end", "end start"],
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.12, 0.88, 1], [0.55, 1, 1, 0.65]);
-  const y = useTransform(scrollYProgress, [0, 1], [32, -32]);
+  const opacity = useTransform(scrollYProgress, [0, 0.1, 0.85, 1], [0.48, 1, 1, 0.58]);
+  const y = useTransform(scrollYProgress, [0, 0.5, 1], [40 + depth * 4, 0, -36]);
+  const scale = useTransform(scrollYProgress, [0, 0.18, 0.82, 1], [0.97, 1, 1, 0.99]);
+  const filter = useTransform(
+    scrollYProgress,
+    [0, 0.12, 0.88, 1],
+    [
+      "blur(3px) brightness(0.82)",
+      "blur(0px) brightness(1)",
+      "blur(0px) brightness(1)",
+      "blur(2px) brightness(0.88)",
+    ]
+  );
 
   const Component = as === "section" ? motion.section : motion.div;
 
   if (!motionReady) {
     if (as === "section") {
       return (
-        <section ref={sectionRef} id={id} className={className}>
+        <section
+          ref={sectionRef}
+          id={id}
+          data-atmosphere={atmosphere}
+          className={cn("scroll-cinematic-wrap", className)}
+        >
           {children}
         </section>
       );
     }
     return (
-      <div ref={divRef} id={id} className={className}>
+      <div
+        ref={divRef}
+        id={id}
+        data-atmosphere={atmosphere}
+        className={cn("scroll-cinematic-wrap", className)}
+      >
         {children}
       </div>
     );
@@ -60,8 +86,10 @@ export function ScrollCinematicSection({
     <Component
       ref={scrollTarget as React.RefObject<HTMLDivElement>}
       id={id}
-      className={cn("scroll-cinematic-section", className)}
-      style={{ opacity, y }}
+      data-atmosphere={atmosphere}
+      data-depth={depth}
+      className={cn("scroll-cinematic-section scroll-cinematic-wrap", className)}
+      style={{ opacity, y, scale, filter }}
     >
       {children}
     </Component>

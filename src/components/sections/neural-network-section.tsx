@@ -37,14 +37,24 @@ export function NeuralNetworkSection() {
     setHovered(id);
   }, []);
 
+  const handleSelect = useCallback((id: NeuralSectorId) => {
+    setActiveSector((prev) => (prev === id ? null : id));
+    setHovered(null);
+  }, []);
+
   return (
-    <SectionShell id="neural-map" tone="lime" className="!py-28 sm:!py-36">
+    <SectionShell
+      id="neural-map"
+      tone="lime"
+      atmosphere="neural"
+      className="!py-28 sm:!py-36"
+    >
       <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
         <SectionHeading
           eyebrow="Neural Network"
           title="City"
           titleAccent="Consciousness"
-          description="Interactive mesh of autonomous districts, data pathways, and synchronized neural uplinks across the metropolitan grid."
+          description="Drag to orbit the mesh. Select a sector to trace uplink pathways across the metropolitan neural grid."
           accent="lime"
           className="lg:col-span-4 lg:pt-4"
         />
@@ -65,10 +75,18 @@ export function NeuralNetworkSection() {
               revealOnView={false}
             >
               <div className="neural-map-viewport relative min-h-[360px] sm:min-h-[440px] lg:min-h-[520px]">
+                <div className="neural-map-fog" aria-hidden />
+                {displaySector && (
+                  <span className="neural-signal-wave" aria-hidden />
+                )}
+                <p className="neural-map-hint pointer-events-none absolute left-5 top-5 z-10 font-mono text-[8px] uppercase tracking-[0.28em] text-white/30">
+                  Drag · orbit · select
+                </p>
                 {mounted ? (
                   <NeuralMapCanvas
                     activeSector={displaySector}
                     onSectorHover={handleHover}
+                    onSectorSelect={handleSelect}
                   />
                 ) : (
                   <div className="neural-map-fallback absolute inset-0" />
@@ -79,11 +97,7 @@ export function NeuralNetworkSection() {
                       <button
                         key={s.id}
                         type="button"
-                        onClick={() =>
-                          setActiveSector((prev) =>
-                            prev === s.id ? null : s.id
-                          )
-                        }
+                        onClick={() => handleSelect(s.id)}
                         className={cn(
                           "neural-sector-btn font-mono text-[9px] uppercase tracking-widest transition-colors",
                           displaySector === s.id
@@ -97,8 +111,8 @@ export function NeuralNetworkSection() {
                   </div>
                   <MicroLabel accent="muted">
                     {displaySector
-                      ? `${displaySector} · SYNC ACTIVE`
-                      : "Hover or select sector"}
+                      ? `${displaySector} · ${NEURAL_SECTORS.find((s) => s.id === displaySector)?.label ?? "SYNC"}`
+                      : "Orbit mesh · select sector"}
                   </MicroLabel>
                 </div>
               </div>

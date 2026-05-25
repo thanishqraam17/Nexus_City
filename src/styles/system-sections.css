@@ -55,6 +55,150 @@
   );
 }
 
+.os-section-bridge--void-lime {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(212, 255, 0, 0.03) 50%,
+    transparent 100%
+  );
+}
+
+.os-section-bridge-scan {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 240, 255, 0.25),
+    rgba(212, 255, 0, 0.2),
+    transparent
+  );
+  opacity: 0.5;
+  animation: bridge-scan 6s ease-in-out infinite;
+}
+
+.os-section-bridge-depth {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 60% 40% at 50% 50%,
+    rgba(0, 240, 255, 0.04) 0%,
+    transparent 70%
+  );
+}
+
+.os-section-bridge-label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+@keyframes bridge-scan {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scaleX(0.6);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scaleX(1);
+  }
+}
+
+/* Per-section atmosphere */
+.os-section-atmosphere {
+  opacity: 0.85;
+}
+
+.os-section--intelligence .os-section-atmosphere {
+  background: radial-gradient(
+    ellipse 70% 50% at 20% 30%,
+    rgba(0, 240, 255, 0.07) 0%,
+    transparent 65%
+  );
+}
+
+.os-section--neural .os-section-atmosphere {
+  background: radial-gradient(
+    ellipse 65% 55% at 75% 40%,
+    rgba(212, 255, 0, 0.06) 0%,
+    transparent 60%
+  );
+}
+
+.os-section--systems .os-section-atmosphere,
+[data-atmosphere="systems"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02) 0%,
+    transparent 40%
+  );
+  pointer-events: none;
+}
+
+.os-section--systems[data-atmosphere="systems"]::before,
+section[data-atmosphere="systems"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 80% 40% at 50% 0%,
+    rgba(255, 255, 255, 0.03) 0%,
+    transparent 55%
+  );
+}
+
+.os-section--terminal .os-section-atmosphere {
+  background: radial-gradient(
+    ellipse 55% 45% at 50% 80%,
+    rgba(212, 255, 0, 0.05) 0%,
+    transparent 60%
+  );
+}
+
+.os-section--access .os-section-atmosphere,
+section[data-atmosphere="access"]::after {
+  content: none;
+}
+
+section[data-atmosphere="access"] {
+  position: relative;
+}
+
+section[data-atmosphere="access"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 50% at 50% 100%,
+    rgba(212, 255, 0, 0.04) 0%,
+    transparent 55%
+  );
+}
+
+.traffic-flow-node--hub .traffic-flow-bar {
+  width: 4.5rem;
+}
+
+.traffic-flow-edge {
+  transition: stroke 0.4s ease;
+}
+
+.neural-map-hint {
+  letter-spacing: 0.28em;
+}
+
 .os-cursor-glow {
   transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1),
     top 0.35s cubic-bezier(0.16, 1, 0.3, 1);

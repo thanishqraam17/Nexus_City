@@ -5,6 +5,7 @@ import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
 import { useMounted } from "@/hooks/use-mounted";
 import { SectionShell, SectionHeading } from "@/components/system";
 import { SystemTerminal } from "@/components/terminal/system-terminal";
+import { SilentWaveform } from "@/components/cinematic/silent-waveform";
 import { fadeUp, slideFromRight } from "@/lib/motion/variants";
 
 export function TerminalSection() {
@@ -13,7 +14,7 @@ export function TerminalSection() {
   const motionReady = mounted && !reduceMotion;
 
   return (
-    <SectionShell id="terminal" tone="lime">
+    <SectionShell id="terminal" tone="lime" atmosphere="terminal">
       <div className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-12">
         <motion.div
           className="lg:col-span-5"
@@ -29,6 +30,7 @@ export function TerminalSection() {
             description="Direct interface to district sync, neural uplink diagnostics, and infrastructure optimization protocols."
             accent="lime"
           />
+          <SilentWaveform className="mt-6 h-5 w-28 opacity-60" />
           <ul className="mt-8 space-y-3 border-t border-white/[0.08] pt-6">
             {[
               "District synchronization",

@@ -14,7 +14,12 @@ export function AccessSection() {
   const motionReady = mounted && !reduceMotion;
 
   return (
-    <section id="access" className="relative z-10 pb-32 pt-8 sm:pb-40">
+    <section
+      id="access"
+      data-section="access"
+      data-atmosphere="access"
+      className="os-section os-section--access relative z-10 pb-32 pt-8 sm:pb-40"
+    >
       <div className="mx-auto max-w-[1800px] px-4 sm:px-8 lg:px-12 lg:pr-16">
         <motion.div
           variants={fadeUp}

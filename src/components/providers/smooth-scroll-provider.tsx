@@ -1,8 +1,9 @@
 "use client";
 
 import Lenis from "lenis";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useUIStore } from "@/store/ui-store";
+import { ScrollContextProvider } from "@/context/scroll-context";
 
 export function SmoothScrollProvider({
   children,
@@ -10,6 +11,7 @@ export function SmoothScrollProvider({
   children: React.ReactNode;
 }) {
   const lenisRef = useRef<Lenis | null>(null);
+  const [lenisReady, setLenisReady] = useState<Lenis | null>(null);
   const scrollLocked = useUIStore((s) => s.scrollLocked);
   const navOpen = useUIStore((s) => s.navOpen);
 
@@ -22,6 +24,7 @@ export function SmoothScrollProvider({
       touchMultiplier: 1.4,
     });
     lenisRef.current = lenis;
+    setLenisReady(lenis);
 
     let frame: number;
     const raf = (time: number) => {
@@ -34,6 +37,7 @@ export function SmoothScrollProvider({
       cancelAnimationFrame(frame);
       lenis.destroy();
       lenisRef.current = null;
+      setLenisReady(null);
     };
   }, []);
 
@@ -47,5 +51,9 @@ export function SmoothScrollProvider({
     }
   }, [scrollLocked, navOpen]);
 
-  return <>{children}</>;
+  return (
+    <ScrollContextProvider lenis={lenisReady}>
+      {children}
+    </ScrollContextProvider>
+  );
 }

@@ -61,6 +61,19 @@ export const TERMINAL_COMMANDS: TerminalCommand[] = [
       "  neural uplink --status",
       "  optimize infrastructure --auto",
       "  telemetry diagnostics --full",
+      "  query infrastructure --mesh",
+    ],
+  },
+  {
+    id: "infra",
+    input: "query infrastructure --mesh",
+    delayMs: 420,
+    lines: [
+      "› Resolving mesh topology…",
+      "› Transit nodes: 1,204 · energy hubs: 89",
+      "› Cross-sector latency p99: 14.2ms",
+      "› Autonomous corridors: 47 active",
+      "✓ Infrastructure mesh query complete",
     ],
   },
 ];

@@ -2,6 +2,7 @@
 @import "../styles/nexus-system.css";
 @import "../styles/hero-layout.css";
 @import "../styles/system-sections.css";
+@import "../styles/cinematic-polish.css";
 
 :root {
   --void: #030308;
@@ -35,6 +36,7 @@
 
 html {
   scroll-behavior: auto;
+  scroll-padding-top: 88px;
 }
 
 html.lenis,
@@ -61,6 +63,30 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(0, 240, 255, 0.28);
+  color: #f8fafc;
+  text-shadow: none;
+}
+
+::-moz-selection {
+  background: rgba(0, 240, 255, 0.28);
+  color: #f8fafc;
+  text-shadow: none;
+}
+
+.hero-title ::selection,
+.font-display ::selection {
+  background: rgba(0, 240, 255, 0.22);
+  color: #ffffff;
+}
+
+.text-nexus-lime ::selection,
+.text-nexus-cyan ::selection {
+  background: rgba(0, 240, 255, 0.32);
+  color: var(--void);
 }
 
 .vignette {

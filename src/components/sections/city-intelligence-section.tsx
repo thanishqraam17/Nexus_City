@@ -37,7 +37,7 @@ export function CityIntelligenceSection() {
   const motionReady = mounted && !reduceMotion;
 
   return (
-    <SectionShell id="intelligence" tone="cyan">
+    <SectionShell id="intelligence" tone="cyan" atmosphere="intelligence">
       <SectionHeading
         eyebrow="City Intelligence"
         title="Live Analytics"
