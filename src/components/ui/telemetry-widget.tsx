@@ -8,6 +8,8 @@ import { GlassPanel } from "./glass-panel";
 import { MicroLabel } from "./micro-label";
 import { cn } from "@/lib/utils";
 import { floatPulse } from "@/lib/motion/variants";
+import { staggerTelemetry } from "@/lib/motion/transitions";
+import { springInertia } from "@/lib/motion/transitions";
 import { useUIStore } from "@/store/ui-store";
 
 interface TelemetryWidgetProps {
@@ -48,6 +50,7 @@ export function TelemetryWidget({
   const reduceMotion = useHydratedReducedMotion();
   const telemetryLive = useUIStore((s) => s.telemetryLive);
   const isLive = mounted && live && telemetryLive;
+  const motionReady = mounted && !reduceMotion;
 
   const trendColor = {
     up: "text-nexus-lime",
@@ -57,13 +60,19 @@ export function TelemetryWidget({
 
   return (
     <motion.div
-      className={cn("w-full max-w-[200px]", className)}
+      className={cn("relative w-full max-w-[200px]", className)}
       variants={floatPulse}
-      initial="initial"
-      animate={mounted && !reduceMotion ? "animate" : undefined}
+      initial={false}
+      animate={motionReady ? "animate" : undefined}
       style={{ animationDelay: `${delay}s` }}
       transition={{ delay }}
     >
+      {isLive && (
+        <span
+          className="telemetry-pulse-ring pointer-events-none absolute -inset-1 rounded-sm border border-nexus-lime/30"
+          aria-hidden
+        />
+      )}
       <GlassPanel
         variant="telemetry"
         glow="lime"
@@ -78,9 +87,13 @@ export function TelemetryWidget({
           <motion.span
             key={value}
             className="font-display text-2xl font-semibold tracking-tight text-white"
-            initial={{ opacity: 0, filter: "blur(4px)" }}
-            animate={{ opacity: 1, filter: "blur(0px)" }}
-            transition={{ duration: 0.4 }}
+            initial={false}
+            animate={
+              motionReady
+                ? { opacity: [0.85, 1, 0.9, 1], filter: "blur(0px)" }
+                : false
+            }
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
           >
             {value}
           </motion.span>
@@ -89,7 +102,7 @@ export function TelemetryWidget({
           )}
         </div>
         <div className="mt-3 flex items-center gap-2">
-          <div className="h-px flex-1 bg-gradient-to-r from-nexus-lime/50 to-transparent" />
+          <div className="telemetry-heartbeat relative h-px flex-1 origin-left bg-gradient-to-r from-nexus-lime/50 to-transparent" />
           <span className={cn("font-mono text-[9px] uppercase tracking-widest", trendColor)}>
             {trend === "up" ? "▲" : trend === "down" ? "▼" : "—"} sync
           </span>
@@ -111,20 +124,29 @@ export function TelemetryBarWidget({
   className,
 }: TelemetryBarWidgetProps) {
   const mounted = useMounted();
+  const motionReady = mounted;
   const liveVal = useLiveValue(percentage, 4, true);
 
   return (
     <GlassPanel variant="hud" glow="cyan" className={cn("p-4", className)} cornerMarks>
       <MicroLabel accent="cyan">{label}</MicroLabel>
-      <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-white/5">
+      <div className="relative mt-3 h-1 w-full overflow-hidden rounded-full bg-white/5">
         <motion.div
           className="h-full rounded-full bg-gradient-to-r from-nexus-cyan/80 to-nexus-lime/80"
           initial={false}
-          animate={mounted ? { width: `${liveVal}%` } : false}
-          transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
+          animate={motionReady ? { width: `${liveVal}%` } : false}
+          transition={springInertia}
         />
+        {motionReady && (
+          <motion.div
+            className="absolute top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-nexus-lime shadow-[0_0_12px_rgba(212,255,0,0.8)]"
+            animate={{ opacity: [0.5, 1, 0.5], scale: [0.8, 1.2, 0.8] }}
+            transition={{ duration: 1.2, repeat: Infinity }}
+            style={{ left: `${liveVal}%` }}
+          />
+        )}
       </div>
-      <p className="mt-2 font-mono text-xs text-white/50">
+      <p className="mt-2 font-mono text-xs text-white/50 tabular-nums">
         {liveVal.toFixed(1)}%
       </p>
     </GlassPanel>
@@ -133,9 +155,17 @@ export function TelemetryBarWidget({
 
 export function TelemetryCluster({ className }: { className?: string }) {
   const activeSector = useUIStore((s) => s.activeSector);
+  const mounted = useMounted();
+  const reduceMotion = useHydratedReducedMotion();
+  const motionReady = mounted && !reduceMotion;
 
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
+    <motion.div
+      className={cn("flex flex-col gap-3", className)}
+      variants={staggerTelemetry()}
+      initial={false}
+      animate={motionReady ? "visible" : false}
+    >
       <TelemetryWidget
         label="Sector Load"
         value={activeSector}
@@ -158,6 +188,6 @@ export function TelemetryCluster({ className }: { className?: string }) {
         trend="down"
         delay={0.3}
       />
-    </div>
+    </motion.div>
   );
 }

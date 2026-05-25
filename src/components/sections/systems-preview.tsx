@@ -6,7 +6,8 @@ import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { MicroLabel } from "@/components/ui/micro-label";
 import { fadeUp, slideFromLeft } from "@/lib/motion/variants";
-import { staggerContainer } from "@/lib/motion/transitions";
+import { staggerCinematic } from "@/lib/motion/transitions";
+import { DepthParallax } from "@/components/atmosphere/depth-parallax";
 
 const systems = [
   {
@@ -37,12 +38,13 @@ export function SystemsPreview() {
   return (
     <section
       id="systems"
-      className="relative z-10 py-32 sm:py-40"
+      className="relative z-10 overflow-hidden py-32 sm:py-40"
     >
+      <div className="pointer-events-none absolute inset-0 atmo-section-glow opacity-40" aria-hidden />
       <div className="mx-auto max-w-[1800px] px-4 sm:px-8 lg:px-12">
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
+          <DepthParallax depth={0.5} className="lg:col-span-4 lg:sticky lg:top-32 lg:self-start">
           <motion.div
-            className="lg:col-span-4 lg:sticky lg:top-32 lg:self-start"
             variants={slideFromLeft}
             initial={false}
             whileInView={motionReady ? "visible" : undefined}
@@ -59,10 +61,12 @@ export function SystemsPreview() {
               millisecond reactivity.
             </p>
           </motion.div>
+          </DepthParallax>
 
+          <DepthParallax depth={0.9} className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6">
           <motion.div
-            className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6"
-            variants={staggerContainer(0.12, 0)}
+            className="flex flex-col gap-6"
+            variants={staggerCinematic(0.1, 0.15)}
             initial={false}
             whileInView={motionReady ? "visible" : undefined}
             viewport={{ once: true, amount: 0.2 }}
@@ -98,6 +102,7 @@ export function SystemsPreview() {
               </motion.div>
             ))}
           </motion.div>
+          </DepthParallax>
         </div>
       </div>
     </section>

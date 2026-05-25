@@ -1,7 +1,12 @@
 "use client";
 
+import { AtmosphereProvider } from "@/context/atmosphere-context";
 import { SmoothScrollProvider } from "./smooth-scroll-provider";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
-  return <SmoothScrollProvider>{children}</SmoothScrollProvider>;
+  return (
+    <SmoothScrollProvider>
+      <AtmosphereProvider>{children}</AtmosphereProvider>
+    </SmoothScrollProvider>
+  );
 }

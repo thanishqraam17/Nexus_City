@@ -99,6 +99,14 @@ body {
   filter: blur(40px);
 }
 
+.atmo-section-glow {
+  background: radial-gradient(
+    ellipse 70% 50% at 50% 0%,
+    rgba(0, 240, 255, 0.06) 0%,
+    transparent 60%
+  );
+}
+
 /* Telemetry scan aesthetic */
 @keyframes scan-pulse {
   0%,
@@ -116,6 +124,386 @@ body {
   }
   100% {
     transform: translate(56px, 56px);
+  }
+}
+
+/* ─── Cinematic atmosphere ─── */
+.atmo-fog-blob {
+  border-radius: 50%;
+  filter: blur(90px);
+  will-change: transform, opacity;
+}
+
+.atmo-fog-cyan {
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.16) 0%, transparent 68%);
+}
+
+.atmo-fog-lime {
+  background: radial-gradient(circle, rgba(212, 255, 0, 0.11) 0%, transparent 70%);
+}
+
+.atmo-fog-orange {
+  background: radial-gradient(circle, rgba(255, 107, 53, 0.09) 0%, transparent 72%);
+}
+
+.atmo-scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 240, 255, 0.04) 2px,
+    rgba(0, 240, 255, 0.04) 3px
+  );
+  animation: atmo-scan-drift 12s linear infinite;
+}
+
+.atmo-scanline-beam {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 255, 0, 0.35),
+    rgba(0, 240, 255, 0.25),
+    transparent
+  );
+  animation: atmo-beam-sweep 6s ease-in-out infinite;
+}
+
+.atmo-crt-flicker {
+  background: rgba(255, 255, 255, 0.02);
+  animation: atmo-crt-flicker 0.12s steps(2) infinite;
+}
+
+.atmo-light-sweep {
+  transform: rotate(-8deg);
+  filter: blur(1px);
+}
+
+.atmo-sweep-lime {
+  background: linear-gradient(90deg, transparent, rgba(212, 255, 0, 0.25), transparent);
+  box-shadow: 0 0 40px rgba(212, 255, 0, 0.15);
+}
+
+.atmo-sweep-cyan {
+  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.2), transparent);
+}
+
+.atmo-sweep-white {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+}
+
+.atmo-gradient-drift {
+  background: linear-gradient(
+    125deg,
+    transparent 0%,
+    rgba(0, 240, 255, 0.04) 25%,
+    transparent 50%,
+    rgba(212, 255, 0, 0.03) 75%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  animation: atmo-gradient-drift 16s ease-in-out infinite;
+}
+
+.atmo-data-stream {
+  animation: atmo-stream-up linear infinite;
+}
+
+.atmo-data-stream-reverse {
+  animation-name: atmo-stream-down;
+}
+
+.atmo-holo-text {
+  animation: atmo-holo-flicker-text 4s ease-in-out infinite;
+}
+
+.atmo-holo-flicker {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 240, 255, 0.03) 0%,
+    transparent 30%,
+    rgba(212, 255, 0, 0.02) 70%,
+    transparent 100%
+  );
+  animation: atmo-holo-pulse 3s steps(3) infinite;
+}
+
+.atmo-chromatic-edge {
+  box-shadow:
+    inset 2px 0 0 rgba(0, 240, 255, 0.04),
+    inset -2px 0 0 rgba(212, 255, 0, 0.03);
+  animation: atmo-chromatic-shift 8s ease-in-out infinite;
+}
+
+.atmo-distortion {
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    transparent 0deg,
+    rgba(255, 255, 255, 0.008) 2deg,
+    transparent 4deg
+  );
+  animation: atmo-distort-spin 40s linear infinite;
+}
+
+.atmo-reflection {
+  background: linear-gradient(
+    105deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    rgba(0, 240, 255, 0.06),
+    transparent
+  );
+  filter: blur(8px);
+  transform: skewX(-6deg);
+}
+
+.atmo-reflection-1 {
+  mix-blend-mode: screen;
+}
+
+.atmo-reflection-2 {
+  mix-blend-mode: plus-lighter;
+}
+
+.atmo-noise-drift {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  animation: atmo-noise-shift 1.2s steps(4) infinite;
+}
+
+.atmo-vignette-pulse {
+  background: radial-gradient(
+    ellipse 85% 75% at 50% 45%,
+    transparent 35%,
+    rgba(3, 3, 8, 0.5) 80%,
+    rgba(3, 3, 8, 0.92) 100%
+  );
+  animation: atmo-vignette-breathe 10s ease-in-out infinite;
+}
+
+.panel-breathe-lime::before,
+.panel-breathe-cyan::before,
+.panel-breathe-orange::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  animation: panel-glow-breathe 4s ease-in-out infinite;
+}
+
+.panel-breathe-lime::before {
+  box-shadow: 0 0 50px rgba(212, 255, 0, 0.12), inset 0 0 24px rgba(212, 255, 0, 0.04);
+}
+
+.panel-breathe-cyan::before {
+  box-shadow: 0 0 50px rgba(0, 240, 255, 0.14), inset 0 0 24px rgba(0, 240, 255, 0.05);
+  animation-delay: 1.2s;
+}
+
+.panel-breathe-orange::before {
+  box-shadow: 0 0 45px rgba(255, 107, 53, 0.1);
+  animation-delay: 2.4s;
+}
+
+.panel-holo-shimmer {
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.04) 50%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  animation: panel-shimmer 6s ease-in-out infinite;
+}
+
+.telemetry-pulse-ring {
+  animation: telemetry-ring-pulse 2.4s ease-out infinite;
+}
+
+.telemetry-heartbeat {
+  animation: telemetry-heartbeat 1.8s ease-in-out infinite;
+}
+
+@keyframes atmo-scan-drift {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(6px);
+  }
+}
+
+@keyframes atmo-beam-sweep {
+  0%,
+  100% {
+    top: 12%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.5;
+  }
+  50% {
+    top: 88%;
+    opacity: 0.35;
+  }
+}
+
+@keyframes atmo-crt-flicker {
+  0%,
+  100% {
+    opacity: 0.02;
+  }
+  50% {
+    opacity: 0.05;
+  }
+}
+
+@keyframes atmo-gradient-drift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes atmo-stream-up {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes atmo-stream-down {
+  0% {
+    transform: translateY(-50%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes atmo-holo-flicker-text {
+  0%,
+  92%,
+  100% {
+    opacity: 0.35;
+  }
+  93% {
+    opacity: 0.15;
+  }
+  94% {
+    opacity: 0.5;
+  }
+  95% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes atmo-holo-pulse {
+  0%,
+  100% {
+    opacity: 0.03;
+  }
+  50% {
+    opacity: 0.06;
+  }
+}
+
+@keyframes atmo-chromatic-shift {
+  0%,
+  100% {
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    filter: hue-rotate(8deg);
+  }
+}
+
+@keyframes atmo-distort-spin {
+  0% {
+    transform: rotate(0deg) scale(1.2);
+  }
+  100% {
+    transform: rotate(360deg) scale(1.2);
+  }
+}
+
+@keyframes atmo-noise-shift {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-2%, 1%);
+  }
+  50% {
+    transform: translate(1%, -1%);
+  }
+  75% {
+    transform: translate(-1%, 2%);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes atmo-vignette-breathe {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes panel-glow-breathe {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
+
+@keyframes panel-shimmer {
+  0%,
+  100% {
+    background-position: 200% 0;
+  }
+  50% {
+    background-position: -100% 0;
+  }
+}
+
+@keyframes telemetry-ring-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  70% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+@keyframes telemetry-heartbeat {
+  0%,
+  100% {
+    transform: scaleX(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scaleX(1.05);
+    opacity: 1;
   }
 }
 

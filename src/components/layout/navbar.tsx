@@ -8,7 +8,7 @@ import { useMounted } from "@/hooks/use-mounted";
 import { Menu, X, Radio } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navItem } from "@/lib/motion/variants";
-import { springSnappy } from "@/lib/motion/transitions";
+import { springHoverReact, springSnappy } from "@/lib/motion/transitions";
 import { MicroLabel } from "@/components/ui/micro-label";
 import { useUIStore } from "@/store/ui-store";
 
@@ -79,7 +79,7 @@ export function Navbar() {
             <motion.div
               className="relative flex h-10 w-10 items-center justify-center border border-nexus-lime/30 bg-black/50"
               whileHover={{ scale: 1.05, borderColor: "rgba(212,255,0,0.6)" }}
-              transition={springSnappy}
+              transition={springHoverReact}
             >
               <span className="font-display text-sm font-bold text-nexus-lime">NX</span>
               <span className="absolute -inset-px bg-nexus-lime/20 blur-md opacity-0 transition-opacity group-hover:opacity-100" />
@@ -126,7 +126,7 @@ export function Navbar() {
                 className="relative overflow-hidden border border-nexus-lime/40 bg-nexus-lime/10 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.25em] text-nexus-lime"
                 whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(212,255,0,0.25)" }}
                 whileTap={{ scale: 0.98 }}
-                transition={springSnappy}
+                transition={springHoverReact}
               >
                 Initialize
               </motion.a>

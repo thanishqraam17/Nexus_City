@@ -1,9 +1,11 @@
 "use client";
 
 import { motion, type HTMLMotionProps } from "framer-motion";
+import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
 import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
 import { panelReveal } from "@/lib/motion/variants";
+import { springHoverReact, springInertia } from "@/lib/motion/transitions";
 
 type GlassVariant = "default" | "hud" | "telemetry" | "command";
 type GlassGlow = "none" | "lime" | "cyan" | "orange";
@@ -15,6 +17,7 @@ interface GlassPanelProps extends Omit<HTMLMotionProps<"div">, "animate"> {
   glow?: GlassGlow;
   cornerMarks?: boolean;
   revealOnView?: boolean;
+  interactive?: boolean;
 }
 
 const variantStyles: Record<GlassVariant, string> = {
@@ -34,6 +37,13 @@ const glowStyles: Record<GlassGlow, string> = {
   orange: "shadow-[0_0_50px_rgba(255,107,53,0.08)]",
 };
 
+const breatheClass: Record<GlassGlow, string> = {
+  none: "",
+  lime: "panel-breathe-lime",
+  cyan: "panel-breathe-cyan",
+  orange: "panel-breathe-orange",
+};
+
 export function GlassPanel({
   children,
   className,
@@ -41,10 +51,13 @@ export function GlassPanel({
   glow = "none",
   cornerMarks = false,
   revealOnView = true,
+  interactive = true,
   ...props
 }: GlassPanelProps) {
   const mounted = useMounted();
+  const reduceMotion = useHydratedReducedMotion();
   const shouldReveal = revealOnView && mounted;
+  const motionReady = mounted && !reduceMotion && interactive;
 
   return (
     <motion.div
@@ -52,30 +65,41 @@ export function GlassPanel({
       initial={false}
       whileInView={shouldReveal ? "visible" : undefined}
       viewport={{ once: true, amount: 0.2 }}
+      whileHover={
+        motionReady
+          ? {
+              y: -3,
+              scale: 1.008,
+              transition: springHoverReact,
+            }
+          : undefined
+      }
+      transition={springInertia}
       className={cn(
-        "relative overflow-hidden rounded-sm border",
+        "group/panel relative overflow-hidden rounded-sm border",
         variantStyles[variant],
         glowStyles[glow],
+        glow !== "none" && breatheClass[glow],
         className
       )}
       {...props}
     >
-      {cornerMarks && (
+      {motionReady && (
         <>
-          <span className="absolute left-0 top-0 h-3 w-3 border-l border-t border-nexus-lime/50" />
-          <span className="absolute right-0 top-0 h-3 w-3 border-r border-t border-nexus-lime/50" />
-          <span className="absolute bottom-0 left-0 h-3 w-3 border-b border-l border-nexus-lime/50" />
-          <span className="absolute bottom-0 right-0 h-3 w-3 border-b border-r border-nexus-lime/50" />
+          <div className="panel-holo-shimmer pointer-events-none absolute inset-0 z-0" />
+          <div className="atmo-holo-flicker pointer-events-none absolute inset-0 z-0 opacity-[0.02]" />
         </>
       )}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.5) 2px, rgba(255,255,255,0.5) 3px)",
-        }}
-      />
-      {children}
+      {cornerMarks && (
+        <>
+          <span className="absolute left-0 top-0 z-10 h-3 w-3 border-l border-t border-nexus-lime/50 transition-colors duration-500 group-hover/panel:border-nexus-lime" />
+          <span className="absolute right-0 top-0 z-10 h-3 w-3 border-r border-t border-nexus-lime/50 transition-colors duration-500 group-hover/panel:border-nexus-lime" />
+          <span className="absolute bottom-0 left-0 z-10 h-3 w-3 border-b border-l border-nexus-lime/50 transition-colors duration-500 group-hover/panel:border-nexus-lime" />
+          <span className="absolute bottom-0 right-0 z-10 h-3 w-3 border-b border-r border-nexus-lime/50 transition-colors duration-500 group-hover/panel:border-nexus-lime" />
+        </>
+      )}
+      <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.03] bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(255,255,255,0.5)_2px,rgba(255,255,255,0.5)_3px)]" />
+      <div className="relative z-[1]">{children}</div>
     </motion.div>
   );
 }

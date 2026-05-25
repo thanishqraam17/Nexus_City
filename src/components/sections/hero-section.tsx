@@ -10,14 +10,15 @@ import { MicroLabel } from "@/components/ui/micro-label";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { TelemetryCluster } from "@/components/ui/telemetry-widget";
 import { heroTitle, fadeUp, lineDraw } from "@/lib/motion/variants";
-import { staggerContainer } from "@/lib/motion/transitions";
-import { useParallaxMouse } from "@/lib/motion/hooks";
+import { staggerCinematic } from "@/lib/motion/transitions";
+import { useLayeredParallax } from "@/lib/motion/hooks";
+import { DepthParallax } from "@/components/atmosphere/depth-parallax";
 
 export function HeroSection() {
   const mounted = useMounted();
   const reduceMotion = useHydratedReducedMotion();
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const { x, y } = useParallaxMouse(0.02);
+  const { x, y } = useLayeredParallax(0.6);
   const motionReady = mounted && !reduceMotion;
 
   useEffect(() => {
@@ -53,7 +54,7 @@ export function HeroSection() {
       >
         <div className="lg:col-span-8 lg:col-start-1">
           <motion.div
-            variants={staggerContainer(0.1, 0.2)}
+            variants={staggerCinematic(0.09, 0.25)}
             initial={false}
             animate={motionReady ? "visible" : false}
             className="space-y-6"
@@ -184,21 +185,22 @@ export function HeroSection() {
         </div>
 
         <div className="relative lg:col-span-4 lg:col-start-9">
-          <motion.div
-            className="lg:absolute lg:right-0 lg:top-8"
-            initial={false}
-            animate={
-              motionReady
-                ? { opacity: 1, x: 0, filter: "blur(0px)" }
-                : false
-            }
-            transition={{ delay: 0.8, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="mb-4 flex justify-end">
-              <MicroLabel accent="orange">Live Telemetry</MicroLabel>
-            </div>
-            <TelemetryCluster className="lg:items-end" />
-          </motion.div>
+          <DepthParallax depth={1.4} className="lg:absolute lg:right-0 lg:top-8">
+            <motion.div
+              initial={false}
+              animate={
+                motionReady
+                  ? { opacity: 1, filter: "blur(0px)" }
+                  : false
+              }
+              transition={{ delay: 0.8, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="mb-4 flex justify-end">
+                <MicroLabel accent="orange">Live Telemetry</MicroLabel>
+              </div>
+              <TelemetryCluster className="lg:items-end" />
+            </motion.div>
+          </DepthParallax>
 
           <motion.div
             className="mt-8 hidden lg:block lg:absolute lg:-left-32 lg:bottom-32"
