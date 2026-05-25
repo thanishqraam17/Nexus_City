@@ -26,6 +26,14 @@ export const SPARKLINE_PATHS = {
   12: buildPath(12),
   13: buildPath(13),
   14: buildPath(14),
+  20: buildPath(20),
+  21: buildPath(21),
+  22: buildPath(22),
+  23: buildPath(23),
+  24: buildPath(24),
+  25: buildPath(25),
+  26: buildPath(26),
+  27: buildPath(27),
 } as const;
 
 export type SparklineSeed = keyof typeof SPARKLINE_PATHS;

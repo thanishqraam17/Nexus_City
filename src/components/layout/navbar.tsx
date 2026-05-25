@@ -15,8 +15,9 @@ import { useUIStore } from "@/store/ui-store";
 
 const navLinks = [
   { href: "#command", label: "Command" },
-  { href: "#systems", label: "Systems" },
-  { href: "#telemetry", label: "Telemetry" },
+  { href: "#intelligence", label: "Intelligence" },
+  { href: "#neural-map", label: "Neural Map" },
+  { href: "#terminal", label: "Terminal" },
   { href: "#access", label: "Access" },
 ];
 

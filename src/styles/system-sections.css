@@ -1,0 +1,175 @@
+/* NEXUS OS — section system */
+
+.os-section-glow--lime {
+  background: radial-gradient(
+    ellipse 55% 40% at 70% 30%,
+    rgba(212, 255, 0, 0.05) 0%,
+    transparent 65%
+  );
+}
+
+.os-section-glow--cyan {
+  background: radial-gradient(
+    ellipse 50% 45% at 30% 25%,
+    rgba(0, 240, 255, 0.06) 0%,
+    transparent 68%
+  );
+}
+
+.os-section-glow--neutral {
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 0%,
+    rgba(255, 255, 255, 0.02) 0%,
+    transparent 60%
+  );
+}
+
+.os-section-bridge-gradient {
+  position: absolute;
+  inset: 0;
+}
+
+.os-section-bridge--void-cyan {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 240, 255, 0.03) 50%,
+    transparent 100%
+  );
+}
+
+.os-section-bridge--cyan-lime {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(212, 255, 0, 0.03) 50%,
+    transparent 100%
+  );
+}
+
+.os-section-bridge--lime-void {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(3, 3, 8, 0.4) 100%
+  );
+}
+
+.os-cursor-glow {
+  transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    top 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: left, top;
+}
+
+.os-glow-container--interactive {
+  transition: box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.os-glow-container--interactive:hover {
+  box-shadow: 0 0 48px rgba(0, 240, 255, 0.06);
+}
+
+.os-glow-container--lime.os-glow-container--interactive:hover {
+  box-shadow: 0 0 52px rgba(212, 255, 0, 0.08);
+}
+
+/* Traffic flow */
+.traffic-flow-map {
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.traffic-flow-bar-fill {
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: left center;
+}
+
+/* Neural map */
+.neural-map-viewport {
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 50%,
+    rgba(0, 240, 255, 0.04) 0%,
+    transparent 70%
+  );
+}
+
+.neural-map-fallback {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(212, 255, 0, 0.06) 0%,
+    transparent 55%
+  );
+}
+
+.neural-sector-label {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(0, 240, 255, 0.65);
+  padding: 2px 6px;
+  background: rgba(3, 3, 8, 0.75);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  white-space: nowrap;
+}
+
+.neural-sector-label--active {
+  color: rgba(212, 255, 0, 0.9);
+  border-color: rgba(212, 255, 0, 0.35);
+}
+
+.neural-sector-btn {
+  padding: 0.35rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(3, 3, 8, 0.6);
+  border-radius: 1px;
+}
+
+.neural-sector-btn:hover {
+  border-color: rgba(212, 255, 0, 0.25);
+}
+
+/* Terminal */
+.os-terminal {
+  background: rgba(3, 3, 8, 0.65);
+}
+
+.os-terminal-body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 255, 0, 0.2) transparent;
+}
+
+.os-terminal-chip {
+  padding: 0.4rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(3, 3, 8, 0.5);
+  border-radius: 1px;
+}
+
+@media (max-width: 640px) {
+  .os-section {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  .neural-map-viewport {
+    min-height: 300px !important;
+  }
+
+  .os-terminal-body {
+    max-height: 260px;
+    min-height: 200px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .os-cursor-glow {
+    display: none;
+  }
+
+  .traffic-flow-bar-fill {
+    transition: none;
+  }
+}
