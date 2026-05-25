@@ -1,1 +1,1 @@
-export { HeroHologram } from "./hero-hologram";
+export { HeroHologram, HeroCoreAdjacent } from "./hero-hologram";

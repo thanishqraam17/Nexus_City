@@ -6,9 +6,10 @@ import * as THREE from "three";
 import { NEXUS } from "./colors";
 
 const RINGS = [
-  { radius: 1.55, speed: 0.9, color: NEXUS.cyan, y: 0.05 },
-  { radius: 2.05, speed: 0.7, color: NEXUS.lime, y: -0.1 },
-  { radius: 2.55, speed: 0.5, color: NEXUS.cyan, y: 0.12 },
+  { radius: 1.45, speed: 0.9, color: NEXUS.cyan, y: 0.05, tilt: 0.12 },
+  { radius: 1.85, speed: 0.7, color: NEXUS.lime, y: -0.08, tilt: -0.08 },
+  { radius: 2.25, speed: 0.55, color: NEXUS.cyan, y: 0.1, tilt: 0.05 },
+  { radius: 2.65, speed: 0.42, color: NEXUS.lime, y: -0.12, tilt: 0.15 },
 ];
 
 export function PulseRings() {
@@ -27,7 +28,7 @@ export function PulseRings() {
   });
 
   return (
-    <group rotation={[-Math.PI / 2, 0, 0]}>
+    <group>
       {RINGS.map((ring, i) => (
         <mesh
           key={ring.radius}
@@ -35,6 +36,7 @@ export function PulseRings() {
             if (el) refs.current[i] = el;
           }}
           position={[0, ring.y, 0]}
+          rotation={[-Math.PI / 2 + ring.tilt, 0, 0]}
         >
           <torusGeometry args={[ring.radius, 0.008, 8, 96]} />
           <meshBasicMaterial

@@ -5,24 +5,32 @@ import { NEXUS } from "./colors";
 export function SceneLights() {
   return (
     <>
-      <ambientLight intensity={0.15} />
+      <ambientLight intensity={0.22} color="#b8c4d4" />
+      <hemisphereLight
+        args={["#1a2030", NEXUS.void, 0.35]}
+        position={[0, 12, 0]}
+      />
       <directionalLight
-        position={[4, 6, 4]}
-        intensity={0.35}
+        position={[5, 8, 4]}
+        intensity={0.28}
         color={NEXUS.cyan}
       />
       <directionalLight
-        position={[-5, 2, -3]}
-        intensity={0.2}
+        position={[-4, 3, -2]}
+        intensity={0.18}
         color={NEXUS.lime}
       />
-      <spotLight
-        position={[0, 8, 2]}
-        angle={0.45}
-        penumbra={0.8}
-        intensity={0.6}
-        color="#ffffff"
-        castShadow={false}
+      <pointLight
+        position={[0.5, 0.4, 0]}
+        intensity={3}
+        color={NEXUS.lime}
+        distance={8}
+      />
+      <pointLight
+        position={[0.6, 1.2, -0.5]}
+        intensity={2}
+        color={NEXUS.cyan}
+        distance={7}
       />
     </>
   );

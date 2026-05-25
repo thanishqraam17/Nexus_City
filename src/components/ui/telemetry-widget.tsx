@@ -79,6 +79,7 @@ export function TelemetryWidget({
         cornerMarks
         className="p-4"
         revealOnView
+        coreGlow
       >
         <MicroLabel accent="lime" pulse={isLive}>
           {label}
@@ -128,7 +129,13 @@ export function TelemetryBarWidget({
   const liveVal = useLiveValue(percentage, 4, true);
 
   return (
-    <GlassPanel variant="hud" glow="cyan" className={cn("p-4", className)} cornerMarks>
+    <GlassPanel
+      variant="hud"
+      glow="cyan"
+      className={cn("p-4", className)}
+      cornerMarks
+      coreGlow
+    >
       <MicroLabel accent="cyan">{label}</MicroLabel>
       <div className="relative mt-3 h-1 w-full overflow-hidden rounded-full bg-white/5">
         <motion.div

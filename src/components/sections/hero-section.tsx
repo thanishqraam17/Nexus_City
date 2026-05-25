@@ -6,7 +6,10 @@ import gsap from "gsap";
 import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
 import { useMounted } from "@/hooks/use-mounted";
 import { ArrowUpRight, ChevronRight } from "lucide-react";
-import { HeroHologram } from "@/components/hero-core/hero-hologram";
+import {
+  HeroHologram,
+  HeroCoreAdjacent,
+} from "@/components/hero-core/hero-hologram";
 import { MicroLabel } from "@/components/ui/micro-label";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { TelemetryCluster } from "@/components/ui/telemetry-widget";
@@ -19,7 +22,7 @@ export function HeroSection() {
   const mounted = useMounted();
   const reduceMotion = useHydratedReducedMotion();
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const { x, y } = useLayeredParallax(0.35);
+  const { x, y } = useLayeredParallax(0.28);
   const motionReady = mounted && !reduceMotion;
 
   useEffect(() => {
@@ -49,13 +52,13 @@ export function HeroSection() {
       id="command"
       className="relative min-h-[100dvh] overflow-hidden pt-28 pb-20 sm:pt-32 lg:pb-28"
     >
-      <HeroHologram className="top-[12%] sm:top-[10%] lg:top-[8%]" />
+      <HeroHologram />
 
       <motion.div
-        className="relative z-10 mx-auto grid max-w-[1800px] grid-cols-1 gap-12 px-4 sm:px-8 lg:grid-cols-12 lg:gap-6 lg:px-12"
+        className="relative z-20 mx-auto grid max-w-[1800px] grid-cols-1 gap-10 px-4 sm:px-8 lg:grid-cols-12 lg:items-start lg:gap-0 lg:px-12"
         style={motionReady ? { x, y } : undefined}
       >
-        <div className="relative z-10 lg:col-span-5 lg:col-start-1">
+        <HeroCoreAdjacent className="relative z-20 lg:col-span-5 lg:col-start-1 lg:-mr-16 xl:-mr-28">
           <motion.div
             variants={staggerCinematic(0.09, 0.25)}
             initial={false}
@@ -77,7 +80,7 @@ export function HeroSection() {
               />
               <h1
                 ref={titleRef}
-                className="font-display font-extralight leading-[0.85] tracking-[-0.04em] text-white"
+                className="font-display font-extralight leading-[0.85] tracking-[-0.04em] text-white mix-blend-normal"
                 style={{ perspective: "800px" }}
               >
                 <span className="block overflow-hidden">
@@ -89,7 +92,7 @@ export function HeroSection() {
                         variants={heroTitle}
                         initial={false}
                         animate={motionReady ? "visible" : false}
-                        className="hero-char inline-block text-[clamp(3rem,11vw,9rem)]"
+                        className="hero-char inline-block text-[clamp(3rem,11vw,9.5rem)]"
                       >
                         {char}
                       </motion.span>
@@ -105,7 +108,7 @@ export function HeroSection() {
                         variants={heroTitle}
                         initial={false}
                         animate={motionReady ? "visible" : false}
-                        className="hero-char inline-block text-[clamp(3rem,11vw,9rem)] text-shadow-nexus-lime"
+                        className="hero-char inline-block text-[clamp(3rem,11vw,9.5rem)] text-shadow-nexus-lime"
                       >
                         {char}
                       </motion.span>
@@ -117,7 +120,7 @@ export function HeroSection() {
 
             <motion.p
               variants={fadeUp}
-              className="max-w-md text-base leading-relaxed text-white/45 sm:text-lg"
+              className="max-w-md text-base leading-relaxed text-white/50 sm:text-lg"
             >
               The neural command layer for tomorrow&apos;s metropolis. Real-time
               telemetry, autonomous infrastructure, and cinematic control at
@@ -130,7 +133,7 @@ export function HeroSection() {
             >
               <motion.a
                 href="#access"
-                className="group relative flex items-center gap-3 overflow-hidden bg-nexus-lime px-8 py-4 font-mono text-[11px] uppercase tracking-[0.3em] text-void"
+                className="group relative z-20 flex items-center gap-3 overflow-hidden bg-nexus-lime px-8 py-4 font-mono text-[11px] uppercase tracking-[0.3em] text-void"
                 whileHover={{
                   scale: 1.02,
                   boxShadow: "0 0 50px rgba(212, 255, 0, 0.4)",
@@ -145,7 +148,7 @@ export function HeroSection() {
               </motion.a>
               <motion.a
                 href="#systems"
-                className="flex items-center gap-2 border border-white/15 px-6 py-4 font-mono text-[11px] uppercase tracking-[0.25em] text-white/60 transition-colors hover:border-nexus-cyan/40 hover:text-white"
+                className="relative z-20 flex items-center gap-2 border border-white/15 bg-void/40 px-6 py-4 font-mono text-[11px] uppercase tracking-[0.25em] text-white/60 backdrop-blur-sm transition-colors hover:border-nexus-cyan/40 hover:text-white"
                 whileHover={{ x: 4 }}
               >
                 View Systems
@@ -155,7 +158,7 @@ export function HeroSection() {
           </motion.div>
 
           <motion.div
-            className="relative z-10 mt-12 grid grid-cols-2 gap-3 sm:mt-16 lg:mt-20 lg:max-w-md"
+            className="relative z-20 mt-12 grid grid-cols-2 gap-3 sm:mt-16 lg:mt-20 lg:max-w-md"
             initial={false}
             animate={motionReady ? { opacity: 1, y: 0 } : false}
             transition={{ delay: 1.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
@@ -171,6 +174,7 @@ export function HeroSection() {
                 variant="hud"
                 className="p-4"
                 glow="cyan"
+                coreGlow
               >
                 <p className="font-display text-xl text-white sm:text-2xl">
                   {item.stat}
@@ -181,12 +185,13 @@ export function HeroSection() {
               </GlassPanel>
             ))}
           </motion.div>
-        </div>
+        </HeroCoreAdjacent>
 
-        <div className="hidden lg:col-span-2 lg:block" aria-hidden />
-
-        <div className="relative z-10 lg:col-span-4 lg:col-start-9">
-          <DepthParallax depth={1.2} className="lg:pt-4">
+        <DepthParallax
+          depth={1.15}
+          className="relative z-20 mt-4 lg:col-span-4 lg:col-start-9 lg:mt-0 lg:-ml-20 xl:-ml-32"
+        >
+          <HeroCoreAdjacent className="lg:pl-8">
             <motion.div
               initial={false}
               animate={
@@ -201,12 +206,12 @@ export function HeroSection() {
               </div>
               <TelemetryCluster className="lg:items-end" />
             </motion.div>
-          </DepthParallax>
-        </div>
+          </HeroCoreAdjacent>
+        </DepthParallax>
       </motion.div>
 
       <motion.div
-        className="pointer-events-none absolute bottom-8 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 sm:flex"
+        className="pointer-events-none absolute bottom-8 left-1/2 z-20 hidden -translate-x-1/2 flex-col items-center gap-2 sm:flex"
         initial={false}
         animate={motionReady ? { opacity: 1 } : false}
         transition={{ delay: 2 }}
@@ -222,7 +227,7 @@ export function HeroSection() {
       </motion.div>
 
       <div
-        className="pointer-events-none absolute right-0 top-1/3 z-10 hidden h-[40vh] w-px bg-gradient-to-b from-transparent via-nexus-cyan/30 to-transparent lg:block"
+        className="pointer-events-none absolute right-0 top-1/3 z-20 hidden h-[40vh] w-px bg-gradient-to-b from-transparent via-nexus-cyan/30 to-transparent lg:block"
         aria-hidden
       />
     </section>

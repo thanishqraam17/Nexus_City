@@ -6,35 +6,49 @@ import { cn } from "@/lib/utils";
 
 const HeroCoreCanvas = dynamic(() => import("./hero-core-canvas"), {
   ssr: false,
-  loading: () => <HeroHologramFallback />,
+  loading: () => <HeroCoreFallback />,
 });
 
-function HeroHologramFallback() {
+function HeroCoreFallback() {
   return (
-    <div className="hero-hologram-fallback absolute inset-0" aria-hidden>
-      <div className="hero-hologram-fallback-core" />
-      <div className="hero-hologram-fallback-ring hero-hologram-fallback-ring-1" />
-      <div className="hero-hologram-fallback-ring hero-hologram-fallback-ring-2" />
+    <div className="hero-core-fallback" aria-hidden>
+      <div className="hero-core-fallback-orb" />
+      <div className="hero-core-fallback-ring hero-core-fallback-ring-a" />
+      <div className="hero-core-fallback-ring hero-core-fallback-ring-b" />
+      <div className="hero-core-fallback-ring hero-core-fallback-ring-c" />
     </div>
   );
 }
 
-export function HeroHologram({ className }: { className?: string }) {
+export function HeroHologram() {
   const ready = useAtmosphereReady();
 
   return (
-    <div
-      className={cn(
-        "pointer-events-none absolute left-1/2 z-[6] w-full max-w-[920px] -translate-x-1/2",
-        className
-      )}
-      aria-hidden
-    >
-      <div className="hero-hologram-vignette relative aspect-[4/3] w-full sm:aspect-[16/11] lg:aspect-[16/10]">
-        {ready ? <HeroCoreCanvas /> : <HeroHologramFallback />}
-        <div className="hero-hologram-mask absolute inset-0" />
-        <div className="hero-hologram-glow absolute inset-0" />
+    <div className="hero-core-field" aria-hidden>
+      <div className="hero-core-atmo-sync" />
+      <div className="hero-core-bleed hero-core-bleed-lime" />
+      <div className="hero-core-bleed hero-core-bleed-cyan" />
+
+      <div className="hero-core-canvas-wrap">
+        {ready ? <HeroCoreCanvas /> : <HeroCoreFallback />}
       </div>
+
+      <div className="hero-core-feather" />
+      <div className="hero-core-depth-fade hero-core-depth-fade-left" />
+      <div className="hero-core-depth-fade hero-core-depth-fade-right" />
+      <div className="hero-core-depth-fade hero-core-depth-fade-bottom" />
+      <div className="hero-core-chromatic" />
     </div>
   );
+}
+
+/** Wraps hero UI that should pick up core environmental light */
+export function HeroCoreAdjacent({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return <div className={cn("hero-core-adjacent", className)}>{children}</div>;
 }

@@ -7,17 +7,19 @@ import { NeuralCoreScene } from "./neural-core-scene";
 export default function HeroCoreCanvas() {
   return (
     <Canvas
-      className="h-full w-full"
-      dpr={[1, 1.75]}
-      camera={{ position: [0, 2.2, 7.8], fov: 42, near: 0.1, far: 40 }}
+      className="h-full w-full touch-none"
+      dpr={[1, 1.5]}
+      camera={{ position: [0.8, 2.1, 8.2], fov: 44, near: 0.1, far: 36 }}
       gl={{
         alpha: true,
         antialias: true,
         powerPreference: "high-performance",
         stencil: false,
+        premultipliedAlpha: true,
       }}
-      performance={{ min: 0.5 }}
+      performance={{ min: 0.55 }}
       style={{ background: "transparent" }}
+      frameloop="always"
     >
       <Suspense fallback={null}>
         <NeuralCoreScene />

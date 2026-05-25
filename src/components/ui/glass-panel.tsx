@@ -18,6 +18,8 @@ interface GlassPanelProps extends Omit<HTMLMotionProps<"div">, "animate"> {
   cornerMarks?: boolean;
   revealOnView?: boolean;
   interactive?: boolean;
+  /** Picks up environmental light from the hero neural core */
+  coreGlow?: boolean;
 }
 
 const variantStyles: Record<GlassVariant, string> = {
@@ -52,6 +54,7 @@ export function GlassPanel({
   cornerMarks = false,
   revealOnView = true,
   interactive = true,
+  coreGlow = false,
   ...props
 }: GlassPanelProps) {
   const mounted = useMounted();
@@ -80,6 +83,7 @@ export function GlassPanel({
         variantStyles[variant],
         glowStyles[glow],
         glow !== "none" && breatheClass[glow],
+        coreGlow && "hero-panel-core-light",
         className
       )}
       {...props}
