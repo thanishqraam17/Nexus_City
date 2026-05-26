@@ -10,6 +10,7 @@ import { SectionBridge } from "@/components/system/section-bridge";
 import { CinematicCursor } from "@/components/cinematic/cinematic-cursor";
 import { SystemBoot } from "@/components/cinematic/system-boot";
 import { ScrollEnvironment } from "@/components/cinematic/scroll-environment";
+import { GlobalAmbient } from "@/components/cinematic/global-ambient";
 import { AmbientPulse } from "@/components/cinematic/ambient-pulse";
 import { Navbar } from "@/components/layout/navbar";
 import { HeroSection } from "@/components/sections/hero-section";
@@ -25,6 +26,7 @@ export function LandingPage() {
       <AnimatedGrid />
       <EnvironmentalDetail />
       <AtmosphericGlow />
+      <GlobalAmbient />
       <CinematicAtmosphere />
       <MidDepthField />
       <ScrollEnvironment />
@@ -33,30 +35,38 @@ export function LandingPage() {
       <SystemBoot />
       <Navbar />
       <main className="relative z-10">
-        <HeroSection />
+        <div data-os-layer="overview">
+          <HeroSection />
+        </div>
 
         <SectionBridge from="void" to="cyan" label="Descent · Layer 01" />
-        <ScrollCinematicSection atmosphere="intelligence" depth={1}>
+        <ScrollCinematicSection atmosphere="intelligence" depth={1} osLayer="intelligence">
           <CityIntelligenceSection />
         </ScrollCinematicSection>
 
         <SectionBridge from="cyan" to="lime" label="Neural interface" />
-        <ScrollCinematicSection atmosphere="neural" depth={2} className="overflow-visible">
+        <ScrollCinematicSection
+          atmosphere="neural"
+          depth={2}
+          softMotion
+          osLayer="neural"
+          className="overflow-visible"
+        >
           <NeuralNetworkSection />
         </ScrollCinematicSection>
 
         <SectionBridge from="lime" to="void" label="Systems mesh" />
-        <ScrollCinematicSection atmosphere="systems" depth={3}>
+        <ScrollCinematicSection atmosphere="systems" depth={3} osLayer="systems">
           <SystemsPreview />
         </ScrollCinematicSection>
 
         <SectionBridge from="void" to="lime" label="Command uplink" />
-        <ScrollCinematicSection atmosphere="terminal" depth={4}>
+        <ScrollCinematicSection atmosphere="terminal" depth={4} osLayer="terminal">
           <TerminalSection />
         </ScrollCinematicSection>
 
         <SectionBridge from="lime" to="void" label="Access gateway" />
-        <ScrollCinematicSection atmosphere="access" depth={5}>
+        <ScrollCinematicSection atmosphere="access" depth={5} osLayer="access">
           <AccessSection />
         </ScrollCinematicSection>
       </main>

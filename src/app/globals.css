@@ -3,6 +3,7 @@
 @import "../styles/hero-layout.css";
 @import "../styles/system-sections.css";
 @import "../styles/cinematic-polish.css";
+@import "../styles/product-finish.css";
 
 :root {
   --void: #030308;

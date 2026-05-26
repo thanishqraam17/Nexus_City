@@ -1,0 +1,362 @@
+/* ─── Global cinematic ambient ─── */
+.global-ambient-pulse {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 90% 70% at 50% 40%,
+    rgba(0, 240, 255, 0.04) 0%,
+    transparent 55%
+  );
+  animation: global-breathe 8s ease-in-out infinite;
+}
+
+.global-ambient-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(212, 255, 0, 0.02) 0%,
+    transparent 35%,
+    transparent 65%,
+    rgba(0, 240, 255, 0.025) 100%
+  );
+  animation: global-drift 24s ease-in-out infinite alternate;
+}
+
+.global-ambient-scan {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(255, 255, 255, 0.008) 3px,
+    rgba(255, 255, 255, 0.008) 4px
+  );
+  animation: global-scan-drift 18s linear infinite;
+}
+
+.global-ambient-bloom {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(
+    circle at 30% 20%,
+    rgba(212, 255, 0, 0.03) 0%,
+    transparent 40%
+  );
+  animation: global-bloom-shift 14s ease-in-out infinite alternate;
+}
+
+@keyframes global-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes global-drift {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-2%);
+  }
+}
+
+@keyframes global-scan-drift {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(48px);
+  }
+}
+
+@keyframes global-bloom-shift {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(3%, 2%);
+  }
+}
+
+/* ─── OS layer identity (scroll wrappers) ─── */
+[data-os-layer="overview"] {
+  --layer-accent: rgba(212, 255, 0, 0.06);
+  --layer-glow: rgba(0, 240, 255, 0.05);
+}
+
+[data-os-layer="intelligence"] {
+  --layer-accent: rgba(0, 240, 255, 0.08);
+  --layer-glow: rgba(0, 240, 255, 0.04);
+}
+
+[data-os-layer="neural"] {
+  --layer-accent: rgba(212, 255, 0, 0.04);
+  --layer-glow: transparent;
+}
+
+[data-os-layer="neural"]::before {
+  opacity: 0.35;
+}
+
+[data-os-layer="systems"] {
+  --layer-accent: rgba(255, 255, 255, 0.04);
+  --layer-glow: rgba(0, 240, 255, 0.03);
+}
+
+[data-os-layer="terminal"] {
+  --layer-accent: rgba(212, 255, 0, 0.06);
+  --layer-glow: rgba(212, 255, 0, 0.04);
+}
+
+[data-os-layer="access"] {
+  --layer-accent: rgba(212, 255, 0, 0.09);
+  --layer-glow: rgba(212, 255, 0, 0.06);
+}
+
+.scroll-cinematic-wrap[data-os-layer]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 30%,
+    var(--layer-glow) 0%,
+    transparent 65%
+  );
+  opacity: 0.9;
+}
+
+#command,
+#overview {
+  --layer-accent: rgba(212, 255, 0, 0.06);
+}
+
+/* Section microdetails */
+.os-section .os-section-inner {
+  position: relative;
+}
+
+.os-section--intelligence .nexus-panel-base::after,
+.os-section--terminal .nexus-panel-base::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.01) 2px,
+    rgba(255, 255, 255, 0.01) 3px
+  );
+  animation: micro-shimmer 12s linear infinite;
+}
+
+@keyframes micro-shimmer {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(8px);
+  }
+}
+
+/* ─── Access cinematic ending ─── */
+.access-ending {
+  position: relative;
+  overflow: visible;
+}
+
+.access-ending__atmosphere {
+  position: absolute;
+  inset: -20% -10%;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 50%,
+    rgba(212, 255, 0, 0.08) 0%,
+    rgba(0, 240, 255, 0.03) 40%,
+    transparent 70%
+  );
+  animation: access-glow-pulse 6s ease-in-out infinite;
+}
+
+.access-ending__scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.access-ending__scan::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  top: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 255, 0, 0.4),
+    rgba(0, 240, 255, 0.3),
+    transparent
+  );
+  animation: access-scan 7s linear infinite;
+  opacity: 0.5;
+}
+
+.access-ending__activation {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.access-ending__activation span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--nexus-lime);
+  animation: access-dot 1.2s ease-in-out infinite;
+}
+
+.access-ending__activation span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.access-ending__activation span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.access-ending__tagline {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 9px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+@keyframes access-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes access-scan {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes access-dot {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ─── Boot sequence polish ─── */
+.system-boot-progress {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.system-boot-progress span {
+  width: 24px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  transform-origin: left;
+}
+
+.system-boot-progress span.is-active {
+  background: linear-gradient(90deg, var(--nexus-lime), var(--nexus-cyan));
+  animation: boot-step 0.5s ease forwards;
+}
+
+@keyframes boot-step {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ─── Ultrawide / responsive ─── */
+@media (min-width: 1920px) {
+  .neural-map-stage__canvas-host {
+    height: clamp(880px, 94vh, 1280px);
+  }
+
+  .os-section-inner {
+    padding-left: max(3rem, calc((100vw - 1800px) / 2 + 3rem));
+    padding-right: max(3rem, calc((100vw - 1800px) / 2 + 3rem));
+  }
+}
+
+@media (max-width: 1024px) {
+  .neural-map-stage__canvas-host {
+    height: clamp(680px, 84vh, 960px);
+  }
+
+  .neural-analysis-panel {
+    top: auto;
+    bottom: 5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .neural-map-stage__guide {
+    display: none;
+  }
+
+  .access-ending__tagline {
+    letter-spacing: 0.2em;
+    font-size: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .global-ambient,
+  .global-ambient-pulse,
+  .global-ambient-gradient,
+  .global-ambient-scan,
+  .global-ambient-bloom,
+  .access-ending__scan::after,
+  .access-ending__activation span {
+    animation: none !important;
+  }
+}

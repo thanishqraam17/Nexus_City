@@ -20,13 +20,17 @@ function NeuralMapCanvasInner({
 }: NeuralMapCanvasProps) {
   return (
     <Canvas
-      className="neural-map-canvas h-full w-full"
+      className="neural-map-canvas"
       dpr={[1, 1.25]}
-      camera={{ position: [0.4, 1.1, 9.2], fov: 34, near: 0.1, far: 45 }}
+      camera={{ position: [0, 0.25, 12.5], fov: 38, near: 0.1, far: 60 }}
       gl={{
         alpha: true,
         antialias: true,
         powerPreference: "high-performance",
+        premultipliedAlpha: true,
+      }}
+      onCreated={({ gl }) => {
+        gl.setClearColor(0x000000, 0);
       }}
       style={{ background: "transparent", touchAction: "none" }}
       frameloop="always"

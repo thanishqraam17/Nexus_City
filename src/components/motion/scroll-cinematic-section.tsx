@@ -14,6 +14,9 @@ interface ScrollCinematicSectionProps {
   as?: "section" | "div";
   atmosphere?: SectionAtmosphere;
   depth?: number;
+  /** Skip scroll blur — prevents clipping on full-bleed 3D sections */
+  softMotion?: boolean;
+  osLayer?: string;
 }
 
 /**
@@ -27,6 +30,8 @@ export function ScrollCinematicSection({
   as = "section",
   atmosphere = "default",
   depth = 0,
+  softMotion = false,
+  osLayer,
 }: ScrollCinematicSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const divRef = useRef<HTMLDivElement>(null);
@@ -47,12 +52,19 @@ export function ScrollCinematicSection({
   const filter = useTransform(
     scrollYProgress,
     [0, 0.12, 0.88, 1],
-    [
-      "blur(3px) brightness(0.82)",
-      "blur(0px) brightness(1)",
-      "blur(0px) brightness(1)",
-      "blur(2px) brightness(0.88)",
-    ]
+    softMotion
+      ? [
+          "blur(0px) brightness(0.92)",
+          "blur(0px) brightness(1)",
+          "blur(0px) brightness(1)",
+          "blur(0px) brightness(0.94)",
+        ]
+      : [
+          "blur(3px) brightness(0.82)",
+          "blur(0px) brightness(1)",
+          "blur(0px) brightness(1)",
+          "blur(2px) brightness(0.88)",
+        ]
   );
 
   const Component = as === "section" ? motion.section : motion.div;
@@ -65,6 +77,7 @@ export function ScrollCinematicSection({
           id={id}
           data-atmosphere={atmosphere}
           className={cn("scroll-cinematic-wrap", className)}
+          data-os-layer={osLayer}
         >
           {children}
         </section>
@@ -76,6 +89,7 @@ export function ScrollCinematicSection({
         id={id}
         data-atmosphere={atmosphere}
         className={cn("scroll-cinematic-wrap", className)}
+        data-os-layer={osLayer}
       >
         {children}
       </div>
@@ -88,6 +102,7 @@ export function ScrollCinematicSection({
       id={id}
       data-atmosphere={atmosphere}
       data-depth={depth}
+      data-os-layer={osLayer}
       className={cn("scroll-cinematic-section scroll-cinematic-wrap overflow-visible", className)}
       style={{ opacity, y, scale, filter }}
     >

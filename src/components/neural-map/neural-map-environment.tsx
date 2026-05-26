@@ -61,7 +61,7 @@ export function NeuralMapEnvironment() {
 
   return (
     <>
-      <fog attach="fog" args={[NEXUS.void, 12, 28]} />
+      <fog attach="fog" args={[NEXUS.void, 22, 55]} />
       <ambientLight intensity={0.25} />
       <hemisphereLight
         args={[NEXUS.cyan, NEXUS.void, 0.35]}

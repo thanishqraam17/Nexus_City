@@ -38,7 +38,7 @@ export function HeroSection() {
   }, [motionReady]);
 
   return (
-    <section id="overview" className="hero-section">
+    <section id="overview" data-os-layer="overview" className="hero-section">
       <HeroDepth />
       <HeroHologram />
 

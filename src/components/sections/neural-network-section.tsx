@@ -18,7 +18,7 @@ const NeuralMapCanvas = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="neural-map-fallback flex min-h-[480px] items-center justify-center">
+      <div className="neural-map-fallback flex h-full min-h-[520px] items-center justify-center">
         <MicroLabel accent="cyan">Initializing neural infrastructure mesh…</MicroLabel>
       </div>
     ),
@@ -41,17 +41,15 @@ export function NeuralNetworkSection() {
     setHoveredSector(null);
   }, []);
 
-  const previewMeta = hoveredSector
-    ? NEURAL_SECTOR_META[hoveredSector]
-    : null;
+  const previewMeta = hoveredSector ? NEURAL_SECTOR_META[hoveredSector] : null;
 
   return (
     <SectionShell
       id="neural-map"
       tone="lime"
       atmosphere="neural"
-      className="neural-section !overflow-visible !border-t-0 !py-20 sm:!py-28"
-      innerClassName="max-w-none px-0 sm:px-0 lg:px-0"
+      className="neural-section !overflow-visible !border-t-0 !bg-transparent !py-12 sm:!py-20"
+      innerClassName="max-w-none px-0"
       borderTop={false}
     >
       <div className="mx-auto max-w-[1800px] px-4 sm:px-8 lg:px-12">
@@ -65,18 +63,12 @@ export function NeuralNetworkSection() {
       </div>
 
       <motion.div
-        className="neural-map-stage mt-12 sm:mt-16"
+        className="neural-map-stage mt-10 sm:mt-14"
         variants={fadeUp}
         initial={false}
         whileInView={motionReady ? "visible" : undefined}
-        viewport={{ once: true, amount: 0.08 }}
+        viewport={{ once: true, amount: 0.06 }}
       >
-        <div className="neural-map-stage__vignette" aria-hidden />
-        <div className="neural-map-stage__fade neural-map-stage__fade--top" aria-hidden />
-        <div className="neural-map-stage__fade neural-map-stage__fade--bottom" aria-hidden />
-        <div className="neural-map-stage__fade neural-map-stage__fade--left" aria-hidden />
-        <div className="neural-map-stage__fade neural-map-stage__fade--right" aria-hidden />
-
         <div className="neural-map-stage__guide">
           <MicroLabel accent="muted" className="text-[8px]">
             Active AI routing layer
@@ -86,7 +78,7 @@ export function NeuralNetworkSection() {
           </p>
         </div>
 
-        <div className="neural-map-stage__canvas-wrap">
+        <div className="neural-map-stage__canvas-host">
           {mounted ? (
             <NeuralMapCanvas
               hoveredSector={hoveredSector}
@@ -95,7 +87,7 @@ export function NeuralNetworkSection() {
               onSectorSelect={handleSelect}
             />
           ) : (
-            <div className="neural-map-fallback absolute inset-0 min-h-[480px]" />
+            <div className="neural-map-fallback absolute inset-0" />
           )}
 
           <NeuralAnalysisPanel
@@ -121,8 +113,7 @@ export function NeuralNetworkSection() {
             <div className="flex flex-wrap gap-2">
               {NEURAL_SECTORS.map((s) => {
                 const meta = NEURAL_SECTOR_META[s.id];
-                const active =
-                  selectedSector === s.id || hoveredSector === s.id;
+                const active = selectedSector === s.id || hoveredSector === s.id;
                 return (
                   <button
                     key={s.id}

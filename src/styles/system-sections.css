@@ -1,4 +1,5 @@
-/* NEXUS OS — section system */
+
+/* NEXUS OS — section system (partial neural overrides below) */
 
 .os-section-glow--lime {
   background: radial-gradient(
@@ -124,12 +125,20 @@
   );
 }
 
-.os-section--neural .os-section-atmosphere {
+/* Neural: no boxed atmosphere — glow only, page grid shows through */
+.neural-section .os-section-glow {
   background: radial-gradient(
-    ellipse 65% 55% at 75% 40%,
-    rgba(212, 255, 0, 0.06) 0%,
-    transparent 60%
+    ellipse 90% 60% at 50% 45%,
+    rgba(212, 255, 0, 0.04) 0%,
+    rgba(0, 240, 255, 0.02) 40%,
+    transparent 72%
   );
+  opacity: 0.9;
+}
+
+.neural-section .os-section-atmosphere {
+  background: none;
+  opacity: 0;
 }
 
 .os-section--systems .os-section-atmosphere,
@@ -145,7 +154,6 @@
   pointer-events: none;
 }
 
-.os-section--systems[data-atmosphere="systems"]::before,
 section[data-atmosphere="systems"]::before {
   content: "";
   position: absolute;
@@ -164,11 +172,6 @@ section[data-atmosphere="systems"]::before {
     rgba(212, 255, 0, 0.05) 0%,
     transparent 60%
   );
-}
-
-.os-section--access .os-section-atmosphere,
-section[data-atmosphere="access"]::after {
-  content: none;
 }
 
 section[data-atmosphere="access"] {
@@ -195,44 +198,10 @@ section[data-atmosphere="access"]::before {
   transition: stroke 0.4s ease;
 }
 
-.neural-map-hint {
-  letter-spacing: 0.28em;
-}
-
-.os-cursor-glow {
-  transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    top 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: left, top;
-}
-
-.os-glow-container--interactive {
-  transition: box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.os-glow-container--interactive:hover {
-  box-shadow: 0 0 48px rgba(0, 240, 255, 0.06);
-}
-
-.os-glow-container--lime.os-glow-container--interactive:hover {
-  box-shadow: 0 0 52px rgba(212, 255, 0, 0.08);
-}
-
-/* Traffic flow */
-.traffic-flow-map {
-  background-image:
-    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
-  background-size: 32px 32px;
-}
-
-.traffic-flow-bar-fill {
-  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-  transform-origin: left center;
-}
-
-/* Neural map — cinematic full-bleed stage */
+/* ─── Neural map: borderless, embedded in page ─── */
 .neural-section .os-section-inner {
   overflow: visible;
+  background: transparent;
 }
 
 .neural-map-stage {
@@ -242,84 +211,50 @@ section[data-atmosphere="access"]::before {
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
   overflow: visible;
-}
-
-.neural-map-stage__vignette {
-  position: absolute;
-  inset: -8% -4%;
-  pointer-events: none;
-  z-index: 2;
-  background: radial-gradient(
-    ellipse 75% 70% at 50% 48%,
-    transparent 35%,
-    rgba(3, 3, 8, 0.5) 75%,
-    rgba(3, 3, 8, 0.85) 100%
-  );
-}
-
-.neural-map-stage__fade {
-  position: absolute;
-  pointer-events: none;
-  z-index: 3;
-}
-
-.neural-map-stage__fade--top {
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 18%;
-  background: linear-gradient(180deg, var(--void) 0%, transparent 100%);
-}
-
-.neural-map-stage__fade--bottom {
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 22%;
-  background: linear-gradient(0deg, var(--void) 0%, transparent 100%);
-}
-
-.neural-map-stage__fade--left {
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 12%;
-  background: linear-gradient(90deg, var(--void) 0%, transparent 100%);
-}
-
-.neural-map-stage__fade--right {
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: 12%;
-  background: linear-gradient(270deg, var(--void) 0%, transparent 100%);
+  background: transparent;
 }
 
 .neural-map-stage__guide {
-  position: absolute;
-  top: 1.25rem;
-  left: 50%;
+  position: relative;
   z-index: 10;
-  transform: translateX(-50%);
+  margin-bottom: 1rem;
   text-align: center;
   pointer-events: none;
   padding: 0 1rem;
 }
 
-.neural-map-stage__canvas-wrap {
+.neural-map-stage__canvas-host {
   position: relative;
-  min-height: min(72vh, 760px);
-  height: min(78vh, 820px);
-  padding: 4rem 0 5.5rem;
+  width: 100%;
+  height: clamp(780px, 92vh, 1200px);
   overflow: visible;
-  isolation: isolate;
+  background: transparent;
+  /* Feather canvas into page — no dark box overlays */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 3%,
+    #000 97%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 3%,
+    #000 97%,
+    transparent 100%
+  );
 }
 
 .neural-map-canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
   display: block;
-  position: relative;
   z-index: 5;
   cursor: grab;
+  background: transparent !important;
 }
 
 .neural-map-canvas:active {
@@ -327,37 +262,34 @@ section[data-atmosphere="access"]::before {
 }
 
 .neural-map-fallback {
-  background: radial-gradient(
-    ellipse 60% 50% at 50% 45%,
-    rgba(0, 240, 255, 0.05) 0%,
-    rgba(212, 255, 0, 0.03) 40%,
-    transparent 70%
-  );
+  background: transparent;
 }
 
 .neural-map-hover-card {
   position: absolute;
-  top: 5rem;
-  left: 1.5rem;
+  top: 3.5rem;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 12;
   max-width: 220px;
-  padding: 0.75rem 1rem;
-  background: rgba(3, 3, 8, 0.75);
-  border: 1px solid rgba(0, 240, 255, 0.15);
-  backdrop-filter: blur(8px);
+  padding: 0.65rem 0.9rem;
+  background: rgba(3, 3, 8, 0.45);
+  border: 1px solid rgba(0, 240, 255, 0.12);
+  backdrop-filter: blur(10px);
 }
 
 .neural-analysis-panel {
   position: absolute;
-  top: 4.5rem;
-  right: max(1rem, calc((100vw - 1800px) / 2 + 1rem));
+  top: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 12;
   width: min(300px, calc(100% - 2rem));
   padding: 1.25rem 1.35rem;
-  background: rgba(3, 3, 8, 0.82);
-  border: 1px solid rgba(212, 255, 0, 0.18);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 0 40px rgba(212, 255, 0, 0.06);
+  background: rgba(3, 3, 8, 0.55);
+  border: 1px solid rgba(212, 255, 0, 0.15);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 0 48px rgba(212, 255, 0, 0.05);
 }
 
 .neural-analysis-panel__chrome {
@@ -373,8 +305,8 @@ section[data-atmosphere="access"]::before {
   align-items: center;
   gap: 2px;
   padding: 4px 8px;
-  background: rgba(3, 3, 8, 0.8);
-  border: 1px solid rgba(0, 240, 255, 0.2);
+  background: rgba(3, 3, 8, 0.55);
+  border: 1px solid rgba(0, 240, 255, 0.18);
   white-space: nowrap;
   pointer-events: none;
 }
@@ -419,7 +351,7 @@ section[data-atmosphere="access"]::before {
   gap: 2px;
   padding: 0.45rem 0.75rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(3, 3, 8, 0.55);
+  background: rgba(3, 3, 8, 0.45);
   transition:
     border-color 0.35s ease,
     background 0.35s ease;
@@ -454,7 +386,23 @@ section[data-atmosphere="access"]::before {
 }
 
 .neural-map-stage__rail {
-  margin-top: -1rem;
+  position: relative;
+  z-index: 10;
+  margin-top: 1.5rem;
+  padding-top: 0.5rem;
+}
+
+/* Traffic flow */
+.traffic-flow-map {
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.traffic-flow-bar-fill {
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: left center;
 }
 
 /* Terminal */
@@ -474,22 +422,55 @@ section[data-atmosphere="access"]::before {
   border-radius: 1px;
 }
 
+.os-cursor-glow {
+  transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    top 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: left, top;
+}
+
+.os-glow-container--interactive {
+  transition: box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.os-glow-container--interactive:hover {
+  box-shadow: 0 0 48px rgba(0, 240, 255, 0.06);
+}
+
+.os-glow-container--lime.os-glow-container--interactive:hover {
+  box-shadow: 0 0 52px rgba(212, 255, 0, 0.08);
+}
+
 @media (max-width: 640px) {
   .os-section {
     padding-top: 5rem;
     padding-bottom: 5rem;
   }
 
-  .neural-map-stage__canvas-wrap {
-    min-height: 420px;
-    height: 65vh;
-    padding: 3rem 0 4rem;
+  .neural-map-stage__canvas-host {
+    height: clamp(620px, 78vh, 900px);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 2%,
+      #000 98%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 2%,
+      #000 98%,
+      transparent 100%
+    );
+  }
+
+  .neural-map-stage__guide {
+    display: none;
   }
 
   .neural-analysis-panel {
-    right: 1rem;
     top: auto;
-    bottom: 5rem;
+    bottom: 4rem;
     width: calc(100% - 2rem);
   }
 
