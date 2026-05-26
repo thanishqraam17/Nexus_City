@@ -9,6 +9,7 @@ import { TelemetryCardLayout } from "@/components/ui/telemetry-card-layout";
 import { TelemetryMetricNumber } from "@/components/ui/telemetry-metric";
 import { TelemetrySparkline } from "@/components/ui/telemetry-sparkline";
 import { formatCityMetric } from "@/lib/system/format-metric";
+import { METRIC_DIAGNOSTICS } from "@/lib/system/os-runtime";
 import type { CityMetricDef } from "@/lib/system/city-data";
 import { cn } from "@/lib/utils";
 
@@ -50,6 +51,7 @@ function DataModuleInner({
           digitsClass={metric.digitsClass}
         />
       }
+      diagnostic={METRIC_DIAGNOSTICS[metric.id] ?? "Infrastructure channel nominal"}
       graph={
         <div className="telemetry-status">
           <TelemetrySparkline seed={metric.sparkSeed} variant={tone} />

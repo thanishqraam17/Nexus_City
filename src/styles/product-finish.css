@@ -356,6 +356,356 @@
   }
 }
 
+/* ─── OS status bar ─── */
+.os-status-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 48;
+  height: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(3, 3, 8, 0.72);
+  backdrop-filter: blur(14px);
+}
+
+.os-status-bar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.os-status-bar__brand {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(212, 255, 0, 0.55);
+  flex-shrink: 0;
+}
+
+.os-status-bar__metrics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem 1.25rem;
+}
+
+.os-status-bar__cell {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.os-status-bar__label {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 7px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.os-status-bar__value {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.62);
+  transition: color 0.5s ease;
+}
+
+.os-status-bar__scan {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 240, 255, 0.04),
+    transparent
+  );
+  animation: os-status-scan 8s linear infinite;
+  pointer-events: none;
+}
+
+.os-status-bar__pulse {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--nexus-lime);
+  flex-shrink: 0;
+  opacity: 0.4;
+}
+
+.os-status-bar__pulse.is-live {
+  animation: os-status-pulse 2s ease-in-out infinite;
+}
+
+@keyframes os-status-scan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes os-status-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    box-shadow: 0 0 0 rgba(212, 255, 0, 0);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(212, 255, 0, 0.5);
+  }
+}
+
+/* ─── AI assistant layer ─── */
+.ai-assistant-layer {
+  left: 1rem;
+  bottom: 2.75rem;
+  max-width: min(360px, calc(100vw - 2rem));
+}
+
+@media (min-width: 640px) {
+  .ai-assistant-layer {
+    left: 2rem;
+  }
+}
+
+.ai-assistant-layer__card {
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(3, 3, 8, 0.55);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.ai-assistant-layer__eyebrow {
+  display: block;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 7px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(0, 240, 255, 0.55);
+}
+
+.ai-assistant-layer__message {
+  margin-top: 0.35rem;
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.ai-assistant-layer__meta {
+  display: block;
+  margin-top: 0.5rem;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 7px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+}
+
+/* ─── Telemetry hover drilldown ─── */
+.telemetry-card-wrap--expanded .telemetry-card {
+  box-shadow:
+    0 0 40px rgba(212, 255, 0, 0.08),
+    0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.telemetry-card-detail {
+  overflow: hidden;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.telemetry-card-detail__text {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.telemetry-card-detail__signal {
+  display: block;
+  margin-top: 0.35rem;
+  height: 1px;
+  width: 40%;
+  background: linear-gradient(90deg, rgba(212, 255, 0, 0.4), transparent);
+  animation: telemetry-signal-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes telemetry-signal-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    width: 30%;
+  }
+  50% {
+    opacity: 1;
+    width: 55%;
+  }
+}
+
+/* ─── Section layer arrivals ─── */
+.scroll-cinematic-wrap--active[data-os-layer] {
+  animation: os-layer-arrive 1.2s cubic-bezier(0.19, 1, 0.22, 1) both;
+}
+
+@keyframes os-layer-arrive {
+  from {
+    filter: brightness(0.92);
+  }
+  to {
+    filter: brightness(1);
+  }
+}
+
+[data-os-layer="neural"].scroll-cinematic-wrap--active {
+  animation-duration: 1.4s;
+}
+
+[data-os-layer="access"].scroll-cinematic-wrap--active .access-ending__atmosphere {
+  animation: access-glow-pulse 4s ease-in-out infinite;
+}
+
+/* ─── Access climax ─── */
+.access-ending__convergence {
+  position: absolute;
+  inset: -30% -15%;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 50% 45% at 50% 55%,
+    rgba(212, 255, 0, 0.1) 0%,
+    rgba(0, 240, 255, 0.04) 35%,
+    transparent 65%
+  );
+  animation: access-convergence 8s ease-in-out infinite;
+}
+
+.access-ending__mesh-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 40%,
+    rgba(0, 240, 255, 0.05) 0%,
+    transparent 45%
+  );
+  opacity: 0.8;
+}
+
+.access-ending__sync-banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .access-ending__sync-banner {
+    justify-content: flex-start;
+  }
+}
+
+.access-ending__climax {
+  max-width: 28rem;
+}
+
+.access-ending__cta {
+  transition:
+    transform 0.5s cubic-bezier(0.19, 1, 0.22, 1),
+    box-shadow 0.5s ease;
+}
+
+.access-ending__cta:hover {
+  box-shadow: 0 0 48px rgba(212, 255, 0, 0.2);
+}
+
+@keyframes access-convergence {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+}
+
+/* ─── Megacity scale ─── */
+.neural-city-backdrop__horizon {
+  position: absolute;
+  left: -5%;
+  right: -5%;
+  bottom: 8%;
+  height: 22%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 240, 255, 0.03) 40%,
+    rgba(212, 255, 0, 0.02) 100%
+  );
+  filter: blur(2px);
+  opacity: 0.7;
+}
+
+.neural-city-backdrop__far-signals {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.neural-city-backdrop__far-signal {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(0, 240, 255, 0.5);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.35);
+  animation: far-signal-blink 5s ease-in-out infinite;
+}
+
+@keyframes far-signal-blink {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.landing-canvas {
+  padding-bottom: 2rem;
+}
+
+.ambient-pulse {
+  bottom: 34px;
+  z-index: 47;
+}
+
+@media (max-width: 768px) {
+  .os-status-bar__metrics {
+    gap: 0.5rem 0.75rem;
+  }
+
+  .os-status-bar__cell:nth-child(n + 5) {
+    display: none;
+  }
+}
+
 .live-feed-diagnostics__backdrop {
   cursor: pointer;
 }
@@ -379,7 +729,12 @@
   .neural-holo-midground__scanlines,
   .env-detail-traffic,
   .access-ending__scan::after,
-  .access-ending__activation span {
+  .access-ending__activation span,
+  .os-status-bar__scan,
+  .os-status-bar__pulse.is-live,
+  .access-ending__convergence,
+  .neural-city-backdrop__far-signal,
+  .telemetry-card-detail__signal {
     animation: none !important;
   }
 }

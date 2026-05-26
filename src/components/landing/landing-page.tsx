@@ -20,9 +20,13 @@ import { NeuralNetworkSection } from "@/components/sections/neural-network-secti
 import { SystemsPreview } from "@/components/sections/systems-preview";
 import { TerminalSection } from "@/components/sections/terminal-section";
 import { AccessSection } from "@/components/sections/access-section";
+import { OsRuntimeProvider } from "@/components/os/os-runtime-provider";
+import { OsStatusBar } from "@/components/os/os-status-bar";
+import { AiAssistantLayer } from "@/components/os/ai-assistant-layer";
 
 export function LandingPage() {
   return (
+    <OsRuntimeProvider>
     <div className="landing-canvas relative min-h-screen bg-void text-white nexus-selection">
       <AnimatedGrid />
       <EnvironmentalDetail />
@@ -36,6 +40,8 @@ export function LandingPage() {
       <SystemBoot />
       <Navbar />
       <LiveFeedDiagnostics />
+      <OsStatusBar />
+      <AiAssistantLayer />
       <main className="relative z-10">
         <div data-os-layer="overview">
           <HeroSection />
@@ -75,5 +81,6 @@ export function LandingPage() {
         </ScrollCinematicSection>
       </main>
     </div>
+    </OsRuntimeProvider>
   );
 }

@@ -25,8 +25,22 @@ export function NeuralCityBackdrop() {
   return (
     <div className="neural-city-backdrop" aria-hidden>
       <div className="neural-city-backdrop__layer neural-city-backdrop__layer--bg">
+        <div className="neural-city-backdrop__horizon" aria-hidden />
         <div className="neural-city-backdrop__fog neural-city-backdrop__fog--deep" />
         <div className="neural-city-backdrop__grid" />
+        <div className="neural-city-backdrop__far-signals" aria-hidden>
+          {Array.from({ length: 12 }).map((_, i) => (
+            <span
+              key={i}
+              className="neural-city-backdrop__far-signal"
+              style={{
+                left: `${8 + ((i * 19) % 84)}%`,
+                bottom: `${20 + ((i * 11) % 45)}%`,
+                animationDelay: `${i * 0.7}s`,
+              }}
+            />
+          ))}
+        </div>
 
         {SKYLINE_LAYERS.map((layer) => (
           <div

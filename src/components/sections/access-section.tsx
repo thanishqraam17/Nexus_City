@@ -7,29 +7,46 @@ import { GlassPanel } from "@/components/ui/glass-panel";
 import { MicroLabel } from "@/components/ui/micro-label";
 import { NexusButton } from "@/components/ui/nexus-button";
 import { Magnetic } from "@/components/cinematic/magnetic";
+import { useOsRuntimeStore } from "@/store/os-runtime-store";
 import { fadeUp } from "@/lib/motion/variants";
+import { easeLuxury } from "@/lib/motion/transitions";
 
 export function AccessSection() {
   const mounted = useMounted();
   const reduceMotion = useHydratedReducedMotion();
   const motionReady = mounted && !reduceMotion;
+  const syncPercent = useOsRuntimeStore((s) => s.syncPercent);
+  const throughputIndex = useOsRuntimeStore((s) => s.throughputIndex);
 
   return (
     <section
       id="access"
       data-section="access"
       data-atmosphere="access"
-      className="os-section os-section--access access-ending relative z-10 pb-32 pt-12 sm:pb-44 sm:pt-16"
+      className="os-section os-section--access access-ending relative z-10 pb-36 pt-12 sm:pb-48 sm:pt-16"
     >
       <div className="access-ending__atmosphere" aria-hidden />
+      <div className="access-ending__convergence" aria-hidden />
+      <div className="access-ending__mesh-glow" aria-hidden />
+
       <div className="mx-auto max-w-[1800px] px-4 sm:px-8 lg:px-12">
         <motion.div
           variants={fadeUp}
           initial={false}
           whileInView={motionReady ? "visible" : undefined}
           viewport={{ once: true, amount: 0.2 }}
+          transition={easeLuxury}
           className="relative"
         >
+          <div className="access-ending__sync-banner">
+            <MicroLabel accent="lime" className="text-[8px]">
+              Neural synchronization · {syncPercent.toFixed(2)}%
+            </MicroLabel>
+            <MicroLabel accent="cyan" className="text-[8px]">
+              Throughput index · {throughputIndex}
+            </MicroLabel>
+          </div>
+
           <MicroLabel accent="lime" className="mb-6 block text-center sm:text-left">
             Final gateway · Layer 06
           </MicroLabel>
@@ -55,6 +72,18 @@ export function AccessSection() {
                   Secure uplink to the metropolitan AI operating layer. Operator credentials
                   authenticate against the infrastructure cortex and neural routing mesh.
                 </p>
+                <motion.p
+                  className="access-ending__climax mt-4 font-mono text-[9px] uppercase tracking-[0.28em] text-nexus-cyan/70"
+                  initial={false}
+                  animate={
+                    motionReady
+                      ? { opacity: [0.5, 1, 0.5] }
+                      : { opacity: 0.7 }
+                  }
+                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  Infrastructure stabilized · mesh convergence complete
+                </motion.p>
                 <div className="access-ending__activation" aria-hidden>
                   <span />
                   <span />
@@ -78,7 +107,7 @@ export function AccessSection() {
                 <Magnetic strength={0.25}>
                   <NexusButton
                     variant="primary"
-                    className="w-full whitespace-nowrap bg-white text-void border-white/30 sm:w-auto"
+                    className="access-ending__cta w-full whitespace-nowrap border-white/30 bg-white text-void sm:w-auto"
                     data-magnetic
                   >
                     Enter the system
@@ -94,7 +123,7 @@ export function AccessSection() {
           <div className="flex flex-wrap gap-6">
             <MicroLabel accent="muted">Privacy</MicroLabel>
             <MicroLabel accent="muted">Protocols</MicroLabel>
-            <MicroLabel accent="muted">Status · Online</MicroLabel>
+            <MicroLabel accent="lime">Status · Synchronized</MicroLabel>
           </div>
         </footer>
       </div>

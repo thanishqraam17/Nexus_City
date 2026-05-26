@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { useRef } from "react";
 import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
 import { useMounted } from "@/hooks/use-mounted";
@@ -47,6 +47,8 @@ export function ScrollCinematicSection({
   const motionReady = mounted && !reduceMotion;
 
   const scrollTarget = as === "section" ? sectionRef : divRef;
+
+  const sectionInView = useInView(scrollTarget, { amount: 0.22, once: false });
 
   const { scrollYProgress } = useScroll({
     target: scrollTarget,
@@ -97,7 +99,11 @@ export function ScrollCinematicSection({
           ref={sectionRef}
           id={id}
           data-atmosphere={atmosphere}
-          className={cn("scroll-cinematic-wrap", className)}
+          className={cn(
+          "scroll-cinematic-wrap",
+          sectionInView && "scroll-cinematic-wrap--active",
+          className
+        )}
           data-os-layer={osLayer}
         >
           {children}
@@ -109,7 +115,11 @@ export function ScrollCinematicSection({
         ref={divRef}
         id={id}
         data-atmosphere={atmosphere}
-        className={cn("scroll-cinematic-wrap", className)}
+        className={cn(
+          "scroll-cinematic-wrap",
+          sectionInView && "scroll-cinematic-wrap--active",
+          className
+        )}
         data-os-layer={osLayer}
       >
         {children}
@@ -128,6 +138,7 @@ export function ScrollCinematicSection({
         "scroll-cinematic-section scroll-cinematic-wrap overflow-visible",
         viewportMode && "scroll-cinematic-section--viewport",
         stableLayout && "scroll-cinematic-section--stable",
+        sectionInView && "scroll-cinematic-wrap--active",
         className
       )}
       style={
