@@ -6,6 +6,7 @@ import { SectionShell, SectionHeading } from "@/components/system";
 import { MicroLabel } from "@/components/ui/micro-label";
 import { NeuralAnalysisPanel } from "@/components/neural-map/neural-analysis-panel";
 import { NeuralCityBackdrop } from "@/components/neural-map/neural-city-backdrop";
+import { NeuralHoloComposite } from "@/components/neural-map/neural-holo-composite";
 import { NEURAL_SECTOR_META } from "@/lib/system/neural-data";
 import { NEURAL_SECTORS, type NeuralSectorId } from "@/lib/system/city-data";
 import { cn } from "@/lib/utils";
@@ -71,6 +72,7 @@ export function NeuralNetworkSection() {
 
           <div className="neural-map-stage__canvas-host">
             <NeuralCityBackdrop />
+            <NeuralHoloComposite />
 
             <div className="neural-map-stage__graph">
               {mounted ? (

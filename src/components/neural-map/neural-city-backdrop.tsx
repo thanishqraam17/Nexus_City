@@ -16,6 +16,7 @@ function towerHeight(seed: number, base: number) {
   return base + n * base * 0.75;
 }
 
+/** Background megacity layer — sits behind WebGL */
 export function NeuralCityBackdrop() {
   const mounted = useMounted();
   const reduceMotion = useHydratedReducedMotion();
@@ -23,67 +24,68 @@ export function NeuralCityBackdrop() {
 
   return (
     <div className="neural-city-backdrop" aria-hidden>
-      <div className="neural-city-backdrop__glow-field" />
-      <div className="neural-city-backdrop__fog neural-city-backdrop__fog--deep" />
-      <div className="neural-city-backdrop__fog neural-city-backdrop__fog--haze" />
+      <div className="neural-city-backdrop__layer neural-city-backdrop__layer--bg">
+        <div className="neural-city-backdrop__fog neural-city-backdrop__fog--deep" />
+        <div className="neural-city-backdrop__grid" />
 
-      <div className="neural-city-backdrop__grid" />
-
-      <span className="neural-city-backdrop__holo neural-city-backdrop__holo--a" />
-      <span className="neural-city-backdrop__holo neural-city-backdrop__holo--b" />
-      <span className="neural-city-backdrop__holo neural-city-backdrop__holo--c" />
-
-      {SKYLINE_LAYERS.map((layer) => (
-        <div
-          key={layer.depth}
-          className={cn(
-            "neural-city-backdrop__skyline",
-            `neural-city-backdrop__skyline--${layer.depth}`,
-            animate && "neural-city-backdrop__skyline--animate"
-          )}
-        >
-          {Array.from({ length: layer.count }).map((_, i) => {
-            const h = towerHeight(i + layer.count * 3, layer.baseH);
-            const w = 2 + (i % 3);
-            const delay = (i * 0.37) % 5;
-            return (
-              <span
-                key={i}
-                className="neural-city-backdrop__tower"
-                style={{
-                  height: `${h}%`,
-                  width: `${w}px`,
-                  opacity: layer.opacity,
-                  animationDelay: `${delay}s`,
-                }}
-              />
-            );
-          })}
-        </div>
-      ))}
-
-      <div className={cn("neural-city-backdrop__highways", animate && "is-live")}>
-        <span className="neural-city-backdrop__highway neural-city-backdrop__highway--a" />
-        <span className="neural-city-backdrop__highway neural-city-backdrop__highway--b" />
-        <span className="neural-city-backdrop__highway neural-city-backdrop__highway--c" />
-      </div>
-
-      <div className="neural-city-backdrop__lights">
-        {Array.from({ length: 28 }).map((_, i) => (
-          <span
-            key={i}
-            className="neural-city-backdrop__light"
-            style={{
-              left: `${6 + ((i * 13) % 88)}%`,
-              bottom: `${10 + ((i * 9) % 32)}%`,
-              animationDelay: `${(i * 0.55) % 6}s`,
-            }}
-          />
+        {SKYLINE_LAYERS.map((layer) => (
+          <div
+            key={layer.depth}
+            className={cn(
+              "neural-city-backdrop__skyline",
+              `neural-city-backdrop__skyline--${layer.depth}`,
+              animate && "neural-city-backdrop__skyline--animate"
+            )}
+          >
+            {Array.from({ length: layer.count }).map((_, i) => {
+              const h = towerHeight(i + layer.count * 3, layer.baseH);
+              const w = 2 + (i % 3);
+              const delay = (i * 0.37) % 5;
+              return (
+                <span
+                  key={i}
+                  className="neural-city-backdrop__tower"
+                  style={{
+                    height: `${h}%`,
+                    width: `${w}px`,
+                    opacity: layer.opacity,
+                    animationDelay: `${delay}s`,
+                  }}
+                />
+              );
+            })}
+          </div>
         ))}
+
+        <div className={cn("neural-city-backdrop__highways", animate && "is-live")}>
+          <span className="neural-city-backdrop__highway neural-city-backdrop__highway--a" />
+          <span className="neural-city-backdrop__highway neural-city-backdrop__highway--b" />
+          <span className="neural-city-backdrop__highway neural-city-backdrop__highway--c" />
+        </div>
+
+        <div className="neural-city-backdrop__lights">
+          {Array.from({ length: 28 }).map((_, i) => (
+            <span
+              key={i}
+              className="neural-city-backdrop__light"
+              style={{
+                left: `${6 + ((i * 13) % 88)}%`,
+                bottom: `${10 + ((i * 9) % 32)}%`,
+                animationDelay: `${(i * 0.55) % 6}s`,
+              }}
+            />
+          ))}
+        </div>
       </div>
 
-      <div className={cn("neural-city-backdrop__scan", animate && "is-live")} />
-      <div className="neural-city-backdrop__vignette" />
+      <div className="neural-city-backdrop__layer neural-city-backdrop__layer--mid">
+        <div className="neural-city-backdrop__fog neural-city-backdrop__fog--haze" />
+        <span className="neural-city-backdrop__holo neural-city-backdrop__holo--a" />
+        <span className="neural-city-backdrop__holo neural-city-backdrop__holo--b" />
+        <span className="neural-city-backdrop__holo neural-city-backdrop__holo--c" />
+        <div className="neural-city-backdrop__glow-field" />
+        <div className={cn("neural-city-backdrop__scan", animate && "is-live")} />
+      </div>
     </div>
   );
 }

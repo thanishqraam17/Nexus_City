@@ -35,7 +35,7 @@ const CursorContext = createContext<CursorState>({
   reducedMotion: false,
 });
 
-const SMOOTH = 0.14;
+const SMOOTH = 0.16;
 
 export function CursorProvider({ children }: { children: ReactNode }) {
   const ready = useAtmosphereReady();

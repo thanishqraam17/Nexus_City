@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useMemo, useRef, useState } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
+import { useCursor } from "@/context/cursor-context";
 import { NEURAL_SECTORS, type NeuralSectorId } from "@/lib/system/city-data";
 import {
   NEURAL_HUB_POSITION,
@@ -12,12 +13,16 @@ import {
   buildNeuralConnections,
   getRelatedNodeIds,
 } from "@/lib/system/neural-layout";
-import { NEURAL_HUB_META, NEURAL_SECTOR_META, NEURAL_RELAY_META } from "@/lib/system/neural-data";
+import { cursorProximity01 } from "@/lib/system/neural-cursor-influence";
+import { neuralPhase } from "@/lib/system/neural-sync";
+import { NEURAL_SECTOR_META, NEURAL_RELAY_META } from "@/lib/system/neural-data";
 import { NEXUS } from "@/components/hero-core/colors";
 import { NeuralMapEnvironment } from "./neural-map-environment";
 import { NeuralMapControls } from "./neural-map-controls";
 import { NeuralSignalFlow } from "./neural-signal-flow";
 import { NeuralOrbitRings } from "./neural-orbit-rings";
+import { NeuralCoreNexus } from "./neural-core-nexus";
+import { NeuralDepthField } from "./neural-depth-field";
 
 interface NeuralMapSceneProps {
   hoveredSector: NeuralSectorId | null;
@@ -32,10 +37,13 @@ export function NeuralMapScene({
   onSectorHover,
   onSectorSelect,
 }: NeuralMapSceneProps) {
-  const hubMat = useRef<THREE.MeshStandardMaterial>(null);
   const sectorMats = useRef<Record<string, THREE.MeshStandardMaterial>>({});
+  const relayMats = useRef<THREE.MeshBasicMaterial[]>([]);
   const worldRef = useRef<THREE.Group>(null);
   const connections = useMemo(() => buildNeuralConnections(), []);
+  const { camera, size } = useThree();
+  const { smoothX, smoothY, ready: cursorReady, reducedMotion } = useCursor();
+  const [cursorBoost, setCursorBoost] = useState(0);
 
   const focusId = hoveredSector ?? selectedSector;
   const analysisId = selectedSector;
@@ -48,29 +56,93 @@ export function NeuralMapScene({
     const t = state.clock.elapsedTime;
 
     if (worldRef.current) {
-      worldRef.current.position.y = Math.sin(t * 0.35) * 0.02;
+      worldRef.current.position.y = Math.sin(neuralPhase(t, 0, 1)) * 0.02;
     }
 
-    if (hubMat.current) {
-      hubMat.current.emissiveIntensity =
-        1.2 + Math.sin(t * 1.1) * 0.2 + (focusId ? 1.2 : 0);
+    let maxProx = 0;
+    if (cursorReady && !reducedMotion && worldRef.current) {
+      const proxHub = cursorProximity01(
+        NEURAL_HUB_POSITION[0],
+        NEURAL_HUB_POSITION[1],
+        NEURAL_HUB_POSITION[2],
+        worldRef.current,
+        camera,
+        size,
+        smoothX,
+        smoothY,
+        220
+      );
+      maxProx = proxHub;
+
+      NEURAL_SECTORS.forEach((sector) => {
+        const pos = NEURAL_SECTOR_POSITIONS[sector.id];
+        const prox = cursorProximity01(
+          pos[0],
+          pos[1],
+          pos[2],
+          worldRef.current,
+          camera,
+          size,
+          smoothX,
+          smoothY,
+          200
+        );
+        maxProx = Math.max(maxProx, prox);
+
+        const mat = sectorMats.current[sector.id];
+        if (!mat) return;
+        const isFocus = sector.id === hoveredSector || sector.id === selectedSector;
+        const dimmed =
+          analysisId !== null && !relatedIds.has(sector.id) && !isSelected(sector.id);
+        if (!isFocus && !dimmed) {
+          mat.emissiveIntensity = 1.2 + prox * 1.4;
+          mat.opacity = 0.72 + prox * 0.12;
+        }
+      });
+
+      relayMats.current.forEach((mat, i) => {
+        const pos = NEURAL_RELAY_POSITIONS[i];
+        if (!mat || !pos) return;
+        const prox = cursorProximity01(
+          pos[0],
+          pos[1],
+          pos[2],
+          worldRef.current,
+          camera,
+          size,
+          smoothX,
+          smoothY,
+          180
+        );
+        maxProx = Math.max(maxProx, prox);
+        mat.opacity = 0.45 + prox * 0.35;
+      });
     }
+
+    setCursorBoost((prev) => prev + (maxProx - prev) * 0.12);
 
     Object.entries(sectorMats.current).forEach(([id, mat]) => {
       const isFocus = id === hoveredSector || id === selectedSector;
       if (isFocus) {
         mat.emissiveIntensity = 2.6 + Math.sin(t * 2.2) * 0.35;
+      } else if (analysisId && !relatedIds.has(id) && id !== selectedSector) {
+        mat.emissiveIntensity = 0.4;
       }
     });
   });
 
+  function isSelected(id: string) {
+    return selectedSector === id;
+  }
+
+  const focusBoost = focusId ? 1 : 0;
+
   return (
     <>
+      <NeuralDepthField />
       <NeuralMapEnvironment />
       <NeuralMapControls />
 
-      <pointLight position={[4, 5, 6]} intensity={2.4} color={NEXUS.lime} />
-      <pointLight position={[-5, 2, 4]} intensity={1.6} color={NEXUS.cyan} />
       {(analysisId || focusId) && focusId && focusId in NEURAL_SECTOR_POSITIONS && (
         <pointLight
           position={NEURAL_SECTOR_POSITIONS[focusId as NeuralSectorId]}
@@ -87,31 +159,13 @@ export function NeuralMapScene({
           connections={connections}
           focusId={focusId}
           analysisId={analysisId}
+          cursorBoost={cursorBoost}
         />
 
-        {/* Hub */}
         <group position={NEURAL_HUB_POSITION}>
-          <mesh renderOrder={3}>
-            <sphereGeometry args={[0.11, 24, 24]} />
-            <meshStandardMaterial
-              ref={hubMat}
-              color={NEXUS.cyan}
-              emissive={NEXUS.cyan}
-              emissiveIntensity={1.2}
-              transparent
-              opacity={0.92}
-              toneMapped={false}
-            />
-          </mesh>
-          <Html center distanceFactor={12} pointerEvents="none">
-            <div className="neural-node-label neural-node-label--hub">
-              <span className="neural-node-label__id">{NEURAL_HUB_META.districtId}</span>
-              <span className="neural-node-label__name">{NEURAL_HUB_META.systemName}</span>
-            </div>
-          </Html>
+          <NeuralCoreNexus focusBoost={focusBoost} cursorBoost={cursorBoost} />
         </group>
 
-        {/* Relays — mid-ring, between sectors */}
         {NEURAL_RELAY_POSITIONS.map((pos, i) => {
           const meta = NEURAL_RELAY_META[i];
           if (!meta) return null;
@@ -121,25 +175,28 @@ export function NeuralMapScene({
               <mesh renderOrder={3}>
                 <sphereGeometry args={[0.05, 10, 10]} />
                 <meshBasicMaterial
+                  ref={(m) => {
+                    if (m) relayMats.current[i] = m;
+                  }}
                   color={NEXUS.cyan}
                   transparent
                   opacity={dimmed ? 0.15 : 0.55}
                   blending={THREE.AdditiveBlending}
+                  depthWrite={false}
                 />
               </mesh>
             </group>
           );
         })}
 
-        {/* Sectors — outer pentagon */}
         {NEURAL_SECTORS.map((sector) => {
           const pos = NEURAL_SECTOR_POSITIONS[sector.id];
           const meta = NEURAL_SECTOR_META[sector.id];
           const isHovered = hoveredSector === sector.id;
-          const isSelected = selectedSector === sector.id;
-          const isFocus = isHovered || isSelected;
+          const isSelectedNode = selectedSector === sector.id;
+          const isFocus = isHovered || isSelectedNode;
           const dimmed =
-            analysisId !== null && !relatedIds.has(sector.id) && !isSelected;
+            analysisId !== null && !relatedIds.has(sector.id) && !isSelectedNode;
 
           return (
             <group key={sector.id} position={pos}>
@@ -151,6 +208,7 @@ export function NeuralMapScene({
                   opacity={isFocus ? 0.35 : 0.08}
                   blending={THREE.AdditiveBlending}
                   side={THREE.DoubleSide}
+                  depthWrite={false}
                 />
               </mesh>
 
@@ -160,14 +218,16 @@ export function NeuralMapScene({
                   <meshBasicMaterial
                     color={NEXUS.lime}
                     transparent
-                    opacity={isSelected ? 0.55 : 0.3}
+                    opacity={isSelectedNode ? 0.55 : 0.3}
                     blending={THREE.AdditiveBlending}
                     side={THREE.DoubleSide}
+                    depthWrite={false}
                   />
                 </mesh>
               )}
 
-              <mesh renderOrder={3}
+              <mesh
+                renderOrder={3}
                 onPointerOver={(e) => {
                   e.stopPropagation();
                   onSectorHover(sector.id);
@@ -184,7 +244,7 @@ export function NeuralMapScene({
                 }}
               >
                 <sphereGeometry
-                  args={[isSelected ? 0.18 : isHovered ? 0.16 : 0.14, 24, 24]}
+                  args={[isSelectedNode ? 0.18 : isHovered ? 0.16 : 0.14, 24, 24]}
                 />
                 <meshStandardMaterial
                   ref={(m) => {
@@ -194,7 +254,8 @@ export function NeuralMapScene({
                   emissive={isFocus ? NEXUS.lime : NEXUS.cyan}
                   emissiveIntensity={isFocus ? 2.8 : dimmed ? 0.4 : 1.2}
                   transparent
-                  opacity={dimmed ? 0.3 : 0.96}
+                  opacity={dimmed ? 0.28 : isFocus ? 0.82 : 0.72}
+                  depthWrite={isFocus}
                   toneMapped={false}
                 />
               </mesh>

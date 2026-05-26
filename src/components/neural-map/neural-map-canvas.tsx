@@ -3,6 +3,7 @@
 import { Canvas } from "@react-three/fiber";
 import { Suspense, memo } from "react";
 import type { NeuralSectorId } from "@/lib/system/city-data";
+import { configureTransparentRenderer } from "@/lib/three/transparent-renderer";
 import { NeuralMapScene } from "./neural-map-scene";
 
 interface NeuralMapCanvasProps {
@@ -27,12 +28,17 @@ function NeuralMapCanvasInner({
         alpha: true,
         antialias: true,
         powerPreference: "high-performance",
-        premultipliedAlpha: true,
+        premultipliedAlpha: false,
+        preserveDrawingBuffer: false,
       }}
-      onCreated={({ gl }) => {
-        gl.setClearColor(0x000000, 0);
+      onCreated={({ gl, scene }) => {
+        configureTransparentRenderer(gl, scene);
       }}
-      style={{ background: "transparent", touchAction: "none" }}
+      style={{
+        background: "transparent",
+        backgroundColor: "transparent",
+        touchAction: "none",
+      }}
       frameloop="always"
       performance={{ min: 0.5 }}
     >

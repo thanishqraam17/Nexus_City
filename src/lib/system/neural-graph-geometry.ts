@@ -63,20 +63,15 @@ export function buildConnectionSegment(conn: NeuralConnection): ConnectionSegmen
   const centerB = getNodeCenter(conn.to);
   if (!centerA || !centerB) return null;
 
-  const radiusA = getNodeRadius(conn.from);
-  const radiusB = getNodeRadius(conn.to);
-
   _dir.subVectors(centerB, centerA);
   const fullDist = _dir.length();
   if (fullDist < 1e-6) return null;
 
   const direction = _dir.clone().normalize();
 
-  const trimA = Math.min(radiusA, fullDist * 0.5 - 0.001);
-  const trimB = Math.min(radiusB, fullDist * 0.5 - 0.001);
-
-  const start = centerA.clone().addScaledVector(direction, trimA);
-  const end = centerB.clone().addScaledVector(direction, -trimB);
+  /* Center-anchored — infrastructure reads as one connected system */
+  const start = centerA.clone();
+  const end = centerB.clone();
   const lineLength = Math.max(start.distanceTo(end), 0.001);
 
   return {

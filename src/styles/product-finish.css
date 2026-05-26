@@ -375,6 +375,8 @@
   .neural-city-backdrop__scan.is-live,
   .neural-city-backdrop__highways.is-live .neural-city-backdrop__highway::after,
   .neural-city-backdrop__light,
+  .neural-holo-midground__beams,
+  .neural-holo-midground__scanlines,
   .env-detail-traffic,
   .access-ending__scan::after,
   .access-ending__activation span {

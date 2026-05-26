@@ -54,21 +54,20 @@ export const NEURAL_ORBIT_RADII = {
   hub: 0.35,
 } as const;
 
+export type NeuralConnectionTier = "spoke" | "ring" | "relay" | "core";
+
 export interface NeuralConnection {
   from: string;
   to: string;
   /** Traffic flows from → to */
   directed?: boolean;
-  tier: "spoke" | "ring" | "relay";
+  tier: NeuralConnectionTier;
 }
 
 export function buildNeuralConnections(): NeuralConnection[] {
   const pairs: NeuralConnection[] = [];
 
-  SECTOR_RING_ORDER.forEach((id) => {
-    pairs.push({ from: id, to: "HUB", directed: true, tier: "spoke" });
-  });
-
+  /* Outer ring — district backbone */
   for (let i = 0; i < SECTOR_RING_ORDER.length; i++) {
     pairs.push({
       from: SECTOR_RING_ORDER[i],
@@ -78,8 +77,35 @@ export function buildNeuralConnections(): NeuralConnection[] {
     });
   }
 
+  /* Sector uplinks → central nexus */
+  SECTOR_RING_ORDER.forEach((id) => {
+    pairs.push({ from: id, to: "HUB", directed: true, tier: "spoke" });
+  });
+
+  /* Relay ring — mid infrastructure mesh */
+  for (let i = 0; i < SECTOR_RING_ORDER.length; i++) {
+    pairs.push({
+      from: `R${i}`,
+      to: `R${(i + 1) % 5}`,
+      directed: true,
+      tier: "ring",
+    });
+  }
+
+  /* Relay uplinks → nexus */
+  SECTOR_RING_ORDER.forEach((_, i) => {
+    pairs.push({ from: `R${i}`, to: "HUB", directed: true, tier: "spoke" });
+  });
+
+  /* Nexus downlink pulses → relays (core routing) */
+  SECTOR_RING_ORDER.forEach((_, i) => {
+    pairs.push({ from: "HUB", to: `R${i}`, directed: true, tier: "core" });
+  });
+
+  /* Relay ↔ district links */
   SECTOR_RING_ORDER.forEach((id, i) => {
     pairs.push({ from: `R${i}`, to: id, directed: true, tier: "relay" });
+    pairs.push({ from: id, to: `R${i}`, directed: true, tier: "relay" });
   });
 
   return pairs;

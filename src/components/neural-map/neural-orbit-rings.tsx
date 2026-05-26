@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { NEURAL_ORBIT_RADII } from "@/lib/system/neural-layout";
+import { neuralPhase, neuralPulse } from "@/lib/system/neural-sync";
 import { NEXUS } from "@/components/hero-core/colors";
 
 /** Rotating orbital rings + holographic scan pulse */
@@ -14,13 +15,14 @@ export function NeuralOrbitRings({ active }: { active: boolean }) {
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
-    if (outerRef.current) outerRef.current.rotation.y = t * 0.12;
-    if (innerRef.current) innerRef.current.rotation.y = -t * 0.18;
+    const pulse = neuralPulse(t, 0.2);
+    if (outerRef.current) outerRef.current.rotation.y = neuralPhase(t, 0, 1);
+    if (innerRef.current) innerRef.current.rotation.y = -neuralPhase(t, 0.15, 1.3);
     if (scanRef.current) {
-      const pulse = 0.92 + Math.sin(t * 1.1) * 0.06;
-      scanRef.current.scale.set(pulse, pulse, 1);
+      const s = 0.94 + pulse * 0.06;
+      scanRef.current.scale.set(s, s, 1);
       const mat = scanRef.current.material as THREE.MeshBasicMaterial;
-      mat.opacity = 0.08 + Math.sin(t * 1.4) * 0.04 + (active ? 0.06 : 0);
+      mat.opacity = 0.08 + pulse * 0.05 + (active ? 0.06 : 0);
     }
   });
 
