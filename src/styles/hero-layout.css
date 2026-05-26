@@ -199,22 +199,118 @@
   }
 }
 
+/* Anchored to first viewport — visible on load, scrolls away with hero */
 .hero-command-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: auto;
+  top: calc(100dvh - var(--os-status-bar-height, 30px) - 5.5rem);
   opacity: 1;
   isolation: isolate;
+  visibility: visible;
+}
+
+@media (max-width: 1023px) {
+  .hero-command-bar {
+    top: calc(100dvh - var(--os-status-bar-height, 30px) - 5rem);
+  }
 }
 
 .hero-command-bar__descend {
-  text-shadow: 0 0 24px rgba(3, 3, 8, 0.9);
+  padding: 0.35rem 0.75rem 0.5rem;
+  border-radius: 2px;
+  background: linear-gradient(
+    180deg,
+    rgba(3, 3, 8, 0.55) 0%,
+    rgba(3, 3, 8, 0.25) 100%
+  );
+  box-shadow:
+    0 0 32px rgba(0, 240, 255, 0.08),
+    0 8px 24px rgba(3, 3, 8, 0.45);
 }
 
 .hero-command-bar__label {
-  opacity: 0.72;
-  letter-spacing: 0.32em;
+  opacity: 0.95;
+  letter-spacing: 0.34em;
+  text-shadow: 0 0 18px rgba(0, 240, 255, 0.35);
 }
 
 .hero-scroll-cue {
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.06);
+  box-shadow:
+    0 0 24px rgba(0, 240, 255, 0.12),
+    inset 0 0 12px rgba(212, 255, 0, 0.06);
+}
+
+/* ─── Hero arrival (first ~3s) ─── */
+.hero-char {
+  opacity: 1;
+}
+
+.hero-section--mounted.hero-section:not(.hero-section--arrived) .hero-char {
+  opacity: 0.92;
+}
+
+.hero-section--arrived .hero-core-field,
+.hero-section--mounted .hero-core-field {
+  animation: hero-arrival-core 2.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-section--arrived .hero-depth-vignette,
+.hero-section--mounted .hero-depth-vignette {
+  animation: hero-arrival-depth 2.2s ease-out both;
+}
+
+.hero-panel--arrival {
+  animation: hero-arrival-panel 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+}
+
+.hero-panel--arrival-delayed {
+  animation-delay: 0.85s;
+}
+
+.hero-shell--arrival {
+  animation: hero-arrival-shell 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+
+@keyframes hero-arrival-core {
+  from {
+    opacity: 0;
+    filter: brightness(0.6) saturate(0.85);
+  }
+  to {
+    opacity: 1;
+    filter: brightness(1) saturate(1.1);
+  }
+}
+
+@keyframes hero-arrival-depth {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-arrival-panel {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-arrival-shell {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .scroll-cinematic-section {
@@ -222,7 +318,7 @@
 }
 
 .scroll-cinematic-section--viewport {
-  min-height: 100dvh;
+  min-height: min(100dvh, fit-content);
 }
 
 .scroll-cinematic-section--stable {

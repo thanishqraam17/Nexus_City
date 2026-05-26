@@ -21,7 +21,7 @@ export function SectionBridge({
   return (
     <div
       className={cn(
-        "os-section-bridge pointer-events-none relative z-[9] h-32 sm:h-44",
+        "os-section-bridge pointer-events-none relative z-[9] h-24 sm:h-32",
         className
       )}
       aria-hidden

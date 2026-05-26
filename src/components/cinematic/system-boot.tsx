@@ -24,14 +24,14 @@ export function SystemBoot() {
     if (sessionStorage.getItem(BOOT_KEY) === "1") return;
 
     setVisible(true);
-    const t1 = setTimeout(() => setPhase(1), 280);
-    const t2 = setTimeout(() => setPhase(2), 620);
-    const t3 = setTimeout(() => setPhase(3), 980);
+    const t1 = setTimeout(() => setPhase(1), 320);
+    const t2 = setTimeout(() => setPhase(2), 780);
+    const t3 = setTimeout(() => setPhase(3), 1280);
     const t4 = setTimeout(() => {
       setPhase(4);
       setVisible(false);
       sessionStorage.setItem(BOOT_KEY, "1");
-    }, 1650);
+    }, 2200);
 
     return () => {
       clearTimeout(t1);

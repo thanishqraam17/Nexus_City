@@ -3,54 +3,55 @@ export interface TerminalCommand {
   input: string;
   lines: string[];
   delayMs?: number;
+  dynamic?: boolean;
+  opensDiagnostics?: boolean;
 }
 
 export const TERMINAL_BOOT: string[] = [
   "NEXUS CITY OS v2.4 — command interface",
   "Neural uplink established · encryption AES-512",
-  "Type `help` or select a command below",
+  "Enter a command or select below · type `help` for syntax",
 ];
 
 export const TERMINAL_COMMANDS: TerminalCommand[] = [
   {
     id: "sync",
     input: "sync --district alpha-7",
-    lines: [
-      "› Initializing district handshake…",
-      "› Alpha-7 mesh nodes: 847 online",
-      "› Transit corridors synchronized",
-      "✓ District sync complete · latency 11.8ms",
-    ],
+    lines: [],
+    dynamic: true,
   },
   {
     id: "uplink",
     input: "neural uplink --status",
-    lines: [
-      "› Neural core temperature: nominal",
-      "› Throughput: 87.4% · variance ±2.1",
-      "› Prediction engine: ACTIVE",
-      "✓ Uplink stable across all sectors",
-    ],
+    lines: [],
+    dynamic: true,
   },
   {
     id: "optimize",
     input: "optimize infrastructure --auto",
-    lines: [
-      "› Analyzing load distribution…",
-      "› Energy mesh rebalanced · +3.2% efficiency",
-      "› Traffic flow optimized · 12 corridors",
-      "✓ Infrastructure optimization applied",
-    ],
+    lines: [],
+    dynamic: true,
+    delayMs: 320,
   },
   {
     id: "diag",
     input: "telemetry diagnostics --full",
-    lines: [
-      "› Grid uptime: 99.97%",
-      "› Atmospheric index: 92.8 aqi",
-      "› AI decision rate: 2.1M/hr",
-      "✓ All subsystems within tolerance",
-    ],
+    lines: [],
+    dynamic: true,
+    opensDiagnostics: true,
+  },
+  {
+    id: "route",
+    input: "neural route --status",
+    lines: [],
+    dynamic: true,
+  },
+  {
+    id: "report",
+    input: "infrastructure report",
+    lines: [],
+    dynamic: true,
+    delayMs: 380,
   },
   {
     id: "help",
@@ -59,9 +60,12 @@ export const TERMINAL_COMMANDS: TerminalCommand[] = [
       "Available commands:",
       "  sync --district [id]",
       "  neural uplink --status",
+      "  neural route --status",
       "  optimize infrastructure --auto",
       "  telemetry diagnostics --full",
+      "  infrastructure report",
       "  query infrastructure --mesh",
+      "  clear",
     ],
   },
   {
@@ -78,4 +82,11 @@ export const TERMINAL_COMMANDS: TerminalCommand[] = [
   },
 ];
 
-export const TERMINAL_SUGGESTIONS = TERMINAL_COMMANDS.map((c) => c.input);
+export const TERMINAL_SUGGESTIONS = [
+  "neural uplink --status",
+  "infrastructure report",
+  "telemetry diagnostics --full",
+  "optimize infrastructure --auto",
+  "neural route --status",
+  "help",
+];

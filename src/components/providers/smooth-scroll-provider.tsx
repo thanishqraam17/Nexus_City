@@ -16,6 +16,11 @@ export function SmoothScrollProvider({
   const navOpen = useUIStore((s) => s.navOpen);
 
   useEffect(() => {
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+
     const lenis = new Lenis({
       duration: 1.5,
       easing: (t) => 1 - Math.pow(1 - t, 4),

@@ -23,7 +23,7 @@ export function AccessSection() {
       id="access"
       data-section="access"
       data-atmosphere="access"
-      className="os-section os-section--access access-ending relative z-10 pb-36 pt-12 sm:pb-48 sm:pt-16"
+      className="os-section os-section--access access-ending relative z-10 pt-12 sm:pt-16"
     >
       <div className="access-ending__atmosphere" aria-hidden />
       <div className="access-ending__convergence" aria-hidden />
@@ -118,7 +118,7 @@ export function AccessSection() {
           </GlassPanel>
         </motion.div>
 
-        <footer className="mt-16 flex flex-col gap-4 border-t border-white/[0.08] pt-8 sm:flex-row sm:items-center sm:justify-between">
+        <footer className="access-ending__footer mt-12 flex flex-col gap-4 border-t border-white/[0.08] pt-7 sm:flex-row sm:items-center sm:justify-between">
           <MicroLabel accent="muted">© 2026 Nexus City Systems</MicroLabel>
           <div className="flex flex-wrap gap-6">
             <MicroLabel accent="muted">Privacy</MicroLabel>

@@ -176,6 +176,7 @@
 .access-ending {
   position: relative;
   overflow: visible;
+  padding-bottom: max(4.5rem, calc(30px + 3.5rem));
 }
 
 .access-ending__atmosphere {
@@ -357,13 +358,17 @@
 }
 
 /* ─── OS status bar ─── */
+:root {
+  --os-status-bar-height: 30px;
+}
+
 .os-status-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 48;
-  height: 30px;
+  height: var(--os-status-bar-height);
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(3, 3, 8, 0.72);
   backdrop-filter: blur(14px);
@@ -380,13 +385,44 @@
   padding: 0 1rem;
 }
 
+.os-status-bar__brand-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
 .os-status-bar__brand {
   font-family: var(--font-jetbrains), monospace;
   font-size: 8px;
   letter-spacing: 0.32em;
   text-transform: uppercase;
   color: rgba(212, 255, 0, 0.55);
-  flex-shrink: 0;
+}
+
+.os-status-bar__event {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 7px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(0, 240, 255, 0.65);
+  animation: os-event-fade 0.5s ease-out;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 10rem;
+}
+
+@keyframes os-event-fade {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .os-status-bar__metrics {
@@ -579,17 +615,23 @@
 }
 
 /* ─── Access climax ─── */
+.access-ending__footer {
+  position: relative;
+  z-index: 1;
+}
+
 .access-ending__convergence {
   position: absolute;
-  inset: -30% -15%;
+  inset: -20% -10%;
   pointer-events: none;
   background: radial-gradient(
     ellipse 50% 45% at 50% 55%,
-    rgba(212, 255, 0, 0.1) 0%,
-    rgba(0, 240, 255, 0.04) 35%,
+    rgba(212, 255, 0, 0.08) 0%,
+    rgba(0, 240, 255, 0.03) 35%,
     transparent 65%
   );
-  animation: access-convergence 8s ease-in-out infinite;
+  opacity: 0.85;
+  animation: access-convergence 10s ease-in-out infinite;
 }
 
 .access-ending__mesh-glow {
@@ -688,7 +730,11 @@
 }
 
 .landing-canvas {
-  padding-bottom: 2rem;
+  padding-bottom: 0;
+}
+
+.landing-canvas main {
+  padding-bottom: 0;
 }
 
 .ambient-pulse {
@@ -704,6 +750,32 @@
   .os-status-bar__cell:nth-child(n + 5) {
     display: none;
   }
+
+  .os-status-bar__event {
+    max-width: 6rem;
+  }
+}
+
+/* Runtime-driven environmental life */
+html[data-os-atmosphere="monitoring"] .global-ambient-scan {
+  opacity: 0.85;
+}
+
+html[data-os-atmosphere="adaptive"] .scroll-environment-cyan {
+  opacity: 0.07;
+}
+
+html[data-os-neural="recalibrating"] .neural-city-backdrop__far-signal {
+  animation-duration: 4.5s;
+}
+
+html[data-os-neural="optimized"] .ambient-pulse-bar {
+  opacity: 0.9;
+}
+
+.live-feed-diagnostics__events {
+  max-height: 9rem;
+  overflow-y: auto;
 }
 
 .live-feed-diagnostics__backdrop {

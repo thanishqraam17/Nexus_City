@@ -13,12 +13,12 @@ export function ScrollEnvironment() {
   const cyan = useTransform(
     scrollYProgress,
     [0, 0.2, 0.45, 0.7, 1],
-    [0.03, 0.07, 0.1, 0.06, 0.04]
+    [0.05, 0.07, 0.1, 0.06, 0.03]
   );
   const lime = useTransform(
     scrollYProgress,
     [0, 0.3, 0.55, 0.8, 1],
-    [0.04, 0.05, 0.1, 0.07, 0.05]
+    [0.05, 0.05, 0.1, 0.07, 0.04]
   );
   const depth = useTransform(scrollYProgress, [0, 0.5, 1], [0, 0.08, 0.18]);
   const carry = useTransform(scrollYProgress, [0, 1], [0.02, 0.12]);

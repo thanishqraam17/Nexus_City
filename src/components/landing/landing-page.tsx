@@ -57,7 +57,6 @@ export function LandingPage() {
           atmosphere="neural"
           depth={2}
           softMotion
-          viewportMode
           layoutStable
           osLayer="neural"
           className="overflow-visible"
@@ -76,7 +75,13 @@ export function LandingPage() {
         </ScrollCinematicSection>
 
         <SectionBridge from="lime" to="void" label="Access gateway" />
-        <ScrollCinematicSection atmosphere="access" depth={5} osLayer="access">
+        <ScrollCinematicSection
+          atmosphere="access"
+          depth={5}
+          layoutStable
+          softMotion
+          osLayer="access"
+        >
           <AccessSection />
         </ScrollCinematicSection>
       </main>

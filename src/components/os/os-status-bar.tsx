@@ -41,6 +41,8 @@ function OsStatusBarInner() {
   const infrastructureLoad = useOsRuntimeStore((s) => s.infrastructureLoad);
   const uplink = useOsRuntimeStore((s) => s.uplink);
   const activeRelays = useOsRuntimeStore((s) => s.activeRelays);
+  const throughputIndex = useOsRuntimeStore((s) => s.throughputIndex);
+  const lastEvent = useOsRuntimeStore((s) => s.lastEvent);
   const tick = useOsRuntimeStore((s) => s.tick);
 
   if (!mounted) return null;
@@ -54,7 +56,14 @@ function OsStatusBarInner() {
     >
       <div className="os-status-bar__scan" aria-hidden />
       <div className="os-status-bar__inner">
-        <span className="os-status-bar__brand">NEXUS OS</span>
+        <div className="os-status-bar__brand-group">
+          <span className="os-status-bar__brand">NEXUS OS</span>
+          {lastEvent && (
+            <span className="os-status-bar__event" key={lastEvent.id}>
+              {lastEvent.shortLabel}
+            </span>
+          )}
+        </div>
         <div className="os-status-bar__metrics">
           <MetricCell
             label="Sync"
@@ -64,8 +73,9 @@ function OsStatusBarInner() {
           <MetricCell label="Neural" value={neuralState} accent="cyan" />
           <MetricCell label="Atmosphere" value={atmosphere} />
           <MetricCell label="Load" value={`${infrastructureLoad}%`} />
+          <MetricCell label="Throughput" value={`${throughputIndex}`} accent="cyan" />
           <MetricCell label="Uplink" value={uplink} accent="lime" />
-          <MetricCell label="Relays" value={`${activeRelays} active`} accent="cyan" />
+          <MetricCell label="Relays" value={`${activeRelays}/5`} accent="cyan" />
         </div>
         <span
           className={`os-status-bar__pulse ${reduceMotion ? "" : "is-live"}`}

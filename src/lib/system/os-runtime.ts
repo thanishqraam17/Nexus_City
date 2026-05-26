@@ -17,6 +17,7 @@ export interface OsRuntimeSnapshot {
   uplink: UplinkState;
   activeRelays: number;
   throughputIndex: number;
+  energyStability: number;
 }
 
 const NEURAL_STATES: NeuralActivityState[] = [
@@ -43,14 +44,22 @@ export function computeOsSnapshot(tick: number): OsRuntimeSnapshot {
   const atmoIdx = Math.floor((tick * 0.11) % ATMOSPHERE_STATES.length);
   const uplinkIdx = infrastructureLoad > 62 ? 1 : syncPercent > 99 ? 2 : 0;
 
+  const relayWave = Math.sin(tick * 0.23 + 2.1) * 0.5 + 0.5;
+  const activeRelays = relayWave > 0.62 ? 5 : 4;
+  const energyStability = Math.min(
+    99,
+    Math.max(88, drift(94, 4, tick, 5))
+  );
+
   return {
     syncPercent,
     neuralState: NEURAL_STATES[neuralIdx],
     atmosphere: ATMOSPHERE_STATES[atmoIdx],
     infrastructureLoad: Math.round(infrastructureLoad),
     uplink: UPLINK_STATES[uplinkIdx],
-    activeRelays: 5,
+    activeRelays,
     throughputIndex: Math.round(throughputIndex),
+    energyStability: Math.round(energyStability),
   };
 }
 

@@ -13,8 +13,12 @@ function AiAssistantLayerInner() {
   const aiMessage = useOsRuntimeStore((s) => s.aiMessage);
   const aiVisible = useOsRuntimeStore((s) => s.aiVisible);
   const neuralState = useOsRuntimeStore((s) => s.neuralState);
+  const lastEvent = useOsRuntimeStore((s) => s.lastEvent);
+  const atmosphere = useOsRuntimeStore((s) => s.atmosphere);
 
   if (!mounted || reduceMotion) return null;
+
+  const isEvent = lastEvent?.message === aiMessage;
 
   return (
     <div className="ai-assistant-layer pointer-events-none fixed z-[45]" aria-live="polite">
@@ -28,10 +32,12 @@ function AiAssistantLayerInner() {
             exit={{ opacity: 0, y: 6, filter: "blur(4px)" }}
             transition={easeLuxury}
           >
-            <span className="ai-assistant-layer__eyebrow">System observation</span>
+            <span className="ai-assistant-layer__eyebrow">
+              {isEvent ? "Infrastructure event" : "System observation"}
+            </span>
             <p className="ai-assistant-layer__message">{aiMessage}</p>
             <span className="ai-assistant-layer__meta">
-              Neural · {neuralState} · autonomous
+              Neural · {neuralState} · {atmosphere}
             </span>
           </motion.aside>
         )}

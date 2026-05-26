@@ -13,6 +13,7 @@ export const NAV_SECTIONS: NavSection[] = [
   { id: "overview", label: "Overview", navLabel: "Overview" },
   { id: "intelligence", label: "Intelligence" },
   { id: "neural-map", label: "Neural Map" },
+  { id: "systems", label: "Systems", navLabel: "Systems" },
   { id: "terminal", label: "Command Terminal", navLabel: "Command" },
   { id: "access", label: "Access" },
 ];

@@ -9,6 +9,10 @@ import {
   type ReactNode,
 } from "react";
 import type Lenis from "lenis";
+import {
+  clearHashFromUrl,
+  isPageReload,
+} from "@/lib/navigation/scroll-reset";
 import { getSectionIdFromHash, SCROLL_OFFSET } from "@/lib/navigation/sections";
 
 interface ScrollContextValue {
@@ -68,9 +72,20 @@ export function ScrollContextProvider({
   }, [scrollTo]);
 
   useEffect(() => {
+    if (!lenis) return;
+
+    if (isPageReload()) {
+      clearHashFromUrl();
+      lenis.scrollTo(0, { immediate: true });
+      return;
+    }
+
     const hash = window.location.hash;
     const id = getSectionIdFromHash(hash);
-    if (!id || !lenis) return;
+    if (!id) {
+      lenis.scrollTo(0, { immediate: true });
+      return;
+    }
 
     const t = window.setTimeout(() => scrollTo(id), 120);
     return () => window.clearTimeout(t);

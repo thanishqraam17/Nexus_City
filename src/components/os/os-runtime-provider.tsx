@@ -6,6 +6,7 @@ import { useMounted } from "@/hooks/use-mounted";
 import { useScrollSpy } from "@/hooks/use-scroll-spy";
 import { SECTION_AI_OBSERVATIONS } from "@/lib/system/os-runtime";
 import { useOsRuntimeStore } from "@/store/os-runtime-store";
+import { OsEnvironmentSync } from "@/components/os/os-environment-sync";
 
 const TICK_MS = 2800;
 
@@ -51,5 +52,10 @@ export function OsRuntimeProvider({ children }: { children: React.ReactNode }) {
     return () => window.clearTimeout(hide);
   }, [aiMessage, mounted, reduceMotion]);
 
-  return <>{children}</>;
+  return (
+    <>
+      <OsEnvironmentSync />
+      {children}
+    </>
+  );
 }

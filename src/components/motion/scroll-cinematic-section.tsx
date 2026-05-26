@@ -57,8 +57,8 @@ export function ScrollCinematicSection({
 
   const opacity = useTransform(
     scrollYProgress,
-    viewportMode ? [0, 0.06, 0.92, 1] : [0, 0.1, 0.85, 1],
-    viewportMode ? [0.88, 1, 1, 0.92] : [0.48, 1, 1, 0.58]
+    viewportMode ? [0, 0.06, 0.92, 1] : [0, 0.08, 0.88, 1],
+    viewportMode ? [0.88, 1, 1, 0.92] : [0.62, 1, 1, 0.72]
   );
   const y = useTransform(
     scrollYProgress,

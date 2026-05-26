@@ -6,12 +6,17 @@ import { useEffect } from "react";
 import { TelemetryRail } from "@/components/ui/telemetry-widget";
 import { MicroLabel } from "@/components/ui/micro-label";
 import { useUIStore } from "@/store/ui-store";
+import { useOsRuntimeStore } from "@/store/os-runtime-store";
 import { springSoft } from "@/lib/motion/transitions";
 
 export function LiveFeedDiagnostics() {
   const open = useUIStore((s) => s.telemetryPanelOpen);
   const setOpen = useUIStore((s) => s.setTelemetryPanelOpen);
   const setScrollLocked = useUIStore((s) => s.setScrollLocked);
+  const syncPercent = useOsRuntimeStore((s) => s.syncPercent);
+  const neuralState = useOsRuntimeStore((s) => s.neuralState);
+  const lastEvent = useOsRuntimeStore((s) => s.lastEvent);
+  const eventLog = useOsRuntimeStore((s) => s.eventLog);
 
   useEffect(() => {
     setScrollLocked(open);
@@ -72,11 +77,29 @@ export function LiveFeedDiagnostics() {
               </button>
             </header>
             <div className="flex-1 overflow-y-auto px-6 py-6">
+              {eventLog.length > 0 && (
+                <div className="live-feed-diagnostics__events mb-6 space-y-2 border-b border-white/[0.06] pb-5">
+                  <MicroLabel accent="cyan" className="text-[8px]">
+                    Recent infrastructure events
+                  </MicroLabel>
+                  {eventLog.slice(0, 4).map((evt) => (
+                    <p
+                      key={evt.id}
+                      className="font-mono text-[10px] leading-relaxed text-white/45"
+                    >
+                      <span className="text-nexus-cyan/80">{evt.shortLabel}</span>
+                      {" · "}
+                      {evt.message}
+                    </p>
+                  ))}
+                </div>
+              )}
               <TelemetryRail />
             </div>
             <footer className="border-t border-white/[0.06] px-6 py-4">
               <p className="font-mono text-[8px] uppercase tracking-[0.28em] text-white/35">
-                Metropolitan mesh · real-time sync
+                Sync {syncPercent.toFixed(2)}% · {neuralState}
+                {lastEvent ? ` · ${lastEvent.shortLabel}` : " · mesh stable"}
               </p>
             </footer>
           </motion.aside>

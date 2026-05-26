@@ -418,6 +418,22 @@
   }
 }
 
+.os-terminal-input-row {
+  background: rgba(3, 3, 8, 0.35);
+}
+
+.os-terminal-input {
+  caret-color: var(--nexus-lime);
+}
+
+.os-terminal-input:focus {
+  outline: none;
+}
+
+.os-terminal-input:disabled {
+  opacity: 0.5;
+}
+
 .os-terminal-history {
   border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
   padding-bottom: 0.5rem;

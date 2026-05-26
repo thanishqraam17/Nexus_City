@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
 import { useMounted } from "@/hooks/use-mounted";
+import { cn } from "@/lib/utils";
 import { ArrowUpRight, ChevronRight } from "lucide-react";
 import { NexusButton } from "@/components/ui/nexus-button";
 import { Magnetic } from "@/components/cinematic/magnetic";
@@ -18,33 +19,48 @@ export function HeroSection() {
   const mounted = useMounted();
   const reduceMotion = useHydratedReducedMotion();
   const titleRef = useRef<HTMLHeadingElement>(null);
+  const [arrivalDone, setArrivalDone] = useState(false);
   const motionReady = mounted && !reduceMotion;
+
+  useEffect(() => {
+    if (!mounted) return;
+    const t = setTimeout(() => setArrivalDone(true), reduceMotion ? 0 : 2800);
+    return () => clearTimeout(t);
+  }, [mounted, reduceMotion]);
 
   useEffect(() => {
     if (!motionReady || !titleRef.current) return;
     const chars = titleRef.current.querySelectorAll(".hero-char");
     gsap.fromTo(
       chars,
-      { opacity: 0, y: 48 },
+      { opacity: 0, y: 36 },
       {
         opacity: 1,
         y: 0,
-        duration: 1,
-        stagger: 0.04,
+        duration: 1.05,
+        stagger: 0.045,
         ease: "power3.out",
-        delay: 0.35,
+        delay: 0.55,
       }
     );
   }, [motionReady]);
 
   return (
-    <section id="overview" data-os-layer="overview" className="hero-section">
+    <section
+      id="overview"
+      data-os-layer="overview"
+      className={cn(
+        "hero-section",
+        mounted && "hero-section--mounted",
+        arrivalDone && "hero-section--arrived"
+      )}
+    >
       <HeroDepth />
       <HeroHologram />
 
-      <div className="hero-shell">
+      <div className="hero-shell hero-shell--arrival">
         <div className="hero-grid">
-          <div className="hero-grid-left hero-grid-left--focus">
+          <div className="hero-grid-left hero-grid-left--focus hero-panel--arrival">
             <div className="flex flex-wrap items-center gap-3 sm:gap-4">
               <MicroLabel accent="lime" pulse={false}>
                 Smart City Operating System
@@ -108,7 +124,7 @@ export function HeroSection() {
 
           <div className="hero-grid-center" aria-hidden />
 
-          <div className="hero-grid-right">
+          <div className="hero-grid-right hero-panel--arrival hero-panel--arrival-delayed">
             <TelemetryRail />
           </div>
         </div>
