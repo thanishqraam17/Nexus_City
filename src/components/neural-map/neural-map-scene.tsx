@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
@@ -10,19 +10,15 @@ import {
   NEURAL_HUB_POSITION,
   NEURAL_RELAY_POSITIONS,
   NEURAL_SECTOR_POSITIONS,
-  buildNeuralConnections,
   getRelatedNodeIds,
 } from "@/lib/system/neural-layout";
+import { NEURAL_NODE_INDEX } from "@/lib/system/neural-graph";
 import { cursorProximity01 } from "@/lib/system/neural-cursor-influence";
-import { neuralPhase } from "@/lib/system/neural-sync";
 import { NEURAL_SECTOR_META, NEURAL_RELAY_META } from "@/lib/system/neural-data";
 import { NEXUS } from "@/components/hero-core/colors";
 import { NeuralMapEnvironment } from "./neural-map-environment";
 import { NeuralMapControls } from "./neural-map-controls";
-import { NeuralSignalFlow } from "./neural-signal-flow";
-import { NeuralOrbitRings } from "./neural-orbit-rings";
-import { NeuralCoreNexus } from "./neural-core-nexus";
-import { NeuralDepthField } from "./neural-depth-field";
+import { NeuralGraph } from "./neural-graph";
 
 interface NeuralMapSceneProps {
   hoveredSector: NeuralSectorId | null;
@@ -30,6 +26,8 @@ interface NeuralMapSceneProps {
   onSectorHover: (id: NeuralSectorId | null) => void;
   onSectorSelect: (id: NeuralSectorId) => void;
 }
+
+const NODE_COUNT = 11;
 
 export function NeuralMapScene({
   hoveredSector,
@@ -39,11 +37,13 @@ export function NeuralMapScene({
 }: NeuralMapSceneProps) {
   const sectorMats = useRef<Record<string, THREE.MeshStandardMaterial>>({});
   const relayMats = useRef<THREE.MeshBasicMaterial[]>([]);
+  const hubMat = useRef<THREE.MeshStandardMaterial | null>(null);
   const worldRef = useRef<THREE.Group>(null);
-  const connections = useMemo(() => buildNeuralConnections(), []);
+  const nodeRefs = useRef<(THREE.Object3D | null)[]>(Array.from({ length: NODE_COUNT }, () => null));
+  const nodeProximityRef = useRef<number[]>(Array.from({ length: NODE_COUNT }, () => 0));
+
   const { camera, size } = useThree();
   const { smoothX, smoothY, ready: cursorReady, reducedMotion } = useCursor();
-  const [cursorBoost, setCursorBoost] = useState(0);
 
   const focusId = hoveredSector ?? selectedSector;
   const analysisId = selectedSector;
@@ -52,16 +52,20 @@ export function NeuralMapScene({
     [analysisId, focusId]
   );
 
+  const registerNode = (index: number, obj: THREE.Object3D | null) => {
+    nodeRefs.current[index] = obj;
+  };
+
   useFrame((state) => {
     const t = state.clock.elapsedTime;
+    const proximity = nodeProximityRef.current;
 
-    if (worldRef.current) {
-      worldRef.current.position.y = Math.sin(neuralPhase(t, 0, 1)) * 0.02;
+    for (let i = 0; i < NODE_COUNT; i++) {
+      proximity[i] = 0;
     }
 
-    let maxProx = 0;
     if (cursorReady && !reducedMotion && worldRef.current) {
-      const proxHub = cursorProximity01(
+      const hubProx = cursorProximity01(
         NEURAL_HUB_POSITION[0],
         NEURAL_HUB_POSITION[1],
         NEURAL_HUB_POSITION[2],
@@ -72,10 +76,26 @@ export function NeuralMapScene({
         smoothY,
         220
       );
-      maxProx = proxHub;
+      proximity[NEURAL_NODE_INDEX.HUB] = hubProx;
+
+      NEURAL_RELAY_POSITIONS.forEach((pos, i) => {
+        const idx = NEURAL_NODE_INDEX[`R${i}`] ?? 1 + i;
+        proximity[idx] = cursorProximity01(
+          pos[0],
+          pos[1],
+          pos[2],
+          worldRef.current,
+          camera,
+          size,
+          smoothX,
+          smoothY,
+          180
+        );
+      });
 
       NEURAL_SECTORS.forEach((sector) => {
         const pos = NEURAL_SECTOR_POSITIONS[sector.id];
+        const idx = NEURAL_NODE_INDEX[sector.id];
         const prox = cursorProximity01(
           pos[0],
           pos[1],
@@ -87,13 +107,13 @@ export function NeuralMapScene({
           smoothY,
           200
         );
-        maxProx = Math.max(maxProx, prox);
+        proximity[idx] = prox;
 
         const mat = sectorMats.current[sector.id];
         if (!mat) return;
         const isFocus = sector.id === hoveredSector || sector.id === selectedSector;
         const dimmed =
-          analysisId !== null && !relatedIds.has(sector.id) && !isSelected(sector.id);
+          analysisId !== null && !relatedIds.has(sector.id) && sector.id !== selectedSector;
         if (!isFocus && !dimmed) {
           mat.emissiveIntensity = 1.2 + prox * 1.4;
           mat.opacity = 0.72 + prox * 0.12;
@@ -101,25 +121,23 @@ export function NeuralMapScene({
       });
 
       relayMats.current.forEach((mat, i) => {
-        const pos = NEURAL_RELAY_POSITIONS[i];
-        if (!mat || !pos) return;
-        const prox = cursorProximity01(
-          pos[0],
-          pos[1],
-          pos[2],
-          worldRef.current,
-          camera,
-          size,
-          smoothX,
-          smoothY,
-          180
-        );
-        maxProx = Math.max(maxProx, prox);
+        const prox = proximity[NEURAL_NODE_INDEX[`R${i}`] ?? 1 + i] ?? 0;
+        if (!mat) return;
         mat.opacity = 0.45 + prox * 0.35;
       });
+
+      if (hubMat.current) {
+        const hubProxVal = proximity[NEURAL_NODE_INDEX.HUB] ?? 0;
+        hubMat.current.emissiveIntensity = 1.8 + hubProxVal * 1.2;
+      }
     }
 
-    setCursorBoost((prev) => prev + (maxProx - prev) * 0.12);
+    nodeRefs.current.forEach((obj, idx) => {
+      if (!obj) return;
+      const prox = proximity[idx] ?? 0;
+      const scale = 1 + prox * (idx === NEURAL_NODE_INDEX.HUB ? 0.06 : 0.1);
+      obj.scale.setScalar(scale);
+    });
 
     Object.entries(sectorMats.current).forEach(([id, mat]) => {
       const isFocus = id === hoveredSector || id === selectedSector;
@@ -131,15 +149,8 @@ export function NeuralMapScene({
     });
   });
 
-  function isSelected(id: string) {
-    return selectedSector === id;
-  }
-
-  const focusBoost = focusId ? 1 : 0;
-
   return (
     <>
-      <NeuralDepthField />
       <NeuralMapEnvironment />
       <NeuralMapControls />
 
@@ -153,25 +164,44 @@ export function NeuralMapScene({
       )}
 
       <group ref={worldRef}>
-        <NeuralOrbitRings active={!!focusId} />
-
-        <NeuralSignalFlow
-          connections={connections}
+        <NeuralGraph
+          nodeRefs={nodeRefs}
+          nodeProximityRef={nodeProximityRef}
           focusId={focusId}
           analysisId={analysisId}
-          cursorBoost={cursorBoost}
         />
 
-        <group position={NEURAL_HUB_POSITION}>
-          <NeuralCoreNexus focusBoost={focusBoost} cursorBoost={cursorBoost} />
+        <group
+          ref={(el) => registerNode(NEURAL_NODE_INDEX.HUB, el)}
+          position={NEURAL_HUB_POSITION}
+        >
+          <mesh renderOrder={3}>
+            <sphereGeometry args={[0.12, 24, 24]} />
+            <meshStandardMaterial
+              ref={(m) => {
+                if (m) hubMat.current = m;
+              }}
+              color={NEXUS.limeBright}
+              emissive={NEXUS.lime}
+              emissiveIntensity={1.8}
+              transparent
+              opacity={0.9}
+              toneMapped={false}
+            />
+          </mesh>
         </group>
 
         {NEURAL_RELAY_POSITIONS.map((pos, i) => {
           const meta = NEURAL_RELAY_META[i];
           if (!meta) return null;
+          const idx = NEURAL_NODE_INDEX[meta.id] ?? 1 + i;
           const dimmed = analysisId !== null && !relatedIds.has(meta.id);
           return (
-            <group key={meta.id} position={pos}>
+            <group
+              key={meta.id}
+              ref={(el) => registerNode(idx, el)}
+              position={pos}
+            >
               <mesh renderOrder={3}>
                 <sphereGeometry args={[0.05, 10, 10]} />
                 <meshBasicMaterial
@@ -192,6 +222,7 @@ export function NeuralMapScene({
         {NEURAL_SECTORS.map((sector) => {
           const pos = NEURAL_SECTOR_POSITIONS[sector.id];
           const meta = NEURAL_SECTOR_META[sector.id];
+          const nodeIdx = NEURAL_NODE_INDEX[sector.id];
           const isHovered = hoveredSector === sector.id;
           const isSelectedNode = selectedSector === sector.id;
           const isFocus = isHovered || isSelectedNode;
@@ -199,7 +230,11 @@ export function NeuralMapScene({
             analysisId !== null && !relatedIds.has(sector.id) && !isSelectedNode;
 
           return (
-            <group key={sector.id} position={pos}>
+            <group
+              key={sector.id}
+              ref={(el) => registerNode(nodeIdx, el)}
+              position={pos}
+            >
               <mesh rotation={[Math.PI / 2, 0, 0]}>
                 <ringGeometry args={[0.26, 0.3, 48]} />
                 <meshBasicMaterial

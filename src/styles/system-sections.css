@@ -282,8 +282,8 @@ section[data-atmosphere="access"]::before {
   max-width: min(1600px, 100%);
   margin-inline: auto;
   flex: 1;
-  min-height: min(68vh, calc(100dvh - 15rem));
-  height: min(68vh, calc(100dvh - 15rem));
+  min-height: min(72vh, calc(100dvh - 12rem));
+  height: min(72vh, calc(100dvh - 12rem));
   overflow: visible;
   background: transparent !important;
 }
@@ -295,7 +295,7 @@ section[data-atmosphere="access"]::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  mix-blend-mode: screen;
+  mix-blend-mode: normal;
   pointer-events: none;
 }
 

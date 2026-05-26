@@ -3,20 +3,41 @@
 import { useEffect, useRef } from "react";
 import { useCursor } from "@/context/cursor-context";
 
-const TRAIL_LEN = 14;
-const HEAD_SMOOTH = 0.32;
-const CHAIN_SMOOTH = 0.38;
+const TRAIL_LEN = 20;
+const HEAD_SMOOTH = 0.28;
+const CHAIN_SMOOTH = 0.36;
 
 export function CinematicCursor() {
-  const { x, y, smoothX, smoothY, ready, reducedMotion } = useCursor();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const trailRef = useRef<{ x: number; y: number }[]>(
     Array.from({ length: TRAIL_LEN }, () => ({ x: 0, y: 0 }))
   );
   const rafRef = useRef<number>(0);
   const initRef = useRef(false);
+  const { x, y, smoothX, smoothY, ready, reducedMotion } = useCursor();
 
   useEffect(() => {
     if (!ready || reducedMotion) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+
+    let dpr = 1;
+
+    const resize = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    resize();
+    window.addEventListener("resize", resize);
 
     if (!initRef.current && x > 0 && y > 0) {
       trailRef.current.forEach((p) => {
@@ -39,61 +60,74 @@ export function CinematicCursor() {
         curr.y += (prev.y - curr.y) * CHAIN_SMOOTH;
       }
 
-      trail.forEach((p, i) => {
-        const el = document.getElementById(`cursor-trail-${i}`);
-        if (!el) return;
-        const fade = Math.pow(0.78, i);
-        const size = 6 - i * 0.25;
-        el.style.transform = `translate(${p.x}px, ${p.y}px) translate(-50%, -50%)`;
-        el.style.opacity = String(0.42 * fade);
-        el.style.width = `${size}px`;
-        el.style.height = `${size}px`;
-        el.style.filter = `blur(${0.5 + i * 0.45}px)`;
-      });
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      ctx.clearRect(0, 0, w, h);
 
-      const glow = document.getElementById("cursor-glow-main");
-      const glowOuter = document.getElementById("cursor-glow-outer");
-      const core = document.getElementById("cursor-core-main");
-      const persistence = document.getElementById("cursor-persistence-main");
+      ctx.globalCompositeOperation = "lighter";
 
-      if (glow) {
-        glow.style.transform = `translate(${smoothX}px, ${smoothY}px) translate(-50%, -50%)`;
+      for (let i = TRAIL_LEN - 1; i >= 0; i--) {
+        const p = trail[i];
+        const fade = Math.pow(0.82, i);
+        const radius = 5 + (TRAIL_LEN - i) * 0.35;
+        const alpha = 0.08 * fade;
+
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius);
+        grad.addColorStop(0, `rgba(212, 255, 0, ${alpha * 2.2})`);
+        grad.addColorStop(0.45, `rgba(0, 240, 255, ${alpha})`);
+        grad.addColorStop(1, "rgba(0, 240, 255, 0)");
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+        ctx.fill();
       }
-      if (glowOuter) {
-        glowOuter.style.transform = `translate(${smoothX}px, ${smoothY}px) translate(-50%, -50%) scale(${1 + Math.sin(performance.now() * 0.002) * 0.04})`;
-      }
-      if (core) {
-        core.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
-      }
-      if (persistence) {
-        persistence.style.transform = `translate(${smoothX}px, ${smoothY}px) translate(-50%, -50%)`;
-        persistence.style.opacity = String(0.55 + Math.sin(performance.now() * 0.003) * 0.15);
-      }
+
+      const glowGrad = ctx.createRadialGradient(
+        smoothX,
+        smoothY,
+        0,
+        smoothX,
+        smoothY,
+        28
+      );
+      glowGrad.addColorStop(0, "rgba(212, 255, 0, 0.22)");
+      glowGrad.addColorStop(0.5, "rgba(0, 240, 255, 0.08)");
+      glowGrad.addColorStop(1, "rgba(0, 240, 255, 0)");
+      ctx.fillStyle = glowGrad;
+      ctx.beginPath();
+      ctx.arc(smoothX, smoothY, 28, 0, Math.PI * 2);
+      ctx.fill();
+
+      const coreGrad = ctx.createRadialGradient(x, y, 0, x, y, 6);
+      coreGrad.addColorStop(0, "rgba(212, 255, 0, 0.95)");
+      coreGrad.addColorStop(0.6, "rgba(212, 255, 0, 0.35)");
+      coreGrad.addColorStop(1, "rgba(212, 255, 0, 0)");
+      ctx.fillStyle = coreGrad;
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalCompositeOperation = "source-over";
 
       rafRef.current = requestAnimationFrame(tick);
     };
 
     rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("resize", resize);
+    };
   }, [x, y, smoothX, smoothY, ready, reducedMotion]);
 
   if (!ready || reducedMotion) return null;
 
   return (
-    <div className="cinematic-cursor pointer-events-none fixed inset-0 z-[100]" aria-hidden>
-      {Array.from({ length: TRAIL_LEN }).map((_, i) => (
-        <span
-          key={i}
-          id={`cursor-trail-${i}`}
-          className={
-            i < 4 ? "cinematic-cursor-trail cinematic-cursor-trail--bright" : "cinematic-cursor-trail"
-          }
-        />
-      ))}
-      <span id="cursor-glow-outer" className="cinematic-cursor-glow cinematic-cursor-glow--outer" />
-      <span id="cursor-glow-main" className="cinematic-cursor-glow" />
-      <span id="cursor-persistence-main" className="cinematic-cursor-persistence" />
-      <span id="cursor-core-main" className="cinematic-cursor-core" />
-    </div>
+    <canvas
+      ref={canvasRef}
+      className="cinematic-cursor-canvas pointer-events-none fixed inset-0 z-[100]"
+      aria-hidden
+    />
   );
 }

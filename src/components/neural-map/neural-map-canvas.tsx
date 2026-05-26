@@ -23,7 +23,7 @@ function NeuralMapCanvasInner({
     <Canvas
       className="neural-map-canvas"
       dpr={[1, 1.25]}
-      camera={{ position: [0, 0.12, 13.4], fov: 36, near: 0.1, far: 60 }}
+      camera={{ position: [0, 1.2, 15], fov: 32, near: 0.1, far: 60 }}
       gl={{
         alpha: true,
         antialias: true,
