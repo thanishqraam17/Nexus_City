@@ -72,6 +72,12 @@ export const easeCinematic: Transition = {
   ease: [0.16, 1, 0.3, 1],
 };
 
+/** Premium UI / section reveals */
+export const easeLuxury: Transition = {
+  duration: 1.1,
+  ease: [0.19, 1, 0.22, 1],
+};
+
 export const staggerContainer = (stagger = 0.08, delay = 0.12) => ({
   hidden: {},
   visible: {

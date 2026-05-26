@@ -199,8 +199,35 @@
   }
 }
 
+.hero-command-bar {
+  opacity: 1;
+  isolation: isolate;
+}
+
+.hero-command-bar__descend {
+  text-shadow: 0 0 24px rgba(3, 3, 8, 0.9);
+}
+
+.hero-command-bar__label {
+  opacity: 0.72;
+  letter-spacing: 0.32em;
+}
+
+.hero-scroll-cue {
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.06);
+}
+
 .scroll-cinematic-section {
   will-change: transform, opacity;
+}
+
+.scroll-cinematic-section--viewport {
+  min-height: 100dvh;
+}
+
+.scroll-cinematic-section--stable {
+  transform: none !important;
+  will-change: opacity;
 }
 
 .landing-canvas main > .scroll-cinematic-section + .scroll-cinematic-section {

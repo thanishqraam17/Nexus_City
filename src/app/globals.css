@@ -134,6 +134,36 @@ body {
   );
 }
 
+.env-detail-traffic {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(212, 255, 0, 0.15) 20%,
+    rgba(0, 240, 255, 0.2) 50%,
+    rgba(212, 255, 0, 0.12) 80%,
+    transparent 100%
+  );
+  opacity: 0.4;
+  animation: env-traffic-drift 16s linear infinite;
+}
+
+@keyframes env-traffic-drift {
+  0% {
+    transform: translateX(-30%);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.55;
+  }
+  88% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateX(30%);
+    opacity: 0;
+  }
+}
+
 .env-detail-tech-line {
   animation: env-tech-pulse 6s ease-in-out infinite;
 }

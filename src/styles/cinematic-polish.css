@@ -188,6 +188,16 @@
   mix-blend-mode: screen;
 }
 
+.scroll-environment-carry {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(3, 3, 8, 0.15) 35%,
+    rgba(3, 3, 8, 0.35) 100%
+  );
+  mix-blend-mode: multiply;
+}
+
 .scroll-environment-depth {
   background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.35) 100%);
 }

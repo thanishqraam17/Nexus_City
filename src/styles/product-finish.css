@@ -318,7 +318,9 @@
 /* ─── Ultrawide / responsive ─── */
 @media (min-width: 1920px) {
   .neural-map-stage__canvas-host {
-    height: clamp(880px, 94vh, 1280px);
+    min-height: min(70vh, calc(100dvh - 14rem));
+    height: min(70vh, calc(100dvh - 14rem));
+    max-width: 1680px;
   }
 
   .os-section-inner {
@@ -328,8 +330,13 @@
 }
 
 @media (max-width: 1024px) {
+  .neural-viewport__stage {
+    min-height: min(64vh, calc(100dvh - 11rem));
+  }
+
   .neural-map-stage__canvas-host {
-    height: clamp(680px, 84vh, 960px);
+    min-height: min(62vh, calc(100dvh - 13rem));
+    height: min(62vh, calc(100dvh - 13rem));
   }
 
   .neural-analysis-panel {
@@ -349,12 +356,26 @@
   }
 }
 
+.live-feed-diagnostics__backdrop {
+  cursor: pointer;
+}
+
+.status-pill {
+  cursor: pointer;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .global-ambient,
   .global-ambient-pulse,
   .global-ambient-gradient,
   .global-ambient-scan,
   .global-ambient-bloom,
+  .neural-city-backdrop__skyline--animate,
+  .neural-city-backdrop__tower,
+  .neural-city-backdrop__scan.is-live,
+  .neural-city-backdrop__highways.is-live .neural-city-backdrop__highway::after,
+  .neural-city-backdrop__light,
+  .env-detail-traffic,
   .access-ending__scan::after,
   .access-ending__activation span {
     animation: none !important;

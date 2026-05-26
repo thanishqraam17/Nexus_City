@@ -16,6 +16,12 @@ const TECH_LINES = [
   { top: "78%", left: "58%", width: "100px", rotate: "-6deg" },
 ] as const;
 
+const TRAFFIC_STREAMS = [
+  { top: "28%", delay: "0s", duration: "14s" },
+  { top: "48%", delay: "2.5s", duration: "18s" },
+  { top: "66%", delay: "5s", duration: "16s" },
+] as const;
+
 export function EnvironmentalDetail() {
   const ready = useAtmosphereReady();
 
@@ -28,6 +34,18 @@ export function EnvironmentalDetail() {
       <div
         className={`env-detail-scanlines absolute inset-0 ${ready ? "opacity-[0.06]" : "opacity-[0.04]"}`}
       />
+
+      {TRAFFIC_STREAMS.map((stream, i) => (
+        <span
+          key={i}
+          className="env-detail-traffic absolute left-0 right-0 h-px"
+          style={{
+            top: stream.top,
+            animationDelay: stream.delay,
+            animationDuration: stream.duration,
+          }}
+        />
+      ))}
 
       {TECH_LINES.map((line, i) => (
         <span

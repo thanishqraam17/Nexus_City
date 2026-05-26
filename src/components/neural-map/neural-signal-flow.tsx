@@ -5,21 +5,17 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {
   type NeuralConnection,
-  getNeuralNodePosition,
   isConnectionHighlighted,
 } from "@/lib/system/neural-layout";
+import {
+  buildConnectionSegment,
+  packetPositionOnSegment,
+  type ConnectionSegment,
+} from "@/lib/system/neural-graph-geometry";
 import { NEXUS } from "@/components/hero-core/colors";
 
 const PACKET_COUNT = 2;
-
-interface SegmentData {
-  conn: NeuralConnection;
-  geo: THREE.BufferGeometry;
-  pa: THREE.Vector3;
-  pb: THREE.Vector3;
-  dir: THREE.Vector3;
-  len: number;
-}
+const _packetPos = new THREE.Vector3();
 
 interface NeuralSignalFlowProps {
   connections: NeuralConnection[];
@@ -27,60 +23,73 @@ interface NeuralSignalFlowProps {
   analysisId: string | null;
 }
 
+function createLineGeometry(seg: ConnectionSegment): THREE.BufferGeometry {
+  const geo = new THREE.BufferGeometry();
+  const positions = new Float32Array([
+    seg.start.x,
+    seg.start.y,
+    seg.start.z,
+    seg.end.x,
+    seg.end.y,
+    seg.end.z,
+  ]);
+  geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  return geo;
+}
+
+function updateLineGeometry(geo: THREE.BufferGeometry, seg: ConnectionSegment) {
+  const attr = geo.getAttribute("position") as THREE.BufferAttribute;
+  attr.setXYZ(0, seg.start.x, seg.start.y, seg.start.z);
+  attr.setXYZ(1, seg.end.x, seg.end.y, seg.end.z);
+  attr.needsUpdate = true;
+}
+
 export function NeuralSignalFlow({
   connections,
   focusId,
   analysisId,
 }: NeuralSignalFlowProps) {
-  const lineRefs = useRef<THREE.LineBasicMaterial[]>([]);
+  const lineMats = useRef<THREE.LineBasicMaterial[]>([]);
+  const lineGeos = useRef<THREE.BufferGeometry[]>([]);
+  const segmentsRef = useRef<(ConnectionSegment | null)[]>([]);
   const packetRefs = useRef<THREE.Mesh[]>([]);
   const analysisMode = analysisId !== null;
   const highlightId = focusId ?? analysisId;
 
-  const segments = useMemo(() => {
-    return connections
-      .map((conn) => {
-        const paRaw = getNeuralNodePosition(conn.from);
-        const pbRaw = getNeuralNodePosition(conn.to);
-        if (!paRaw || !pbRaw) return null;
+  const segmentList = useMemo(
+    () => connections.map((conn) => buildConnectionSegment(conn)),
+    [connections]
+  );
 
-        const pa = new THREE.Vector3(...paRaw);
-        const pb = new THREE.Vector3(...pbRaw);
-        const dir = new THREE.Vector3().subVectors(pb, pa);
-        const len = dir.length();
-        dir.normalize();
-
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute(
-          "position",
-          new THREE.Float32BufferAttribute(
-            [pa.x, pa.y, pa.z, pb.x, pb.y, pb.z],
-            3
-          )
-        );
-
-        return { conn, geo, pa, pb, dir, len };
-      })
-      .filter(Boolean) as SegmentData[];
-  }, [connections]);
+  segmentsRef.current = segmentList;
 
   const packetSlots = useMemo(
     () =>
-      segments.flatMap((seg, segIdx) =>
-        Array.from({ length: PACKET_COUNT }, (_, p) => ({
+      segmentList.flatMap((seg, segIdx) => {
+        if (!seg) return [];
+        return Array.from({ length: PACKET_COUNT }, (_, p) => ({
           segIdx,
           phase: p / PACKET_COUNT,
-          speed: seg.conn.tier === "spoke" ? 0.35 : seg.conn.tier === "ring" ? 0.28 : 0.4,
-        }))
-      ),
-    [segments]
+          speed:
+            seg.conn.tier === "spoke" ? 0.32 : seg.conn.tier === "ring" ? 0.26 : 0.38,
+        }));
+      }),
+    [segmentList]
   );
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
 
-    segments.forEach((seg, i) => {
-      const mat = lineRefs.current[i];
+    connections.forEach((conn, i) => {
+      const seg = buildConnectionSegment(conn);
+      segmentsRef.current[i] = seg;
+
+      if (!seg) return;
+
+      const geo = lineGeos.current[i];
+      if (geo) updateLineGeometry(geo, seg);
+
+      const mat = lineMats.current[i];
       if (!mat) return;
 
       const highlighted = highlightId
@@ -107,7 +116,7 @@ export function NeuralSignalFlow({
 
     packetSlots.forEach((slot, pi) => {
       const mesh = packetRefs.current[pi];
-      const seg = segments[slot.segIdx];
+      const seg = segmentsRef.current[slot.segIdx];
       if (!mesh || !seg) return;
 
       const highlighted = highlightId
@@ -121,54 +130,68 @@ export function NeuralSignalFlow({
       mesh.visible = !dimmed;
       if (!mesh.visible) return;
 
-      const travel = ((t * slot.speed + slot.phase) % 1);
-      mesh.position.copy(seg.pa).addScaledVector(seg.dir, seg.len * travel);
-      const scale = highlighted ? 1.15 : 0.85;
-      mesh.scale.setScalar(scale);
-      const mat = mesh.material as THREE.MeshBasicMaterial;
-      mat.opacity = highlighted ? 0.95 : 0.55;
+      const travel = (t * slot.speed + slot.phase) % 1;
+      packetPositionOnSegment(seg, travel, _packetPos);
+      mesh.position.copy(_packetPos);
+
+      mesh.scale.setScalar(highlighted ? 1.12 : 0.85);
+      (mesh.material as THREE.MeshBasicMaterial).opacity = highlighted ? 0.95 : 0.55;
     });
   });
 
   let packetIndex = 0;
 
   return (
-    <group>
-      {segments.map((seg, i) => (
-        <group key={`${seg.conn.from}-${seg.conn.to}`}>
-          <lineSegments geometry={seg.geo}>
-            <lineBasicMaterial
-              ref={(el) => {
-                if (el) lineRefs.current[i] = el;
+    <group renderOrder={1}>
+      {connections.map((conn, i) => {
+        const seg = segmentList[i];
+        if (!seg) return null;
+
+        return (
+          <group key={`${conn.from}-${conn.to}`}>
+            <lineSegments
+              geometry={createLineGeometry(seg)}
+              ref={(obj) => {
+                if (obj) {
+                  lineGeos.current[i] = obj.geometry;
+                  lineMats.current[i] = obj.material as THREE.LineBasicMaterial;
+                }
               }}
-              color={NEXUS.cyan}
-              transparent
-              opacity={0.12}
-              blending={THREE.AdditiveBlending}
-            />
-          </lineSegments>
-          {Array.from({ length: PACKET_COUNT }).map(() => {
-            const idx = packetIndex++;
-            return (
-              <mesh
-                key={idx}
-                ref={(el) => {
-                  if (el) packetRefs.current[idx] = el;
-                }}
-              >
-                <sphereGeometry args={[0.045, 8, 8]} />
-                <meshBasicMaterial
-                  color={NEXUS.limeBright}
-                  transparent
-                  opacity={0.7}
-                  blending={THREE.AdditiveBlending}
-                  depthWrite={false}
-                />
-              </mesh>
-            );
-          })}
-        </group>
-      ))}
+              renderOrder={1}
+            >
+              <lineBasicMaterial
+                color={NEXUS.cyan}
+                transparent
+                opacity={0.12}
+                blending={THREE.AdditiveBlending}
+                depthWrite={false}
+              />
+            </lineSegments>
+
+            {Array.from({ length: PACKET_COUNT }).map(() => {
+              const idx = packetIndex++;
+              return (
+                <mesh
+                  key={idx}
+                  ref={(el) => {
+                    if (el) packetRefs.current[idx] = el;
+                  }}
+                  renderOrder={2}
+                >
+                  <sphereGeometry args={[0.04, 8, 8]} />
+                  <meshBasicMaterial
+                    color={NEXUS.limeBright}
+                    transparent
+                    opacity={0.7}
+                    blending={THREE.AdditiveBlending}
+                    depthWrite={false}
+                  />
+                </mesh>
+              );
+            })}
+          </group>
+        );
+      })}
     </group>
   );
 }

@@ -22,6 +22,7 @@ export function Navbar() {
   const toggleNav = useUIStore((s) => s.toggleNav);
   const setNavOpen = useUIStore((s) => s.setNavOpen);
   const telemetryLive = useUIStore((s) => s.telemetryLive);
+  const toggleTelemetryPanel = useUIStore((s) => s.toggleTelemetryPanel);
   const mounted = useMounted();
   const reduceMotion = useHydratedReducedMotion();
   const activeSection = useScrollSpy();
@@ -143,7 +144,10 @@ export function Navbar() {
             </ul>
 
             <div className="flex items-center gap-4">
-              <StatusPill live={mounted && telemetryLive} />
+              <StatusPill
+                live={mounted && telemetryLive}
+                onOpen={toggleTelemetryPanel}
+              />
               <NexusButton href="#access" variant="outline">
                 Initialize
               </NexusButton>
@@ -205,7 +209,11 @@ export function Navbar() {
                   </a>
                 </motion.div>
               ))}
-              <StatusPill live={mounted && telemetryLive} className="mt-4" />
+              <StatusPill
+                live={mounted && telemetryLive}
+                onOpen={toggleTelemetryPanel}
+                className="mt-4"
+              />
             </div>
           </motion.div>
         )}
@@ -217,26 +225,33 @@ export function Navbar() {
 function StatusPill({
   live,
   className,
+  onOpen,
 }: {
   live: boolean;
   className?: string;
+  onOpen: () => void;
 }) {
   return (
-    <div
+    <button
+      type="button"
+      onClick={onOpen}
       className={cn(
-        "flex items-center gap-2 border border-white/[0.1] bg-black/35 px-3 py-1.5 backdrop-blur-md",
+        "status-pill flex items-center gap-2 border border-white/[0.1] bg-black/35 px-3 py-1.5 backdrop-blur-md",
+        "transition-colors duration-500 hover:border-nexus-lime/25 hover:bg-black/50",
+        "focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-nexus-lime/50",
         className
       )}
+      aria-label={live ? "Open live feed diagnostics" : "Open telemetry diagnostics"}
     >
       <motion.span
-        animate={live ? { opacity: [1, 0.3, 1] } : { opacity: 0.5 }}
-        transition={{ duration: 1.5, repeat: Infinity }}
+        animate={live ? { opacity: [1, 0.35, 1] } : { opacity: 0.5 }}
+        transition={{ duration: 1.8, repeat: Infinity, ease: [0.45, 0, 0.55, 1] }}
       >
         <Radio size={12} className="text-nexus-lime" />
       </motion.span>
       <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-white/55">
         {live ? "Live Feed" : "Standby"}
       </span>
-    </div>
+    </button>
   );
 }

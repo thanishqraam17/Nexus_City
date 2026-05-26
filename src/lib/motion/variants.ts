@@ -1,5 +1,5 @@
 import type { Variants } from "framer-motion";
-import { blurReveal, easeOutExpo } from "./transitions";
+import { blurReveal, easeLuxury, easeOutExpo } from "./transitions";
 
 export const fadeUp: Variants = {
   hidden: { opacity: 0, y: 48, filter: "blur(8px)" },
@@ -7,7 +7,7 @@ export const fadeUp: Variants = {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: blurReveal,
+    transition: easeLuxury,
   },
 };
 

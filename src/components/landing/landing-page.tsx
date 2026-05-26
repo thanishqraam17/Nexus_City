@@ -11,6 +11,7 @@ import { CinematicCursor } from "@/components/cinematic/cinematic-cursor";
 import { SystemBoot } from "@/components/cinematic/system-boot";
 import { ScrollEnvironment } from "@/components/cinematic/scroll-environment";
 import { GlobalAmbient } from "@/components/cinematic/global-ambient";
+import { LiveFeedDiagnostics } from "@/components/cinematic/live-feed-diagnostics";
 import { AmbientPulse } from "@/components/cinematic/ambient-pulse";
 import { Navbar } from "@/components/layout/navbar";
 import { HeroSection } from "@/components/sections/hero-section";
@@ -34,6 +35,7 @@ export function LandingPage() {
       <AmbientPulse />
       <SystemBoot />
       <Navbar />
+      <LiveFeedDiagnostics />
       <main className="relative z-10">
         <div data-os-layer="overview">
           <HeroSection />
@@ -49,6 +51,8 @@ export function LandingPage() {
           atmosphere="neural"
           depth={2}
           softMotion
+          viewportMode
+          layoutStable
           osLayer="neural"
           className="overflow-visible"
         >

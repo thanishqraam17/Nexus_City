@@ -48,7 +48,7 @@ export function NeuralMapScene({
     const t = state.clock.elapsedTime;
 
     if (worldRef.current) {
-      worldRef.current.position.y = Math.sin(t * 0.35) * 0.03;
+      worldRef.current.position.y = Math.sin(t * 0.35) * 0.02;
     }
 
     if (hubMat.current) {
@@ -91,7 +91,7 @@ export function NeuralMapScene({
 
         {/* Hub */}
         <group position={NEURAL_HUB_POSITION}>
-          <mesh>
+          <mesh renderOrder={3}>
             <sphereGeometry args={[0.11, 24, 24]} />
             <meshStandardMaterial
               ref={hubMat}
@@ -118,7 +118,7 @@ export function NeuralMapScene({
           const dimmed = analysisId !== null && !relatedIds.has(meta.id);
           return (
             <group key={meta.id} position={pos}>
-              <mesh>
+              <mesh renderOrder={3}>
                 <sphereGeometry args={[0.05, 10, 10]} />
                 <meshBasicMaterial
                   color={NEXUS.cyan}
@@ -167,7 +167,7 @@ export function NeuralMapScene({
                 </mesh>
               )}
 
-              <mesh
+              <mesh renderOrder={3}
                 onPointerOver={(e) => {
                   e.stopPropagation();
                   onSectorHover(sector.id);
