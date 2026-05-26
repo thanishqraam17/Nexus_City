@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useMounted } from "@/hooks/use-mounted";
 import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
 import { cn } from "@/lib/utils";
@@ -10,17 +11,76 @@ const SKYLINE_LAYERS = [
   { depth: "near", count: 10, baseH: 52, opacity: 0.45 },
 ] as const;
 
-function towerHeight(seed: number, base: number) {
-  const r = Math.sin(seed * 127.1) * 43758.5453;
-  const n = r - Math.floor(r);
-  return base + n * base * 0.75;
+/** Integer hash — identical output on Node SSR and browser */
+function hash01(seed: number): number {
+  let x = Math.imul(seed, 2654435761) >>> 0;
+  x = Math.imul(x ^ (x >>> 16), 2246822507) >>> 0;
+  x = Math.imul(x ^ (x >>> 13), 3266489909) >>> 0;
+  return (x ^ (x >>> 16)) / 4294967296;
 }
+
+function towerHeight(seed: number, base: number): number {
+  const n = hash01(seed);
+  return Math.round((base + n * base * 0.75) * 100) / 100;
+}
+
+type TowerSpec = {
+  depth: (typeof SKYLINE_LAYERS)[number]["depth"];
+  height: string;
+  width: string;
+  opacity: number;
+  animationDelay: string;
+};
+
+/** Precomputed once — avoids SSR/client float drift from Math.sin */
+const SKYLINE_TOWERS: TowerSpec[] = SKYLINE_LAYERS.flatMap((layer) =>
+  Array.from({ length: layer.count }, (_, i) => {
+    const h = towerHeight(i + layer.count * 3, layer.baseH);
+    const w = 2 + (i % 3);
+    const delay = Math.round(((i * 0.37) % 5) * 100) / 100;
+    return {
+      depth: layer.depth,
+      height: `${h.toFixed(2)}%`,
+      width: `${w}px`,
+      opacity: layer.opacity,
+      animationDelay: `${delay.toFixed(2)}s`,
+    };
+  })
+);
+
+const TOWERS_BY_DEPTH = SKYLINE_LAYERS.reduce(
+  (acc, layer) => {
+    acc[layer.depth] = SKYLINE_TOWERS.filter((t) => t.depth === layer.depth);
+    return acc;
+  },
+  {} as Record<(typeof SKYLINE_LAYERS)[number]["depth"], TowerSpec[]>
+);
 
 /** Background megacity layer — sits behind WebGL */
 export function NeuralCityBackdrop() {
   const mounted = useMounted();
   const reduceMotion = useHydratedReducedMotion();
   const animate = mounted && !reduceMotion;
+
+  const farSignals = useMemo(
+    () =>
+      Array.from({ length: 12 }, (_, i) => ({
+        left: `${8 + ((i * 19) % 84)}%`,
+        bottom: `${20 + ((i * 11) % 45)}%`,
+        animationDelay: `${i * 0.7}s`,
+      })),
+    []
+  );
+
+  const lights = useMemo(
+    () =>
+      Array.from({ length: 28 }, (_, i) => ({
+        left: `${6 + ((i * 13) % 88)}%`,
+        bottom: `${10 + ((i * 9) % 32)}%`,
+        animationDelay: `${(i * 0.55) % 6}s`,
+      })),
+    []
+  );
 
   return (
     <div className="neural-city-backdrop" aria-hidden>
@@ -29,16 +89,8 @@ export function NeuralCityBackdrop() {
         <div className="neural-city-backdrop__fog neural-city-backdrop__fog--deep" />
         <div className="neural-city-backdrop__grid" />
         <div className="neural-city-backdrop__far-signals" aria-hidden>
-          {Array.from({ length: 12 }).map((_, i) => (
-            <span
-              key={i}
-              className="neural-city-backdrop__far-signal"
-              style={{
-                left: `${8 + ((i * 19) % 84)}%`,
-                bottom: `${20 + ((i * 11) % 45)}%`,
-                animationDelay: `${i * 0.7}s`,
-              }}
-            />
+          {farSignals.map((style, i) => (
+            <span key={i} className="neural-city-backdrop__far-signal" style={style} />
           ))}
         </div>
 
@@ -51,23 +103,18 @@ export function NeuralCityBackdrop() {
               animate && "neural-city-backdrop__skyline--animate"
             )}
           >
-            {Array.from({ length: layer.count }).map((_, i) => {
-              const h = towerHeight(i + layer.count * 3, layer.baseH);
-              const w = 2 + (i % 3);
-              const delay = (i * 0.37) % 5;
-              return (
-                <span
-                  key={i}
-                  className="neural-city-backdrop__tower"
-                  style={{
-                    height: `${h}%`,
-                    width: `${w}px`,
-                    opacity: layer.opacity,
-                    animationDelay: `${delay}s`,
-                  }}
-                />
-              );
-            })}
+            {TOWERS_BY_DEPTH[layer.depth].map((tower, i) => (
+              <span
+                key={i}
+                className="neural-city-backdrop__tower"
+                style={{
+                  height: tower.height,
+                  width: tower.width,
+                  opacity: tower.opacity,
+                  animationDelay: tower.animationDelay,
+                }}
+              />
+            ))}
           </div>
         ))}
 
@@ -78,16 +125,8 @@ export function NeuralCityBackdrop() {
         </div>
 
         <div className="neural-city-backdrop__lights">
-          {Array.from({ length: 28 }).map((_, i) => (
-            <span
-              key={i}
-              className="neural-city-backdrop__light"
-              style={{
-                left: `${6 + ((i * 13) % 88)}%`,
-                bottom: `${10 + ((i * 9) % 32)}%`,
-                animationDelay: `${(i * 0.55) % 6}s`,
-              }}
-            />
+          {lights.map((style, i) => (
+            <span key={i} className="neural-city-backdrop__light" style={style} />
           ))}
         </div>
       </div>

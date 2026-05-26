@@ -41,6 +41,7 @@ export function NeuralMapScene({
   const worldRef = useRef<THREE.Group>(null);
   const nodeRefs = useRef<(THREE.Object3D | null)[]>(Array.from({ length: NODE_COUNT }, () => null));
   const nodeProximityRef = useRef<number[]>(Array.from({ length: NODE_COUNT }, () => 0));
+  const hubEnergyRef = useRef(0);
 
   const { camera, size } = useThree();
   const { smoothX, smoothY, ready: cursorReady, reducedMotion } = useCursor();
@@ -59,6 +60,8 @@ export function NeuralMapScene({
   useFrame((state) => {
     const t = state.clock.elapsedTime;
     const proximity = nodeProximityRef.current;
+
+    hubEnergyRef.current = 0.5 + 0.5 * Math.sin(t * 1.15);
 
     for (let i = 0; i < NODE_COUNT; i++) {
       proximity[i] = 0;
@@ -126,10 +129,12 @@ export function NeuralMapScene({
         mat.opacity = 0.45 + prox * 0.35;
       });
 
-      if (hubMat.current) {
-        const hubProxVal = proximity[NEURAL_NODE_INDEX.HUB] ?? 0;
-        hubMat.current.emissiveIntensity = 1.8 + hubProxVal * 1.2;
-      }
+    }
+
+    if (hubMat.current) {
+      const hubProxVal = proximity[NEURAL_NODE_INDEX.HUB] ?? 0;
+      hubMat.current.emissiveIntensity =
+        1.8 + hubProxVal * 1.2 + hubEnergyRef.current * 0.65;
     }
 
     nodeRefs.current.forEach((obj, idx) => {
@@ -169,12 +174,23 @@ export function NeuralMapScene({
           nodeProximityRef={nodeProximityRef}
           focusId={focusId}
           analysisId={analysisId}
+          hubEnergyRef={hubEnergyRef}
         />
 
         <group
           ref={(el) => registerNode(NEURAL_NODE_INDEX.HUB, el)}
           position={NEURAL_HUB_POSITION}
         >
+          <mesh renderOrder={2}>
+            <sphereGeometry args={[0.16, 24, 24]} />
+            <meshBasicMaterial
+              color={NEXUS.lime}
+              transparent
+              opacity={0.08}
+              blending={THREE.AdditiveBlending}
+              depthWrite={false}
+            />
+          </mesh>
           <mesh renderOrder={3}>
             <sphereGeometry args={[0.12, 24, 24]} />
             <meshStandardMaterial

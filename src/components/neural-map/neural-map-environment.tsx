@@ -1,22 +1,20 @@
 "use client";
 
-/**
- * Lighting-only 3D environment — atmosphere lives in CSS compositing layers.
- * No fog, no solid fills, no background geometry that reads as an opaque panel.
- */
 import { NEXUS } from "@/components/hero-core/colors";
 
+/** Lighting + depth fog for route atmospheric perspective */
 export function NeuralMapEnvironment() {
   return (
     <>
-      <ambientLight intensity={0.12} />
+      <fog attach="fog" args={[NEXUS.void, 11, 26]} />
+      <ambientLight intensity={0.14} />
       <hemisphereLight
-        args={[NEXUS.cyan, "#000000", 0.18]}
+        args={[NEXUS.cyan, NEXUS.voidDeep, 0.22]}
         position={[0, 4, 0]}
       />
-      <pointLight position={[4, 5, 6]} intensity={1.8} color={NEXUS.lime} distance={24} />
-      <pointLight position={[-5, 2, 4]} intensity={1.2} color={NEXUS.cyan} distance={20} />
-      <pointLight position={[0, 1.5, 0]} intensity={0.6} color={NEXUS.cyan} distance={12} />
+      <pointLight position={[4, 5, 6]} intensity={2} color={NEXUS.lime} distance={26} />
+      <pointLight position={[-5, 2, 4]} intensity={1.35} color={NEXUS.cyan} distance={22} />
+      <pointLight position={[0, 1.5, 0]} intensity={0.85} color={NEXUS.limeBright} distance={14} />
     </>
   );
 }
