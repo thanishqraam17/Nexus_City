@@ -18,8 +18,26 @@ import { useSeededLiveValue } from "@/lib/telemetry/seeded-value";
 import { useSmoothMetric } from "@/hooks/use-smooth-metric";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/ui-store";
+import { useOsRuntimeStore } from "@/store/os-runtime-store";
 
-const NEURAL_BASE = 87;
+function clamp01(n: number) {
+  return Math.min(1, Math.max(0, n));
+}
+
+function computeLatencyMs(load: number, neuralState: string) {
+  // Low variance + correlated with load/state: believable, non-random.
+  const load01 = clamp01((load - 38) / (72 - 38));
+  const statePenalty =
+    neuralState === "Optimized"
+      ? -0.08
+      : neuralState === "Balancing"
+        ? 0.03
+        : neuralState === "Recalibrating"
+          ? 0.12
+          : 0.05;
+  const ms = 0.65 + load01 * 0.9 + statePenalty;
+  return Math.min(2.2, Math.max(0.55, ms));
+}
 
 function TelemetryStatus({
   trend,
@@ -225,7 +243,7 @@ function NeuralThroughputWidget({
       fallback={
         <NeuralThroughputStatic
           label={label}
-          percentage={NEURAL_BASE}
+          percentage={percentage}
           trend={trend}
           className={className}
         />
@@ -244,6 +262,15 @@ function NeuralThroughputWidget({
 /** Right-rail telemetry stack — fixed layout, no motion wrappers. */
 export function TelemetryRail() {
   const activeSector = useUIStore((s) => s.activeSector);
+  const telemetryLive = useUIStore((s) => s.telemetryLive);
+  const mounted = useMounted();
+  const isLive = mounted && telemetryLive;
+  const syncPercent = useOsRuntimeStore((s) => s.syncPercent);
+  const throughputIndex = useOsRuntimeStore((s) => s.throughputIndex);
+  const infrastructureLoad = useOsRuntimeStore((s) => s.infrastructureLoad);
+  const neuralState = useOsRuntimeStore((s) => s.neuralState);
+
+  const latencyBase = computeLatencyMs(infrastructureLoad, neuralState);
 
   return (
     <aside className="telemetry-rail" aria-label="Live telemetry">
@@ -256,29 +283,29 @@ export function TelemetryRail() {
         <TelemetryWidget label="Sector Load" value={activeSector} trend="stable" />
         <TelemetryNumericWidget
           label="Grid Uptime"
-          value={99.97}
+          value={syncPercent}
           format={metricFormat.uptime}
           unit="%"
-          trend="up"
-          animate
-          seed={3}
-          variance={0.05}
+          trend={syncPercent > 99.2 ? "up" : syncPercent < 98.4 ? "down" : "stable"}
+          animate={isLive}
+          seed={2}
+          variance={0.08}
           digitsClass="telemetry-metric-digits--uptime"
         />
         <NeuralThroughputWidget
           label="Neural Throughput"
-          percentage={NEURAL_BASE}
-          trend="up"
+          percentage={throughputIndex}
+          trend={neuralState === "Optimized" ? "up" : neuralState === "Recalibrating" ? "down" : "stable"}
         />
         <TelemetryNumericWidget
           label="Latency"
-          value={0.8}
+          value={latencyBase}
           format={metricFormat.latency}
           unit="ms"
-          trend="down"
-          animate
+          trend={neuralState === "Optimized" ? "down" : neuralState === "Recalibrating" ? "up" : "stable"}
+          animate={isLive}
           seed={9}
-          variance={0.12}
+          variance={0.08}
           digitsClass="telemetry-metric-digits--latency"
         />
       </div>

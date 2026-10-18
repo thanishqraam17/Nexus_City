@@ -1,6 +1,12 @@
 "use client";
 
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
@@ -36,12 +42,11 @@ export function Navbar() {
     ["rgba(3, 3, 8, 0)", "rgba(3, 3, 8, 0.85)"]
   );
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  useMotionValueEvent(scrollY, "change", (v) => {
+    // Avoid a global scroll listener; keep navbar state in sync with Lenis too.
+    const next = v > 40;
+    setScrolled((prev) => (prev === next ? prev : next));
+  });
 
   useEffect(() => {
     document.body.style.overflow = navOpen ? "hidden" : "";
