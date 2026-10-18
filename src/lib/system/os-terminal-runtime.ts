@@ -73,11 +73,19 @@ export function resolveTerminalInput(
   if (input.startsWith("sync")) {
     return { id: "sync", input: raw.trim() };
   }
+  if (input.startsWith("optimize")) {
+    return { id: "optimize", input: raw.trim() };
+  }
+  // Specific keywords before broad ones: "neural route" must not match "neural",
+  // and "infrastructure report" must not match "infra".
+  if (input.includes("route")) {
+    return { id: "route", input: raw.trim() };
+  }
   if (input.includes("uplink") || input.includes("neural")) {
     return { id: "uplink", input: raw.trim() };
   }
-  if (input.startsWith("optimize")) {
-    return { id: "optimize", input: raw.trim() };
+  if (input.includes("report")) {
+    return { id: "report", input: raw.trim() };
   }
   if (input.includes("diag") || input.includes("telemetry")) {
     return { id: "diag", input: raw.trim() };
@@ -85,10 +93,7 @@ export function resolveTerminalInput(
   if (input.includes("infra") || input.includes("mesh") || input.includes("query")) {
     return { id: "infra", input: raw.trim() };
   }
-  if (input.includes("route")) {
-    return { id: "route", input: raw.trim() };
-  }
-  if (input.includes("report") || input.includes("status")) {
+  if (input.includes("status")) {
     return { id: "report", input: raw.trim() };
   }
   if (input === "clear") {
