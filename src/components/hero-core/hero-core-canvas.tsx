@@ -4,7 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
 import { NeuralCoreScene } from "./neural-core-scene";
 
-export default function HeroCoreCanvas() {
+export default function HeroCoreCanvas({ active = true }: { active?: boolean }) {
   return (
     <Canvas
       className="h-full w-full touch-none"
@@ -19,7 +19,7 @@ export default function HeroCoreCanvas() {
       }}
       performance={{ min: 0.55 }}
       style={{ background: "transparent" }}
-      frameloop="always"
+      frameloop={active ? "always" : "never"}
     >
       <Suspense fallback={null}>
         <NeuralCoreScene />

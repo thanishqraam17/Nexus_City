@@ -7,6 +7,7 @@ import { configureTransparentRenderer } from "@/lib/three/transparent-renderer";
 import { NeuralMapScene } from "./neural-map-scene";
 
 interface NeuralMapCanvasProps {
+  active?: boolean;
   hoveredSector: NeuralSectorId | null;
   selectedSector: NeuralSectorId | null;
   onSectorHover: (id: NeuralSectorId | null) => void;
@@ -14,6 +15,7 @@ interface NeuralMapCanvasProps {
 }
 
 function NeuralMapCanvasInner({
+  active = true,
   hoveredSector,
   selectedSector,
   onSectorHover,
@@ -39,7 +41,7 @@ function NeuralMapCanvasInner({
         backgroundColor: "transparent",
         touchAction: "none",
       }}
-      frameloop="always"
+      frameloop={active ? "always" : "never"}
       performance={{ min: 0.5 }}
     >
       <Suspense fallback={null}>

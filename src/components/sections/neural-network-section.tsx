@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useState } from "react";
+import { useInView } from "framer-motion";
+import { useCallback, useRef, useState } from "react";
 import { SectionShell, SectionHeading } from "@/components/system";
 import { MicroLabel } from "@/components/ui/micro-label";
 import { NeuralAnalysisPanel } from "@/components/neural-map/neural-analysis-panel";
@@ -28,6 +29,9 @@ export function NeuralNetworkSection() {
   const mounted = useMounted();
   const [selectedSector, setSelectedSector] = useState<NeuralSectorId | null>(null);
   const [hoveredSector, setHoveredSector] = useState<NeuralSectorId | null>(null);
+  const graphRef = useRef<HTMLDivElement>(null);
+  // Pause the render loop while the map is well out of view.
+  const graphInView = useInView(graphRef, { margin: "200px 0px" });
 
   const handleHover = useCallback((id: NeuralSectorId | null) => {
     setHoveredSector(id);
@@ -74,9 +78,10 @@ export function NeuralNetworkSection() {
             <NeuralCityBackdrop />
             <NeuralHoloComposite />
 
-            <div className="neural-map-stage__graph">
+            <div ref={graphRef} className="neural-map-stage__graph">
               {mounted ? (
                 <NeuralMapCanvas
+                  active={graphInView}
                   hoveredSector={hoveredSector}
                   selectedSector={selectedSector}
                   onSectorHover={handleHover}
