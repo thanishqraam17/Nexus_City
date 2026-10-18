@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion";
 import { useMounted } from "@/hooks/use-mounted";
 import { GlassPanel } from "@/components/ui/glass-panel";
@@ -17,6 +18,18 @@ export function AccessSection() {
   const motionReady = mounted && !reduceMotion;
   const syncPercent = useOsRuntimeStore((s) => s.syncPercent);
   const throughputIndex = useOsRuntimeStore((s) => s.throughputIndex);
+  const pushAiMessage = useOsRuntimeStore((s) => s.pushAiMessage);
+  const [email, setEmail] = useState("");
+  const [granted, setGranted] = useState(false);
+
+  // Front-end only: no backend exists yet, so nothing is sent anywhere.
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const operator = email.trim();
+    if (!operator) return;
+    setGranted(true);
+    pushAiMessage(`Operator channel ${operator} registered — command access granted.`);
+  };
 
   return (
     <section
@@ -89,31 +102,51 @@ export function AccessSection() {
                   <span />
                   <span />
                   <p className="ml-2 font-mono text-[9px] uppercase tracking-[0.28em] text-nexus-lime/70">
-                    Awaiting operator signal
+                    {granted ? "Operator signal received" : "Awaiting operator signal"}
                   </p>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4 lg:col-span-5 lg:items-end">
-                <label className="w-full font-mono text-[9px] uppercase tracking-widest text-white/35 lg:max-w-sm">
-                  Operator channel
-                  <input
-                    type="email"
-                    placeholder="OPERATOR@NEXUS.IO"
-                    className="nexus-input mt-2 w-full"
-                    aria-label="Email address"
-                  />
-                </label>
-                <Magnetic strength={0.25}>
-                  <NexusButton
-                    variant="primary"
-                    className="access-ending__cta w-full whitespace-nowrap border-white/30 bg-white text-void sm:w-auto"
-                    data-magnetic
-                  >
-                    Enter the system
-                  </NexusButton>
-                </Magnetic>
-              </div>
+              {granted ? (
+                <div
+                  className="flex flex-col gap-3 lg:col-span-5 lg:items-end"
+                  role="status"
+                >
+                  <MicroLabel accent="lime">Command access granted</MicroLabel>
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-white/50">
+                    Operator channel · {email.trim()}
+                  </p>
+                </div>
+              ) : (
+                <form
+                  className="flex flex-col gap-4 lg:col-span-5 lg:items-end"
+                  onSubmit={handleSubmit}
+                >
+                  <label className="w-full font-mono text-[9px] uppercase tracking-widest text-white/35 lg:max-w-sm">
+                    Operator channel
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="OPERATOR@NEXUS.IO"
+                      className="nexus-input mt-2 w-full"
+                    />
+                  </label>
+                  <Magnetic strength={0.25}>
+                    <NexusButton
+                      type="submit"
+                      variant="primary"
+                      className="access-ending__cta w-full whitespace-nowrap border-white/30 bg-white text-void sm:w-auto"
+                      data-magnetic
+                    >
+                      Enter the system
+                    </NexusButton>
+                  </Magnetic>
+                </form>
+              )}
             </div>
           </GlassPanel>
         </motion.div>
